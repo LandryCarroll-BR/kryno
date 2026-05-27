@@ -1,0 +1,27 @@
+{
+  "name": "@workspace/auth",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./domain": "./src/domain/index.ts",
+    "./services": "./src/services/index.ts",
+    "./policies": "./src/policies/index.ts",
+    "./controllers": "./src/controllers/index.ts",
+    "./testing": "./src/testing/index.ts"
+  },
+  "dependencies": {
+    "effect": "^3.21.2"
+  },
+  "devDependencies": {
+    "@effect/vitest": "^0.23.0",
+    "@workspace/tsconfig": "workspace:*",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
+  }
+}

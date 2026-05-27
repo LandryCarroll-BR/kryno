@@ -8,11 +8,11 @@ Add the system-admin bootstrap flow. The auth module should be able to create th
 
 ## Acceptance criteria
 
-- [ ] The auth module models system-admin identity separately from gym-side identity.
-- [ ] A bootstrap use case creates the first system admin with email and password credentials.
-- [ ] Running bootstrap again does not create duplicate first-admin accounts.
-- [ ] The flow returns typed success and recoverable error results.
-- [ ] Behavior tests cover first-admin creation, idempotency, and duplicate prevention.
+- [x] The auth module models system-admin identity separately from gym-side identity.
+- [x] A bootstrap use case creates the first system admin with email and password credentials.
+- [x] Running bootstrap again does not create duplicate first-admin accounts.
+- [x] The flow returns typed success and recoverable error results.
+- [x] Behavior tests cover first-admin creation, idempotency, and duplicate prevention.
 
 ## Blocked by
 

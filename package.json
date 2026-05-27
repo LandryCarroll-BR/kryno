@@ -6,6 +6,7 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "format": "turbo format",
+    "test": "turbo test",
     "prepare": "effect-language-service patch",
     "typecheck": "turbo typecheck"
   },
