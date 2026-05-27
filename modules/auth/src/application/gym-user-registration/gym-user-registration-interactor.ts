@@ -1,27 +1,15 @@
 import { Effect, Layer } from "effect"
-import * as Context from "effect/Context"
 
 import {
   GymUserRegistrationRecord,
   type ReserveGymUserEmailInput,
-  type GymUserEmailAlreadyReserved,
-} from "../domain/index.ts"
-import { ensureGymUserEmailCanBeReserved } from "../policies/index.ts"
-import { AuthIdGenerator } from "./auth-id-generator.ts"
-import { GymUserRegistrationRepository } from "./gym-user-registration-repository.ts"
+} from "../../domain/gym-user.ts"
+import { AuthIdGenerator } from "../../ports/auth-id-generator.ts"
+import { GymUserRegistrationRepository } from "../../ports/gym-user-registration-repository.ts"
+import { GymUserRegistration } from "./gym-user-registration-input-boundary.ts"
+import { ensureGymUserEmailCanBeReserved } from "./gym-user-registration-policy.ts"
 
-export class GymUserRegistration extends Context.Tag(
-  "@kryno/auth/GymUserRegistration"
-)<
-  GymUserRegistration,
-  {
-    readonly reserveEmail: (
-      input: ReserveGymUserEmailInput
-    ) => Effect.Effect<GymUserRegistrationRecord, GymUserEmailAlreadyReserved>
-  }
->() {}
-
-export const GymUserRegistrationLayer = Layer.effect(
+export const GymUserRegistrationInteractor = Layer.effect(
   GymUserRegistration,
   Effect.gen(function* () {
     const ids = yield* AuthIdGenerator

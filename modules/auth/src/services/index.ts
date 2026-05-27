@@ -1,6 +1,0 @@
-export * from "./auth-id-generator.ts"
-export * from "./gym-user-registration-repository.ts"
-export * from "./gym-user-registration.ts"
-export * from "./password-hasher.ts"
-export * from "./system-admin-bootstrap-repository.ts"
-export * from "./system-admin-bootstrap.ts"

@@ -9,11 +9,18 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./domain": "./src/domain/index.ts",
-    "./services": "./src/services/index.ts",
-    "./policies": "./src/policies/index.ts",
-    "./controllers": "./src/controllers/index.ts",
-    "./testing": "./src/testing/index.ts"
+    "./application/gym-user-registration/interactor": "./src/application/gym-user-registration/gym-user-registration-interactor.ts",
+    "./application/system-admin-bootstrap/interactor": "./src/application/system-admin-bootstrap/system-admin-bootstrap-interactor.ts",
+    "./ports/auth-id-generator": "./src/ports/auth-id-generator.ts",
+    "./ports/password-hasher": "./src/ports/password-hasher.ts",
+    "./ports/gym-user-registration-repository": "./src/ports/gym-user-registration-repository.ts",
+    "./ports/system-admin-bootstrap-repository": "./src/ports/system-admin-bootstrap-repository.ts",
+    "./adapters/auth-id-generator-sequential": "./src/adapters/auth-id-generator-sequential.ts",
+    "./adapters/password-hasher-deterministic": "./src/adapters/password-hasher-deterministic.ts",
+    "./adapters/gym-user-registration-repository-memory": "./src/adapters/gym-user-registration-repository-memory.ts",
+    "./adapters/system-admin-bootstrap-repository-memory": "./src/adapters/system-admin-bootstrap-repository-memory.ts",
+    "./adapters/http-gym-user-registration": "./src/adapters/http-gym-user-registration.ts",
+    "./testing": "./src/testing/layers.ts"
   },
   "dependencies": {
     "effect": "^3.21.2"

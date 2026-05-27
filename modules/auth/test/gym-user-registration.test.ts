@@ -1,8 +1,8 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Effect, Exit } from "effect"
 
-import { GymUserRegistration } from "../src/index.ts"
-import { AuthTestLayer } from "../src/testing/index.ts"
+import { GymUserRegistration } from "@workspace/auth"
+import { AuthTestLayer } from "@workspace/auth/testing"
 
 describe("GymUserRegistration.reserveEmail", () => {
   it.effect(

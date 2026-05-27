@@ -4,7 +4,7 @@ import * as Context from "effect/Context"
 import type {
   SystemAdminCredentialRecord,
   SystemAdminRecord,
-} from "../domain/index.ts"
+} from "../domain/system-admin.ts"
 
 export class SystemAdminBootstrapRepository extends Context.Tag(
   "@kryno/auth/SystemAdminBootstrapRepository"

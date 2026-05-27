@@ -1,9 +1,7 @@
 import { Effect, Option } from "effect"
 
-import {
-  GymUserEmailAlreadyReserved,
-  type GymUserRegistrationRecord,
-} from "../domain/index.ts"
+import { GymUserEmailAlreadyReserved } from "../../domain/errors.ts"
+import { type GymUserRegistrationRecord } from "../../domain/gym-user.ts"
 
 export const ensureGymUserEmailCanBeReserved = (
   email: string,

@@ -1,34 +1,19 @@
 import { Effect, Layer, Option } from "effect"
-import * as Context from "effect/Context"
 
+import { FirstSystemAdminAlreadyExists } from "../../domain/errors.ts"
 import {
   FirstSystemAdminAlreadyBootstrapped,
-  FirstSystemAdminAlreadyExists,
   FirstSystemAdminCreated,
   SystemAdminCredentialRecord,
   SystemAdminRecord,
   type BootstrapFirstSystemAdminInput,
-  type BootstrapFirstSystemAdminSuccess,
-} from "../domain/index.ts"
-import { AuthIdGenerator } from "./auth-id-generator.ts"
-import { PasswordHasher } from "./password-hasher.ts"
-import { SystemAdminBootstrapRepository } from "./system-admin-bootstrap-repository.ts"
+} from "../../domain/system-admin.ts"
+import { AuthIdGenerator } from "../../ports/auth-id-generator.ts"
+import { PasswordHasher } from "../../ports/password-hasher.ts"
+import { SystemAdminBootstrapRepository } from "../../ports/system-admin-bootstrap-repository.ts"
+import { SystemAdminBootstrap } from "./system-admin-bootstrap-input-boundary.ts"
 
-export class SystemAdminBootstrap extends Context.Tag(
-  "@kryno/auth/SystemAdminBootstrap"
-)<
-  SystemAdminBootstrap,
-  {
-    readonly bootstrapFirstAdmin: (
-      input: BootstrapFirstSystemAdminInput
-    ) => Effect.Effect<
-      BootstrapFirstSystemAdminSuccess,
-      FirstSystemAdminAlreadyExists
-    >
-  }
->() {}
-
-export const SystemAdminBootstrapLayer = Layer.effect(
+export const SystemAdminBootstrapInteractor = Layer.effect(
   SystemAdminBootstrap,
   Effect.gen(function* () {
     const ids = yield* AuthIdGenerator
