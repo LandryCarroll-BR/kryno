@@ -9,6 +9,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./application/auth": "./src/application/auth.ts",
     "./application/gym-user-registration/interactor": "./src/application/gym-user-registration/gym-user-registration-interactor.ts",
     "./application/system-admin-bootstrap/interactor": "./src/application/system-admin-bootstrap/system-admin-bootstrap-interactor.ts",
     "./ports/auth-id-generator": "./src/ports/auth-id-generator.ts",

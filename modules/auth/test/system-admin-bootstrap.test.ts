@@ -2,7 +2,7 @@ import { describe, expect, it } from "@effect/vitest"
 import { Effect, Exit } from "effect"
 
 import { SystemAdminBootstrap } from "@workspace/auth"
-import { AuthTestLayer } from "@workspace/auth/testing"
+import { AuthTestLayer } from "../src/layers/test-layer"
 
 describe("SystemAdminBootstrap.bootstrapFirstAdmin", () => {
   it.effect("creates the first system admin with password credentials", () =>
