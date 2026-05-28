@@ -3,7 +3,7 @@ import { Cause, Effect, Exit } from "effect"
 
 import { Auth } from "@workspace/auth"
 import { SystemAdminSessionId } from "../src/domain/system-admin"
-import { AuthLiveTestLayer } from "../src/layers/test-layer"
+import { AuthTestLayer } from "../src/layers/test-layer"
 
 const expectFailureTag = <Tag extends string>(
   exit: Exit.Exit<unknown, { readonly _tag: string }>,
@@ -54,7 +54,7 @@ describe("Auth system admin authentication", () => {
       )
 
       expectFailureTag(afterLogout, "SystemAdminSessionInvalid")
-    }).pipe(Effect.provide(AuthLiveTestLayer))
+    }).pipe(Effect.provide(AuthTestLayer))
   )
 
   it.effect("denies login with invalid credentials", () =>
@@ -74,7 +74,7 @@ describe("Auth system admin authentication", () => {
       )
 
       expectFailureTag(failedLogin, "SystemAdminInvalidCredentials")
-    }).pipe(Effect.provide(AuthLiveTestLayer))
+    }).pipe(Effect.provide(AuthTestLayer))
   )
 
   it.effect("denies unknown admin sessions", () =>
@@ -96,6 +96,6 @@ describe("Auth system admin authentication", () => {
       )
 
       expectFailureTag(logout, "SystemAdminSessionInvalid")
-    }).pipe(Effect.provide(AuthLiveTestLayer))
+    }).pipe(Effect.provide(AuthTestLayer))
   )
 })

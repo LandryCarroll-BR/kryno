@@ -3,6 +3,11 @@ import { Schema } from "effect"
 export const GymUserId = Schema.String.pipe(Schema.brand("GymUserId"))
 export type GymUserId = typeof GymUserId.Type
 
+export const GymUserSessionId = Schema.String.pipe(
+  Schema.brand("GymUserSessionId")
+)
+export type GymUserSessionId = typeof GymUserSessionId.Type
+
 export class GymUserRegistrationRecord extends Schema.Class<GymUserRegistrationRecord>(
   "GymUserRegistrationRecord"
 )({
@@ -40,6 +45,14 @@ export class GymUserCredentialRecord extends Schema.Class<GymUserCredentialRecor
   passwordHash: Schema.String,
 }) {}
 
+export class GymUserSessionRecord extends Schema.Class<GymUserSessionRecord>(
+  "GymUserSessionRecord"
+)({
+  id: GymUserSessionId,
+  userId: GymUserId,
+  active: Schema.Boolean,
+}) {}
+
 export class GymUserEmailVerificationTokenRecord extends Schema.Class<GymUserEmailVerificationTokenRecord>(
   "GymUserEmailVerificationTokenRecord"
 )({
@@ -58,4 +71,37 @@ export class GymUserEmailVerificationSuccess extends Schema.Class<GymUserEmailVe
   "GymUserEmailVerificationSuccess"
 )({
   user: GymUserRegistrationRecord,
+}) {}
+
+export class LoginGymUserInput extends Schema.Class<LoginGymUserInput>(
+  "LoginGymUserInput"
+)({
+  email: Schema.String,
+  password: Schema.String,
+}) {}
+
+export class CurrentGymUserSessionInput extends Schema.Class<CurrentGymUserSessionInput>(
+  "CurrentGymUserSessionInput"
+)({
+  sessionId: GymUserSessionId,
+}) {}
+
+export class LogoutGymUserInput extends Schema.Class<LogoutGymUserInput>(
+  "LogoutGymUserInput"
+)({
+  sessionId: GymUserSessionId,
+}) {}
+
+export class GymUserLoginSuccess extends Schema.Class<GymUserLoginSuccess>(
+  "GymUserLoginSuccess"
+)({
+  user: GymUserRegistrationRecord,
+  session: GymUserSessionRecord,
+}) {}
+
+export class CurrentGymUserSessionSuccess extends Schema.Class<CurrentGymUserSessionSuccess>(
+  "CurrentGymUserSessionSuccess"
+)({
+  user: GymUserRegistrationRecord,
+  session: GymUserSessionRecord,
 }) {}

@@ -6,6 +6,11 @@ import {
   VerifyGymUserEmailEndpoint,
 } from "./endpoints/gym-user-registration.ts"
 import {
+  CurrentGymUserSessionEndpoint,
+  LoginGymUserEndpoint,
+  LogoutGymUserEndpoint,
+} from "./endpoints/gym-user-authentication.ts"
+import {
   CurrentSystemAdminSessionEndpoint,
   LoginSystemAdminEndpoint,
   LogoutSystemAdminEndpoint,
@@ -16,6 +21,9 @@ export const AuthHttpGroup = HttpApiGroup.make("auth")
   .add(ReserveGymUserEmailEndpoint)
   .add(SignUpGymUserEndpoint)
   .add(VerifyGymUserEmailEndpoint)
+  .add(LoginGymUserEndpoint)
+  .add(CurrentGymUserSessionEndpoint)
+  .add(LogoutGymUserEndpoint)
   .add(BootstrapFirstSystemAdminEndpoint)
   .add(LoginSystemAdminEndpoint)
   .add(CurrentSystemAdminSessionEndpoint)

@@ -2,7 +2,7 @@ import { describe, expect, it } from "@effect/vitest"
 import { Cause, Effect, Exit } from "effect"
 
 import { SystemAdminBootstrap } from "../src/application/system-admin-bootstrap/system-admin-bootstrap-input-boundary"
-import { AuthTestLayer } from "../src/layers/test-layer"
+import { AuthApplicationTestLayer } from "../src/layers/test-layer"
 
 describe("SystemAdminBootstrap.bootstrapFirstAdmin", () => {
   it.effect("creates the first system admin with password credentials", () =>
@@ -24,7 +24,7 @@ describe("SystemAdminBootstrap.bootstrapFirstAdmin", () => {
       expect(result.credential.passwordHash).toBe(
         "hashed:correct horse battery staple"
       )
-    }).pipe(Effect.provide(AuthTestLayer))
+    }).pipe(Effect.provide(AuthApplicationTestLayer))
   )
 
   it.effect(
@@ -49,7 +49,7 @@ describe("SystemAdminBootstrap.bootstrapFirstAdmin", () => {
         expect(second._tag).toBe("FirstSystemAdminAlreadyBootstrapped")
         expect(second.admin.id).toBe(first.admin.id)
         expect(second.admin.email).toBe("admin@example.com")
-      }).pipe(Effect.provide(AuthTestLayer))
+      }).pipe(Effect.provide(AuthApplicationTestLayer))
   )
 
   it.effect(
@@ -84,6 +84,6 @@ describe("SystemAdminBootstrap.bootstrapFirstAdmin", () => {
             )
           }
         }
-      }).pipe(Effect.provide(AuthTestLayer))
+      }).pipe(Effect.provide(AuthApplicationTestLayer))
   )
 })

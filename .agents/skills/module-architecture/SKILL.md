@@ -1,6 +1,6 @@
 ---
 name: module-architecture
-description: Use when creating or refactoring a repo module so it follows Kryno's module structure: a thin module facade, application input boundaries/interactors, ports, adapters, Effect HttpApi contracts, and live/mock/test layers.
+description: Use when creating or refactoring a repo module so it follows Kryno's module structure: a thin module facade with its facade layer, application input boundaries/interactors, ports, adapters, Effect HttpApi contracts, and clearly separated production/test/mock layers.
 ---
 
 # Module Architecture
@@ -46,7 +46,7 @@ modules/<module>/src/
       <service>-<variant>.ts
 
   layers/
-    live-layer.ts
+    live-layer.ts              # only when real production adapters exist
     mock-layer.ts
     test-layer.ts
 ```
@@ -56,6 +56,7 @@ modules/<module>/src/
 - Root `index.ts` should expose the module facade and its layers by default. Do not export ports, adapters, or application internals from root unless there is a deliberate public API reason.
 - The module facade lives at `src/<module>.ts` and is named for the module, for example `Auth`. It should be a small Effect service tag used by other modules.
 - Facade methods should be business-facing and stable, for example `reserveGymUserEmail` rather than repository-like verbs.
+- The facade service should own its facade adapter layer, for example `Auth.layer`, when the implementation only maps facade methods to application input boundaries. Do not call this `AuthLive`; it is not a complete production layer until all production adapters are provided.
 - Use-case input boundaries live under `application/<use-case>/` and expose the lower-level use-case Effect service.
 - Interactors implement input boundaries and depend on ports, policies, and domain contracts.
 - Ports are Effect service tags for dependencies the application layer needs.
@@ -73,9 +74,10 @@ modules/<module>/src/
   - `adapters/repositories/`: repository implementations, named by repository plus variant, for example `gym-user-registration-repository-memory.ts`.
   - `adapters/services/`: service implementations, named by service plus variant, for example `password-hasher-deterministic.ts`.
 - Layers compose services:
-  - `live-layer.ts`: facade backed by real application/interactor wiring.
-  - `mock-layer.ts`: facade implemented directly for tests or consumers that need a simple stand-in.
-  - `test-layer.ts`: application/interactor wiring plus test adapters; expose a convenient test layer.
+  - `src/<module>.ts`: define the module facade tag and its facade adapter layer, for example `Auth.layer`, when the layer still requires application input boundaries.
+  - `live-layer.ts`: complete production composition only. It should provide the facade, interactors, and real adapters such as database repositories, real email delivery, token generation, config, and other production services. Omit this file until that production composition exists.
+  - `test-layer.ts`: real application/interactor wiring plus test adapters. Expose `<Module>ApplicationTestLayer` for tests that exercise input boundaries directly, and `<Module>TestLayer` for tests that exercise the public module facade.
+  - `mock-layer.ts`: facade implemented directly with canned or configurable responses for other modules that need a stand-in. It should not exercise module business logic.
 - Avoid `index.ts` barrels inside subfolders. Prefer explicit file imports and package subpath exports.
 
 ## HttpApi Composition
@@ -132,6 +134,7 @@ export const AuthHttpHandlersLive = HttpApiBuilder.group(
 - Expose ports and adapters only by explicit subpath.
 - Expose API contracts and handler builders only by explicit `./api...` subpaths when app/server composition needs them.
 - Expose test helpers through `./testing` when useful.
+- Do not export `live-layer.ts` or a `<Module>Live` symbol until it is backed by production adapters. A facade adapter layer belongs on the facade service itself, for example `Auth.layer`.
 
 Example:
 
@@ -153,7 +156,8 @@ Example:
 
 ## Tests
 
-- Other modules should be able to test against the facade with either the live test layer or mock layer.
+- Other modules should test against the facade with either `<Module>TestLayer` when they need real module behavior with test infrastructure, or `<Module>Mock` when they only need a stand-in.
+- Use `<Module>ApplicationTestLayer` for tests that exercise application input boundaries/interactors directly.
 - Use-case behavior tests should exercise input boundaries/interactors through Effect services, not private helper functions.
 - Adapter tests should target adapter behavior only when the adapter has meaningful logic.
 - API contract/handler tests should compile or exercise the typed client/server boundary when the handler mapping has meaningful logic. Keep domain behavior assertions in use-case/facade tests.

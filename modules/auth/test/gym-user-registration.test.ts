@@ -5,7 +5,7 @@ import { Auth } from "@workspace/auth"
 import { GymUserRegistration } from "../src/application/gym-user-registration/gym-user-registration-input-boundary"
 import { GymUserRegistrationRepository } from "../src/ports/repositories/gym-user-registration-repository"
 import { AuthEmailDelivery } from "../src/ports/services/auth-email-delivery"
-import { AuthLiveTestLayer, AuthTestLayer } from "../src/layers/test-layer"
+import { AuthApplicationTestLayer, AuthTestLayer } from "../src/layers/test-layer"
 
 const expectFailureTag = <Tag extends string>(
   exit: Exit.Exit<unknown, { readonly _tag: string }>,
@@ -58,7 +58,7 @@ describe("GymUserRegistration.reserveEmail", () => {
             token: "gym-user-email-verification-token-1",
           },
         ])
-      }).pipe(Effect.provide(AuthTestLayer))
+      }).pipe(Effect.provide(AuthApplicationTestLayer))
   )
 
   it.effect("verifies a gym-side user with the delivered email token", () =>
@@ -84,7 +84,7 @@ describe("GymUserRegistration.reserveEmail", () => {
       if (storedUser._tag === "Some") {
         expect(storedUser.value.emailVerified).toBe(true)
       }
-    }).pipe(Effect.provide(AuthTestLayer))
+    }).pipe(Effect.provide(AuthApplicationTestLayer))
   )
 
   it.effect("rejects invalid and replayed email verification tokens", () =>
@@ -114,7 +114,7 @@ describe("GymUserRegistration.reserveEmail", () => {
       )
 
       expectFailureTag(replay, "GymUserEmailVerificationInvalid")
-    }).pipe(Effect.provide(AuthTestLayer))
+    }).pipe(Effect.provide(AuthApplicationTestLayer))
   )
 
   it.effect("rejects duplicate gym-side signup emails", () =>
@@ -136,7 +136,7 @@ describe("GymUserRegistration.reserveEmail", () => {
       )
 
       expectFailureTag(duplicate, "GymUserEmailAlreadyReserved")
-    }).pipe(Effect.provide(AuthTestLayer))
+    }).pipe(Effect.provide(AuthApplicationTestLayer))
   )
 
   it.effect(
@@ -157,7 +157,7 @@ describe("GymUserRegistration.reserveEmail", () => {
 
         expect(admin._tag).toBe("FirstSystemAdminCreated")
         expect(gymUser.user.email).toBe("alex@example.com")
-      }).pipe(Effect.provide(AuthLiveTestLayer))
+      }).pipe(Effect.provide(AuthTestLayer))
   )
 
   it.effect(
@@ -190,6 +190,6 @@ describe("GymUserRegistration.reserveEmail", () => {
             expect(failure.error.email).toBe("alex@example.com")
           }
         }
-      }).pipe(Effect.provide(AuthTestLayer))
+      }).pipe(Effect.provide(AuthApplicationTestLayer))
   )
 })

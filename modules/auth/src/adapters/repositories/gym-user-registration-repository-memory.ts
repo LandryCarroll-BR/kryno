@@ -1,5 +1,6 @@
 import { Effect, Layer, Option } from "effect"
 
+import { GymUserSessionRecord } from "../../domain/gym-user.ts"
 import type {
   GymUserCredentialRecord,
   GymUserEmailVerificationTokenRecord,
@@ -13,6 +14,7 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
     const recordsById = new Map<string, GymUserRegistrationRecord>()
     const recordsByEmail = new Map<string, GymUserRegistrationRecord>()
     const credentialsByUserId = new Map<string, GymUserCredentialRecord>()
+    const sessionsById = new Map<string, GymUserSessionRecord>()
     const emailVerificationTokensByToken = new Map<
       string,
       GymUserEmailVerificationTokenRecord
@@ -27,6 +29,8 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
         Effect.sync(() =>
           Option.fromNullishOr(credentialsByUserId.get(userId))
         ),
+      findSessionById: (sessionId: GymUserSessionRecord["id"]) =>
+        Effect.sync(() => Option.fromNullishOr(sessionsById.get(sessionId))),
       save: (record: GymUserRegistrationRecord) =>
         Effect.sync(() => {
           recordsById.set(record.id, record)
@@ -46,6 +50,24 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
         Effect.sync(() =>
           Option.fromNullishOr(emailVerificationTokensByToken.get(token))
         ),
+      saveSession: (session: GymUserSessionRecord) =>
+        Effect.sync(() => {
+          sessionsById.set(session.id, session)
+        }),
+      invalidateSession: (sessionId: GymUserSessionRecord["id"]) =>
+        Effect.sync(() => {
+          const session = sessionsById.get(sessionId)
+          if (session !== undefined) {
+            sessionsById.set(
+              sessionId,
+              new GymUserSessionRecord({
+                id: session.id,
+                userId: session.userId,
+                active: false,
+              })
+            )
+          }
+        }),
     }
   }
 )

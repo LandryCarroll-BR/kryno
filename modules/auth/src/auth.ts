@@ -1,18 +1,30 @@
-import { Effect } from "effect"
+import { Effect, Layer } from "effect"
 import * as Context from "effect/Context"
 
+import { GymUserAuthentication } from "./application/gym-user-authentication/gym-user-authentication-input-boundary.ts"
+import { GymUserRegistration } from "./application/gym-user-registration/gym-user-registration-input-boundary.ts"
+import { SystemAdminAuthentication } from "./application/system-admin-authentication/system-admin-authentication-input-boundary.ts"
+import { SystemAdminBootstrap } from "./application/system-admin-bootstrap/system-admin-bootstrap-input-boundary.ts"
 import {
   type FirstSystemAdminAlreadyExists,
   type GymUserEmailAlreadyReserved,
   type GymUserEmailVerificationInvalid,
+  type GymUserInvalidCredentials,
   type GymUserNotFound,
+  type GymUserSessionInvalid,
+  type GymUserUnverified,
   type SystemAdminInvalidCredentials,
   type SystemAdminSessionInvalid,
 } from "./domain/errors.ts"
 import {
+  type CurrentGymUserSessionInput,
+  type CurrentGymUserSessionSuccess,
+  type GymUserLoginSuccess,
   type GymUserSignupSuccess,
   type GymUserEmailVerificationSuccess,
   type GymUserRegistrationRecord,
+  type LoginGymUserInput,
+  type LogoutGymUserInput,
   type ReserveGymUserEmailInput,
   type SignUpGymUserInput,
   type VerifyGymUserEmailInput,
@@ -42,6 +54,21 @@ export class Auth extends Context.Service<
     readonly reserveGymUserEmail: (
       input: ReserveGymUserEmailInput
     ) => Effect.Effect<GymUserRegistrationRecord, GymUserEmailAlreadyReserved>
+    readonly loginGymUser: (
+      input: LoginGymUserInput
+    ) => Effect.Effect<
+      GymUserLoginSuccess,
+      GymUserInvalidCredentials | GymUserUnverified
+    >
+    readonly currentGymUserSession: (
+      input: CurrentGymUserSessionInput
+    ) => Effect.Effect<
+      CurrentGymUserSessionSuccess,
+      GymUserSessionInvalid | GymUserUnverified
+    >
+    readonly logoutGymUser: (
+      input: LogoutGymUserInput
+    ) => Effect.Effect<void, GymUserSessionInvalid>
     readonly bootstrapFirstSystemAdmin: (
       input: BootstrapFirstSystemAdminInput
     ) => Effect.Effect<
@@ -61,4 +88,27 @@ export class Auth extends Context.Service<
       input: LogoutSystemAdminInput
     ) => Effect.Effect<void, SystemAdminSessionInvalid>
   }
->()("@kryno/auth/Auth") {}
+>()("@kryno/auth/Auth") {
+  static readonly layer = Layer.effect(
+    Auth,
+    Effect.gen(function* () {
+      const gymUserAuthentication = yield* GymUserAuthentication
+      const gymUserRegistration = yield* GymUserRegistration
+      const systemAdminAuthentication = yield* SystemAdminAuthentication
+      const systemAdminBootstrap = yield* SystemAdminBootstrap
+
+      return {
+        signUpGymUser: gymUserRegistration.signUp,
+        verifyGymUserEmail: gymUserRegistration.verifyEmail,
+        reserveGymUserEmail: gymUserRegistration.reserveEmail,
+        loginGymUser: gymUserAuthentication.login,
+        currentGymUserSession: gymUserAuthentication.currentSession,
+        logoutGymUser: gymUserAuthentication.logout,
+        bootstrapFirstSystemAdmin: systemAdminBootstrap.bootstrapFirstAdmin,
+        loginSystemAdmin: systemAdminAuthentication.login,
+        currentSystemAdminSession: systemAdminAuthentication.currentSession,
+        logoutSystemAdmin: systemAdminAuthentication.logout,
+      }
+    })
+  )
+}

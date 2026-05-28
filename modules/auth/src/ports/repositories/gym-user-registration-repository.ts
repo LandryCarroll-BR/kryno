@@ -6,6 +6,8 @@ import type {
   GymUserEmailVerificationTokenRecord,
   GymUserId,
   GymUserRegistrationRecord,
+  GymUserSessionId,
+  GymUserSessionRecord,
 } from "../../domain/gym-user.ts"
 
 export class GymUserRegistrationRepository extends Context.Service<
@@ -20,6 +22,9 @@ export class GymUserRegistrationRepository extends Context.Service<
     readonly findCredentialByUserId: (
       userId: GymUserId
     ) => Effect.Effect<Option.Option<GymUserCredentialRecord>>
+    readonly findSessionById: (
+      sessionId: GymUserSessionId
+    ) => Effect.Effect<Option.Option<GymUserSessionRecord>>
     readonly save: (record: GymUserRegistrationRecord) => Effect.Effect<void>
     readonly saveCredential: (
       credential: GymUserCredentialRecord
@@ -30,5 +35,9 @@ export class GymUserRegistrationRepository extends Context.Service<
     readonly findEmailVerificationToken: (
       token: string
     ) => Effect.Effect<Option.Option<GymUserEmailVerificationTokenRecord>>
+    readonly saveSession: (session: GymUserSessionRecord) => Effect.Effect<void>
+    readonly invalidateSession: (
+      sessionId: GymUserSessionId
+    ) => Effect.Effect<void>
   }
 >()("@kryno/auth/GymUserRegistrationRepository") {}

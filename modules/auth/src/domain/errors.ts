@@ -1,6 +1,6 @@
 import { Schema } from "effect"
 
-import { GymUserId } from "./gym-user.ts"
+import { GymUserId, GymUserSessionId } from "./gym-user.ts"
 import { SystemAdminId, SystemAdminSessionId } from "./system-admin.ts"
 
 export class GymUserEmailAlreadyReserved extends Schema.TaggedErrorClass<GymUserEmailAlreadyReserved>()(
@@ -21,6 +21,27 @@ export class GymUserNotFound extends Schema.TaggedErrorClass<GymUserNotFound>()(
   "GymUserNotFound",
   {
     userId: GymUserId,
+  }
+) {}
+
+export class GymUserInvalidCredentials extends Schema.TaggedErrorClass<GymUserInvalidCredentials>()(
+  "GymUserInvalidCredentials",
+  {
+    email: Schema.String,
+  }
+) {}
+
+export class GymUserUnverified extends Schema.TaggedErrorClass<GymUserUnverified>()(
+  "GymUserUnverified",
+  {
+    userId: GymUserId,
+  }
+) {}
+
+export class GymUserSessionInvalid extends Schema.TaggedErrorClass<GymUserSessionInvalid>()(
+  "GymUserSessionInvalid",
+  {
+    sessionId: GymUserSessionId,
   }
 ) {}
 

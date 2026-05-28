@@ -2,7 +2,7 @@ import { describe, expect, it } from "@effect/vitest"
 import { Effect } from "effect"
 
 import { Auth } from "@workspace/auth"
-import { AuthLiveTestLayer } from "../src/layers/test-layer"
+import { AuthTestLayer } from "../src/layers/test-layer"
 import { AuthMock } from "../src/layers/mock-layer"
 
 describe("Auth", () => {
@@ -17,7 +17,7 @@ describe("Auth", () => {
 
       expect(reservation.id).toBe("gym-user-1")
       expect(reservation.email).toBe("alex@example.com")
-    }).pipe(Effect.provide(AuthLiveTestLayer))
+    }).pipe(Effect.provide(AuthTestLayer))
   )
 
   it.effect("can be provided by a mock layer", () =>
