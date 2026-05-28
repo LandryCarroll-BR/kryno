@@ -2,6 +2,8 @@ import { Effect, Layer } from "effect"
 import { Auth } from "../auth.ts"
 import {
   CurrentGymUserSessionSuccess,
+  GymUserPasswordResetCompleted,
+  GymUserPasswordResetRequested,
   GymUserEmailVerificationSuccess,
   GymUserId,
   GymUserLoginSuccess,
@@ -97,6 +99,18 @@ export const AuthMock = Layer.succeed(Auth, {
       })
     ),
   logoutGymUser: () => Effect.void,
+  requestGymUserPasswordReset: (input) =>
+    Effect.succeed(
+      new GymUserPasswordResetRequested({
+        email: input.email,
+      })
+    ),
+  completeGymUserPasswordReset: () =>
+    Effect.succeed(
+      new GymUserPasswordResetCompleted({
+        user: mockGymUser,
+      })
+    ),
   bootstrapFirstSystemAdmin: (input) =>
     Effect.succeed(
       new FirstSystemAdminCreated({

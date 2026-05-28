@@ -7,6 +7,7 @@ import { AuthIdGeneratorSequentialAdapter } from "../adapters/services/auth-id-g
 import { AuthTokenGeneratorSequentialAdapter } from "../adapters/services/auth-token-generator-sequential.ts"
 import { PasswordHasherDeterministicAdapter } from "../adapters/services/password-hasher-deterministic.ts"
 import { GymUserAuthenticationInteractor } from "../application/gym-user-authentication/gym-user-authentication-interactor.ts"
+import { GymUserPasswordResetInteractor } from "../application/gym-user-password-reset/gym-user-password-reset-interactor.ts"
 import { GymUserRegistrationInteractor } from "../application/gym-user-registration/gym-user-registration-interactor.ts"
 import { SystemAdminAuthenticationInteractor } from "../application/system-admin-authentication/system-admin-authentication-interactor.ts"
 import { SystemAdminBootstrapInteractor } from "../application/system-admin-bootstrap/system-admin-bootstrap-interactor.ts"
@@ -15,6 +16,7 @@ import { Auth } from "../auth.ts"
 export const AuthApplicationTestLayer = Layer.mergeAll(
   GymUserRegistrationInteractor,
   GymUserAuthenticationInteractor,
+  GymUserPasswordResetInteractor,
   SystemAdminBootstrapInteractor,
   SystemAdminAuthenticationInteractor
 ).pipe(

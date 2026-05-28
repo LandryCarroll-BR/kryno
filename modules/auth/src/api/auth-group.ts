@@ -11,6 +11,10 @@ import {
   LogoutGymUserEndpoint,
 } from "./endpoints/gym-user-authentication.ts"
 import {
+  CompleteGymUserPasswordResetEndpoint,
+  RequestGymUserPasswordResetEndpoint,
+} from "./endpoints/gym-user-password-reset.ts"
+import {
   CurrentSystemAdminSessionEndpoint,
   LoginSystemAdminEndpoint,
   LogoutSystemAdminEndpoint,
@@ -24,6 +28,8 @@ export const AuthHttpGroup = HttpApiGroup.make("auth")
   .add(LoginGymUserEndpoint)
   .add(CurrentGymUserSessionEndpoint)
   .add(LogoutGymUserEndpoint)
+  .add(RequestGymUserPasswordResetEndpoint)
+  .add(CompleteGymUserPasswordResetEndpoint)
   .add(BootstrapFirstSystemAdminEndpoint)
   .add(LoginSystemAdminEndpoint)
   .add(CurrentSystemAdminSessionEndpoint)

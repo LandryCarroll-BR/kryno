@@ -2,6 +2,7 @@ import { Effect, Layer } from "effect"
 import * as Context from "effect/Context"
 
 import { GymUserAuthentication } from "./application/gym-user-authentication/gym-user-authentication-input-boundary.ts"
+import { GymUserPasswordReset } from "./application/gym-user-password-reset/gym-user-password-reset-input-boundary.ts"
 import { GymUserRegistration } from "./application/gym-user-registration/gym-user-registration-input-boundary.ts"
 import { SystemAdminAuthentication } from "./application/system-admin-authentication/system-admin-authentication-input-boundary.ts"
 import { SystemAdminBootstrap } from "./application/system-admin-bootstrap/system-admin-bootstrap-input-boundary.ts"
@@ -11,6 +12,10 @@ import {
   type GymUserEmailVerificationInvalid,
   type GymUserInvalidCredentials,
   type GymUserNotFound,
+  type GymUserPasswordResetTokenAlreadyUsed,
+  type GymUserPasswordResetTokenExpired,
+  type GymUserPasswordResetTokenInvalid,
+  type GymUserPasswordResetUnknownEmail,
   type GymUserSessionInvalid,
   type GymUserUnverified,
   type SystemAdminInvalidCredentials,
@@ -19,12 +24,16 @@ import {
 import {
   type CurrentGymUserSessionInput,
   type CurrentGymUserSessionSuccess,
+  type CompleteGymUserPasswordResetInput,
   type GymUserLoginSuccess,
+  type GymUserPasswordResetCompleted,
+  type GymUserPasswordResetRequested,
   type GymUserSignupSuccess,
   type GymUserEmailVerificationSuccess,
   type GymUserRegistrationRecord,
   type LoginGymUserInput,
   type LogoutGymUserInput,
+  type RequestGymUserPasswordResetInput,
   type ReserveGymUserEmailInput,
   type SignUpGymUserInput,
   type VerifyGymUserEmailInput,
@@ -69,6 +78,21 @@ export class Auth extends Context.Service<
     readonly logoutGymUser: (
       input: LogoutGymUserInput
     ) => Effect.Effect<void, GymUserSessionInvalid>
+    readonly requestGymUserPasswordReset: (
+      input: RequestGymUserPasswordResetInput
+    ) => Effect.Effect<
+      GymUserPasswordResetRequested,
+      GymUserPasswordResetUnknownEmail
+    >
+    readonly completeGymUserPasswordReset: (
+      input: CompleteGymUserPasswordResetInput
+    ) => Effect.Effect<
+      GymUserPasswordResetCompleted,
+      | GymUserPasswordResetTokenInvalid
+      | GymUserPasswordResetTokenExpired
+      | GymUserPasswordResetTokenAlreadyUsed
+      | GymUserNotFound
+    >
     readonly bootstrapFirstSystemAdmin: (
       input: BootstrapFirstSystemAdminInput
     ) => Effect.Effect<
@@ -93,6 +117,7 @@ export class Auth extends Context.Service<
     Auth,
     Effect.gen(function* () {
       const gymUserAuthentication = yield* GymUserAuthentication
+      const gymUserPasswordReset = yield* GymUserPasswordReset
       const gymUserRegistration = yield* GymUserRegistration
       const systemAdminAuthentication = yield* SystemAdminAuthentication
       const systemAdminBootstrap = yield* SystemAdminBootstrap
@@ -104,6 +129,8 @@ export class Auth extends Context.Service<
         loginGymUser: gymUserAuthentication.login,
         currentGymUserSession: gymUserAuthentication.currentSession,
         logoutGymUser: gymUserAuthentication.logout,
+        requestGymUserPasswordReset: gymUserPasswordReset.request,
+        completeGymUserPasswordReset: gymUserPasswordReset.complete,
         bootstrapFirstSystemAdmin: systemAdminBootstrap.bootstrapFirstAdmin,
         loginSystemAdmin: systemAdminAuthentication.login,
         currentSystemAdminSession: systemAdminAuthentication.currentSession,

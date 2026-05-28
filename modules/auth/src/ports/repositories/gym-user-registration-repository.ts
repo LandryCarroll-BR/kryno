@@ -5,6 +5,7 @@ import type {
   GymUserCredentialRecord,
   GymUserEmailVerificationTokenRecord,
   GymUserId,
+  GymUserPasswordResetTokenRecord,
   GymUserRegistrationRecord,
   GymUserSessionId,
   GymUserSessionRecord,
@@ -35,6 +36,12 @@ export class GymUserRegistrationRepository extends Context.Service<
     readonly findEmailVerificationToken: (
       token: string
     ) => Effect.Effect<Option.Option<GymUserEmailVerificationTokenRecord>>
+    readonly savePasswordResetToken: (
+      token: GymUserPasswordResetTokenRecord
+    ) => Effect.Effect<void>
+    readonly findPasswordResetToken: (
+      token: string
+    ) => Effect.Effect<Option.Option<GymUserPasswordResetTokenRecord>>
     readonly saveSession: (session: GymUserSessionRecord) => Effect.Effect<void>
     readonly invalidateSession: (
       sessionId: GymUserSessionId

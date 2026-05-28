@@ -61,6 +61,15 @@ export class GymUserEmailVerificationTokenRecord extends Schema.Class<GymUserEma
   used: Schema.Boolean,
 }) {}
 
+export class GymUserPasswordResetTokenRecord extends Schema.Class<GymUserPasswordResetTokenRecord>(
+  "GymUserPasswordResetTokenRecord"
+)({
+  token: Schema.String,
+  userId: GymUserId,
+  expiresAtMillis: Schema.Number,
+  used: Schema.Boolean,
+}) {}
+
 export class GymUserSignupSuccess extends Schema.Class<GymUserSignupSuccess>(
   "GymUserSignupSuccess"
 )({
@@ -92,6 +101,19 @@ export class LogoutGymUserInput extends Schema.Class<LogoutGymUserInput>(
   sessionId: GymUserSessionId,
 }) {}
 
+export class RequestGymUserPasswordResetInput extends Schema.Class<RequestGymUserPasswordResetInput>(
+  "RequestGymUserPasswordResetInput"
+)({
+  email: Schema.String,
+}) {}
+
+export class CompleteGymUserPasswordResetInput extends Schema.Class<CompleteGymUserPasswordResetInput>(
+  "CompleteGymUserPasswordResetInput"
+)({
+  token: Schema.String,
+  newPassword: Schema.String,
+}) {}
+
 export class GymUserLoginSuccess extends Schema.Class<GymUserLoginSuccess>(
   "GymUserLoginSuccess"
 )({
@@ -104,4 +126,16 @@ export class CurrentGymUserSessionSuccess extends Schema.Class<CurrentGymUserSes
 )({
   user: GymUserRegistrationRecord,
   session: GymUserSessionRecord,
+}) {}
+
+export class GymUserPasswordResetRequested extends Schema.Class<GymUserPasswordResetRequested>(
+  "GymUserPasswordResetRequested"
+)({
+  email: Schema.String,
+}) {}
+
+export class GymUserPasswordResetCompleted extends Schema.Class<GymUserPasswordResetCompleted>(
+  "GymUserPasswordResetCompleted"
+)({
+  user: GymUserRegistrationRecord,
 }) {}

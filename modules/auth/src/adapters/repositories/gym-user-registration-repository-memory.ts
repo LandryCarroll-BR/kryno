@@ -4,6 +4,7 @@ import { GymUserSessionRecord } from "../../domain/gym-user.ts"
 import type {
   GymUserCredentialRecord,
   GymUserEmailVerificationTokenRecord,
+  GymUserPasswordResetTokenRecord,
   GymUserRegistrationRecord,
 } from "../../domain/gym-user.ts"
 import { GymUserRegistrationRepository } from "../../ports/repositories/gym-user-registration-repository.ts"
@@ -18,6 +19,10 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
     const emailVerificationTokensByToken = new Map<
       string,
       GymUserEmailVerificationTokenRecord
+    >()
+    const passwordResetTokensByToken = new Map<
+      string,
+      GymUserPasswordResetTokenRecord
     >()
 
     return {
@@ -49,6 +54,14 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
       findEmailVerificationToken: (token: string) =>
         Effect.sync(() =>
           Option.fromNullishOr(emailVerificationTokensByToken.get(token))
+        ),
+      savePasswordResetToken: (token: GymUserPasswordResetTokenRecord) =>
+        Effect.sync(() => {
+          passwordResetTokensByToken.set(token.token, token)
+        }),
+      findPasswordResetToken: (token: string) =>
+        Effect.sync(() =>
+          Option.fromNullishOr(passwordResetTokensByToken.get(token))
         ),
       saveSession: (session: GymUserSessionRecord) =>
         Effect.sync(() => {

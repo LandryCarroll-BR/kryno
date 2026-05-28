@@ -25,6 +25,12 @@ export const buildAuthHttpHandlers = (
     .handle("logoutGymUser", ({ params }) =>
       Auth.use((auth) => auth.logoutGymUser(params))
     )
+    .handle("requestGymUserPasswordReset", ({ payload }) =>
+      Auth.use((auth) => auth.requestGymUserPasswordReset(payload))
+    )
+    .handle("completeGymUserPasswordReset", ({ payload }) =>
+      Auth.use((auth) => auth.completeGymUserPasswordReset(payload))
+    )
     .handle("bootstrapFirstSystemAdmin", ({ payload }) =>
       Auth.use((auth) => auth.bootstrapFirstSystemAdmin(payload))
     )

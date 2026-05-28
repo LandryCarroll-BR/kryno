@@ -45,6 +45,34 @@ export class GymUserSessionInvalid extends Schema.TaggedErrorClass<GymUserSessio
   }
 ) {}
 
+export class GymUserPasswordResetUnknownEmail extends Schema.TaggedErrorClass<GymUserPasswordResetUnknownEmail>()(
+  "GymUserPasswordResetUnknownEmail",
+  {
+    email: Schema.String,
+  }
+) {}
+
+export class GymUserPasswordResetTokenInvalid extends Schema.TaggedErrorClass<GymUserPasswordResetTokenInvalid>()(
+  "GymUserPasswordResetTokenInvalid",
+  {
+    token: Schema.String,
+  }
+) {}
+
+export class GymUserPasswordResetTokenExpired extends Schema.TaggedErrorClass<GymUserPasswordResetTokenExpired>()(
+  "GymUserPasswordResetTokenExpired",
+  {
+    token: Schema.String,
+  }
+) {}
+
+export class GymUserPasswordResetTokenAlreadyUsed extends Schema.TaggedErrorClass<GymUserPasswordResetTokenAlreadyUsed>()(
+  "GymUserPasswordResetTokenAlreadyUsed",
+  {
+    token: Schema.String,
+  }
+) {}
+
 export class FirstSystemAdminAlreadyExists extends Schema.TaggedErrorClass<FirstSystemAdminAlreadyExists>()(
   "FirstSystemAdminAlreadyExists",
   {
