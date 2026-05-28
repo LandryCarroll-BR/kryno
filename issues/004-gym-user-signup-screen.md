@@ -17,7 +17,7 @@ Build the first gym-user signup path in the React app. This includes one request
 
 ## Blocked by
 
-- Blocked by `issues/001-composed-kryno-api-shell.md`
+- Blocked by `issues/done/001-composed-kryno-api-shell.md`
 
 ## User stories addressed
 

@@ -1,10 +1,15 @@
-import { HttpApiBuilder } from "effect/unstable/httpapi"
+import { HttpApiBuilder, HttpApiGroup } from "effect/unstable/httpapi"
 
-import { AuthHttpApi, AuthHttpGroup } from "./auth-group.ts"
+import { AuthHttpGroup } from "./auth-group.ts"
 import { Auth } from "../auth.ts"
 
+export type ApiPrefixedAuthHttpGroup = HttpApiGroup.AddPrefix<
+  typeof AuthHttpGroup,
+  "/api"
+>
+
 export const buildAuthHttpHandlers = (
-  handlers: HttpApiBuilder.Handlers.FromGroup<typeof AuthHttpGroup>
+  handlers: HttpApiBuilder.Handlers.FromGroup<ApiPrefixedAuthHttpGroup>
 ) =>
   handlers
     .handle("reserveGymUserEmail", ({ payload }) =>
@@ -64,9 +69,3 @@ export const buildAuthHttpHandlers = (
     .handle("logoutSystemAdmin", ({ params }) =>
       Auth.use((auth) => auth.logoutSystemAdmin(params))
     )
-
-export const AuthHttpHandlersLive = HttpApiBuilder.group(
-  AuthHttpApi,
-  "auth",
-  buildAuthHttpHandlers
-)

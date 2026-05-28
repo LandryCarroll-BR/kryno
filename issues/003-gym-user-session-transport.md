@@ -4,7 +4,7 @@
 
 ## What to build
 
-Update the gym-user Auth HTTP edge so browser clients use an HTTP-only session cookie while future clients can continue using bearer session IDs. Login should still return the session DTO, current-session and logout should resolve session IDs from transport, and logout should clear the browser cookie.
+Update the gym-user Auth HTTP edge so browser clients use an HTTP-only session cookie while future clients can continue using bearer session IDs. Login should still return the session DTO, current-session and logout should resolve session IDs from transport, and logout should clear the browser cookie. Any handler changes should remain in the Auth module API adapter and flow into the app through `KrynoHttpHandlersLive`.
 
 ## Acceptance criteria
 
@@ -14,6 +14,7 @@ Update the gym-user Auth HTTP edge so browser clients use an HTTP-only session c
 - [ ] Gym-user logout invalidates the session through the Auth facade and clears the gym-user session cookie.
 - [ ] Session transport remains an HTTP edge concern; Auth facade use cases continue to operate on session IDs.
 - [ ] Auth HTTP API tests cover login DTO plus cookie behavior, current-session cookie and bearer behavior, missing-session failures, and logout cookie clearing.
+- [ ] `apps/api` continues to consume the composed `KrynoHttpHandlersLive` layer and does not wire Auth handler builders directly.
 
 ## Blocked by
 
