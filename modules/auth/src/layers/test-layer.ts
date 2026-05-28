@@ -1,6 +1,7 @@
 import { Layer } from "effect"
 
 import { GymRepositoryMemoryAdapter } from "../adapters/repositories/gym-repository-memory.ts"
+import { GymStaffInvitationRepositoryMemoryAdapter } from "../adapters/repositories/gym-staff-invitation-repository-memory.ts"
 import { GymUserRegistrationRepositoryMemoryAdapter } from "../adapters/repositories/gym-user-registration-repository-memory.ts"
 import { SystemAdminBootstrapRepositoryMemoryAdapter } from "../adapters/repositories/system-admin-bootstrap-repository-memory.ts"
 import { AuthEmailDeliveryMemoryAdapter } from "../adapters/services/auth-email-delivery-memory.ts"
@@ -8,6 +9,7 @@ import { AuthIdGeneratorSequentialAdapter } from "../adapters/services/auth-id-g
 import { AuthTokenGeneratorSequentialAdapter } from "../adapters/services/auth-token-generator-sequential.ts"
 import { PasswordHasherDeterministicAdapter } from "../adapters/services/password-hasher-deterministic.ts"
 import { GymRequestInteractor } from "../application/gym-request/gym-request-interactor.ts"
+import { GymStaffInvitationInteractor } from "../application/gym-staff-invitation/gym-staff-invitation-interactor.ts"
 import { GymUserAuthenticationInteractor } from "../application/gym-user-authentication/gym-user-authentication-interactor.ts"
 import { GymUserPasswordResetInteractor } from "../application/gym-user-password-reset/gym-user-password-reset-interactor.ts"
 import { GymUserRegistrationInteractor } from "../application/gym-user-registration/gym-user-registration-interactor.ts"
@@ -20,11 +22,13 @@ export const AuthApplicationTestLayer = Layer.mergeAll(
   GymUserAuthenticationInteractor,
   GymUserPasswordResetInteractor,
   GymRequestInteractor,
+  GymStaffInvitationInteractor,
   SystemAdminBootstrapInteractor,
   SystemAdminAuthenticationInteractor
 ).pipe(
   Layer.provideMerge(GymUserRegistrationRepositoryMemoryAdapter),
   Layer.provideMerge(GymRepositoryMemoryAdapter),
+  Layer.provideMerge(GymStaffInvitationRepositoryMemoryAdapter),
   Layer.provideMerge(SystemAdminBootstrapRepositoryMemoryAdapter),
   Layer.provideMerge(AuthEmailDeliveryMemoryAdapter),
   Layer.provideMerge(AuthIdGeneratorSequentialAdapter),

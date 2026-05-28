@@ -11,6 +11,11 @@ export const GymCreationRequestId = Schema.String.pipe(
 )
 export type GymCreationRequestId = typeof GymCreationRequestId.Type
 
+export const GymStaffInvitationId = Schema.String.pipe(
+  Schema.brand("GymStaffInvitationId")
+)
+export type GymStaffInvitationId = typeof GymStaffInvitationId.Type
+
 export const GymStatus = Schema.Literals(["pending", "active", "suspended"])
 export type GymStatus = typeof GymStatus.Type
 
@@ -25,6 +30,12 @@ export type GymAffiliationRole = typeof GymAffiliationRole.Type
 
 export const GymAffiliationStatus = Schema.Literals(["active", "left"])
 export type GymAffiliationStatus = typeof GymAffiliationStatus.Type
+
+export const GymStaffInvitationStatus = Schema.Literals([
+  "pending",
+  "accepted",
+])
+export type GymStaffInvitationStatus = typeof GymStaffInvitationStatus.Type
 
 export class GymRecord extends Schema.Class<GymRecord>("GymRecord")({
   id: GymId,
@@ -48,6 +59,17 @@ export class GymAffiliationRecord extends Schema.Class<GymAffiliationRecord>(
   userId: GymUserId,
   role: GymAffiliationRole,
   status: GymAffiliationStatus,
+}) {}
+
+export class GymStaffInvitationRecord extends Schema.Class<GymStaffInvitationRecord>(
+  "GymStaffInvitationRecord"
+)({
+  id: GymStaffInvitationId,
+  gymId: GymId,
+  invitedEmail: Schema.String,
+  invitedByUserId: GymUserId,
+  token: Schema.String,
+  status: GymStaffInvitationStatus,
 }) {}
 
 export class RequestGymCreationInput extends Schema.Class<RequestGymCreationInput>(
@@ -85,6 +107,21 @@ export class LeaveGymAsMemberInput extends Schema.Class<LeaveGymAsMemberInput>(
   gymId: GymId,
 }) {}
 
+export class CreateGymStaffInvitationInput extends Schema.Class<CreateGymStaffInvitationInput>(
+  "CreateGymStaffInvitationInput"
+)({
+  sessionId: GymUserSessionId,
+  gymId: GymId,
+  email: Schema.String,
+}) {}
+
+export class AcceptGymStaffInvitationInput extends Schema.Class<AcceptGymStaffInvitationInput>(
+  "AcceptGymStaffInvitationInput"
+)({
+  sessionId: GymUserSessionId,
+  token: Schema.String,
+}) {}
+
 export class GymCreationRequested extends Schema.Class<GymCreationRequested>(
   "GymCreationRequested"
 )({
@@ -116,5 +153,20 @@ export class GymMemberJoined extends Schema.Class<GymMemberJoined>(
 
 export class GymMemberLeft extends Schema.Class<GymMemberLeft>("GymMemberLeft")({
   gym: GymRecord,
+  affiliation: GymAffiliationRecord,
+}) {}
+
+export class GymStaffInvitationCreated extends Schema.Class<GymStaffInvitationCreated>(
+  "GymStaffInvitationCreated"
+)({
+  gym: GymRecord,
+  invitation: GymStaffInvitationRecord,
+}) {}
+
+export class GymStaffInvitationAccepted extends Schema.Class<GymStaffInvitationAccepted>(
+  "GymStaffInvitationAccepted"
+)({
+  gym: GymRecord,
+  invitation: GymStaffInvitationRecord,
   affiliation: GymAffiliationRecord,
 }) {}

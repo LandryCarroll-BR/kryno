@@ -96,6 +96,21 @@ export class GymOwnerAccessDenied extends Schema.TaggedErrorClass<GymOwnerAccess
   }
 ) {}
 
+export class GymStaffSelfAssignmentDenied extends Schema.TaggedErrorClass<GymStaffSelfAssignmentDenied>()(
+  "GymStaffSelfAssignmentDenied",
+  {
+    gymId: GymId,
+    userId: GymUserId,
+  }
+) {}
+
+export class GymStaffInvitationInvalid extends Schema.TaggedErrorClass<GymStaffInvitationInvalid>()(
+  "GymStaffInvitationInvalid",
+  {
+    token: Schema.String,
+  }
+) {}
+
 export class GymMemberAffiliationInvalid extends Schema.TaggedErrorClass<GymMemberAffiliationInvalid>()(
   "GymMemberAffiliationInvalid",
   {

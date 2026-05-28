@@ -46,6 +46,12 @@ export const buildAuthHttpHandlers = (
     .handle("leaveGymAsMember", ({ payload }) =>
       Auth.use((auth) => auth.leaveGymAsMember(payload))
     )
+    .handle("createGymStaffInvitation", ({ payload }) =>
+      Auth.use((auth) => auth.createGymStaffInvitation(payload))
+    )
+    .handle("acceptGymStaffInvitation", ({ payload }) =>
+      Auth.use((auth) => auth.acceptGymStaffInvitation(payload))
+    )
     .handle("bootstrapFirstSystemAdmin", ({ payload }) =>
       Auth.use((auth) => auth.bootstrapFirstSystemAdmin(payload))
     )

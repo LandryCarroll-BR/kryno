@@ -5,6 +5,7 @@ import { GymUserAuthentication } from "./application/gym-user-authentication/gym
 import { GymUserPasswordReset } from "./application/gym-user-password-reset/gym-user-password-reset-input-boundary.ts"
 import { GymUserRegistration } from "./application/gym-user-registration/gym-user-registration-input-boundary.ts"
 import { GymRequest } from "./application/gym-request/gym-request-input-boundary.ts"
+import { GymStaffInvitation } from "./application/gym-staff-invitation/gym-staff-invitation-input-boundary.ts"
 import { SystemAdminAuthentication } from "./application/system-admin-authentication/system-admin-authentication-input-boundary.ts"
 import { SystemAdminBootstrap } from "./application/system-admin-bootstrap/system-admin-bootstrap-input-boundary.ts"
 import {
@@ -12,6 +13,8 @@ import {
   type GymAccessInactive,
   type GymCreationRequestInvalid,
   type GymOwnerAccessDenied,
+  type GymStaffInvitationInvalid,
+  type GymStaffSelfAssignmentDenied,
   type GymUserEmailAlreadyReserved,
   type GymUserEmailVerificationInvalid,
   type GymUserInvalidCredentials,
@@ -27,13 +30,17 @@ import {
   type SystemAdminSessionInvalid,
 } from "./domain/errors.ts"
 import {
+  type AcceptGymStaffInvitationInput,
   type ApproveGymCreationRequestInput,
+  type CreateGymStaffInvitationInput,
   type CurrentGymOwnerAccessInput,
   type CurrentGymOwnerAccessSuccess,
   type GymCreationRequestApproved,
   type GymCreationRequested,
   type GymMemberJoined,
   type GymMemberLeft,
+  type GymStaffInvitationAccepted,
+  type GymStaffInvitationCreated,
   type JoinGymAsMemberInput,
   type LeaveGymAsMemberInput,
   type RequestGymCreationInput,
@@ -149,6 +156,26 @@ export class Auth extends Context.Service<
       | GymAccessInactive
       | GymMemberAffiliationInvalid
     >
+    readonly createGymStaffInvitation: (
+      input: CreateGymStaffInvitationInput
+    ) => Effect.Effect<
+      GymStaffInvitationCreated,
+      | GymUserSessionInvalid
+      | GymUserUnverified
+      | GymAccessInactive
+      | GymOwnerAccessDenied
+      | GymStaffSelfAssignmentDenied
+    >
+    readonly acceptGymStaffInvitation: (
+      input: AcceptGymStaffInvitationInput
+    ) => Effect.Effect<
+      GymStaffInvitationAccepted,
+      | GymUserSessionInvalid
+      | GymUserUnverified
+      | GymAccessInactive
+      | GymStaffInvitationInvalid
+      | GymStaffSelfAssignmentDenied
+    >
     readonly bootstrapFirstSystemAdmin: (
       input: BootstrapFirstSystemAdminInput
     ) => Effect.Effect<
@@ -176,6 +203,7 @@ export class Auth extends Context.Service<
       const gymUserPasswordReset = yield* GymUserPasswordReset
       const gymUserRegistration = yield* GymUserRegistration
       const gymRequest = yield* GymRequest
+      const gymStaffInvitation = yield* GymStaffInvitation
       const systemAdminAuthentication = yield* SystemAdminAuthentication
       const systemAdminBootstrap = yield* SystemAdminBootstrap
 
@@ -193,6 +221,8 @@ export class Auth extends Context.Service<
         currentGymOwnerAccess: gymRequest.currentOwnerAccess,
         joinGymAsMember: gymRequest.joinAsMember,
         leaveGymAsMember: gymRequest.leaveAsMember,
+        createGymStaffInvitation: gymStaffInvitation.create,
+        acceptGymStaffInvitation: gymStaffInvitation.accept,
         bootstrapFirstSystemAdmin: systemAdminBootstrap.bootstrapFirstAdmin,
         loginSystemAdmin: systemAdminAuthentication.login,
         currentSystemAdminSession: systemAdminAuthentication.currentSession,

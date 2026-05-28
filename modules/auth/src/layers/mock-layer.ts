@@ -8,6 +8,10 @@ import {
   GymCreationRequestId,
   GymMemberJoined,
   GymMemberLeft,
+  GymStaffInvitationAccepted,
+  GymStaffInvitationCreated,
+  GymStaffInvitationId,
+  GymStaffInvitationRecord,
   GymCreationRequestRecord,
   GymId,
   GymRecord,
@@ -201,6 +205,45 @@ export const AuthMock = Layer.succeed(Auth, {
     return Effect.succeed(
       new GymMemberLeft({
         gym: mockGym,
+        affiliation,
+      })
+    )
+  },
+  createGymStaffInvitation: (input) => {
+    const invitation = new GymStaffInvitationRecord({
+      id: GymStaffInvitationId.make("gym-staff-invitation-mock"),
+      gymId: input.gymId,
+      invitedEmail: input.email,
+      invitedByUserId: mockGymUser.id,
+      token: "gym-staff-invitation-token-mock",
+      status: "pending",
+    })
+    return Effect.succeed(
+      new GymStaffInvitationCreated({
+        gym: mockGym,
+        invitation,
+      })
+    )
+  },
+  acceptGymStaffInvitation: () => {
+    const invitation = new GymStaffInvitationRecord({
+      id: GymStaffInvitationId.make("gym-staff-invitation-mock"),
+      gymId: mockGym.id,
+      invitedEmail: mockGymUser.email,
+      invitedByUserId: mockOwnerAffiliation.userId,
+      token: "gym-staff-invitation-token-mock",
+      status: "accepted",
+    })
+    const affiliation = new GymAffiliationRecord({
+      gymId: mockGym.id,
+      userId: mockGymUser.id,
+      role: "Staff",
+      status: "active",
+    })
+    return Effect.succeed(
+      new GymStaffInvitationAccepted({
+        gym: mockGym,
+        invitation,
         affiliation,
       })
     )

@@ -1,6 +1,6 @@
 ---
 name: module-architecture
-description: Use when creating or refactoring a repo module so it follows Kryno's module structure: a thin module facade with its facade layer, application input boundaries/interactors, ports, adapters, Effect HttpApi contracts, and clearly separated production/test/mock layers.
+description: "Use when creating or refactoring a repo module so it follows Kryno's module structure: a thin module facade with its facade layer, application input boundaries/interactors, ports, adapters, Effect HttpApi contracts, and clearly separated production/test/mock layers."
 ---
 
 # Module Architecture

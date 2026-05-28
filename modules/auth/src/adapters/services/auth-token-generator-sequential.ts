@@ -7,6 +7,7 @@ export const AuthTokenGeneratorSequentialAdapter = Layer.sync(
   () => {
     let nextGymUserEmailVerificationToken = 1
     let nextGymUserPasswordResetToken = 1
+    let nextGymStaffInvitationToken = 1
 
     return {
       nextGymUserEmailVerificationToken: Effect.sync(
@@ -15,6 +16,9 @@ export const AuthTokenGeneratorSequentialAdapter = Layer.sync(
       ),
       nextGymUserPasswordResetToken: Effect.sync(
         () => `gym-user-password-reset-token-${nextGymUserPasswordResetToken++}`
+      ),
+      nextGymStaffInvitationToken: Effect.sync(
+        () => `gym-staff-invitation-token-${nextGymStaffInvitationToken++}`
       ),
     }
   }
