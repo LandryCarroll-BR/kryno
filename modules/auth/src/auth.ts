@@ -4,6 +4,8 @@ import * as Context from "effect/Context"
 import {
   type FirstSystemAdminAlreadyExists,
   type GymUserEmailAlreadyReserved,
+  type SystemAdminInvalidCredentials,
+  type SystemAdminSessionInvalid,
 } from "./domain/errors.ts"
 import {
   type GymUserRegistrationRecord,
@@ -12,6 +14,11 @@ import {
 import {
   type BootstrapFirstSystemAdminInput,
   type BootstrapFirstSystemAdminSuccess,
+  type CurrentSystemAdminSessionInput,
+  type CurrentSystemAdminSessionSuccess,
+  type LoginSystemAdminInput,
+  type LogoutSystemAdminInput,
+  type SystemAdminLoginSuccess,
 } from "./domain/system-admin.ts"
 
 export class Auth extends Context.Service<
@@ -26,5 +33,17 @@ export class Auth extends Context.Service<
       BootstrapFirstSystemAdminSuccess,
       FirstSystemAdminAlreadyExists
     >
+    readonly loginSystemAdmin: (
+      input: LoginSystemAdminInput
+    ) => Effect.Effect<SystemAdminLoginSuccess, SystemAdminInvalidCredentials>
+    readonly currentSystemAdminSession: (
+      input: CurrentSystemAdminSessionInput
+    ) => Effect.Effect<
+      CurrentSystemAdminSessionSuccess,
+      SystemAdminSessionInvalid
+    >
+    readonly logoutSystemAdmin: (
+      input: LogoutSystemAdminInput
+    ) => Effect.Effect<void, SystemAdminSessionInvalid>
   }
 >()("@kryno/auth/Auth") {}

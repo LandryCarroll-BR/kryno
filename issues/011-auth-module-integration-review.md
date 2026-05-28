@@ -4,12 +4,13 @@
 
 ## What to build
 
-Perform a human review of the completed auth module public surface before designing persistence, HTTP, or UI adapters. This should confirm that the module is deep, stable, testable, and aligned with the PRD's scope boundaries.
+Perform a human review of the completed auth module public surface before designing persistence, web delivery, or UI adapters. This should confirm that the module is deep, stable, testable, and aligned with the PRD's scope boundaries.
 
 ## Acceptance criteria
 
 - [ ] The public auth module interface is reviewed for stability and clarity.
-- [ ] The module is confirmed to keep infrastructure, HTTP, UI, social features, training features, and full gym membership management out of scope.
+- [ ] The completed schema-backed Effect HTTP API contract surface is reviewed for coverage of completed auth use cases.
+- [ ] The module is confirmed to keep production infrastructure, web app routes, API clients, cookies, UI, social features, training features, and full gym membership management out of scope.
 - [ ] The team confirms that active gym status is treated as an authorization input, not as an auth-owned suspension/reactivation workflow.
 - [ ] Follow-up adapter or product-module issues can be drafted from the reviewed interface.
 - [ ] Any requested public-interface changes are captured before downstream adapter work begins.

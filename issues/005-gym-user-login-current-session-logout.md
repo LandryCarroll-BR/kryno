@@ -13,6 +13,11 @@ Complete the gym-side authentication loop. Verified gym-side users should be abl
 - [ ] Current-session lookup returns the authenticated gym-side user for an active session.
 - [ ] Unverified gym-side users cannot receive authenticated app access.
 - [ ] Logout invalidates the gym-side session.
+- [ ] Schema-backed Effect HTTP API endpoint contracts exist for gym-side login, current-session lookup, and logout.
+- [ ] Endpoints are registered in the auth HTTP group and wired through auth HTTP handlers to the public `Auth` facade.
+- [ ] Endpoint contracts expose typed success and expected invalid-credentials, unverified-user, and invalid-session error responses with appropriate HTTP statuses.
+- [ ] HTTP session endpoints remain separate from the admin session endpoint contracts.
+- [ ] Tests or typechecks cover endpoint contract/handler wiring for representative login, current-session, logout, and denial paths.
 - [ ] Behavior tests cover successful login, failed login, unverified denial, current-session lookup, logout, and invalid-session denial.
 
 ## Blocked by

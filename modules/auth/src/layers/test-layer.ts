@@ -5,12 +5,14 @@ import { SystemAdminBootstrapRepositoryMemoryAdapter } from "../adapters/reposit
 import { AuthIdGeneratorSequentialAdapter } from "../adapters/services/auth-id-generator-sequential.ts"
 import { PasswordHasherDeterministicAdapter } from "../adapters/services/password-hasher-deterministic.ts"
 import { GymUserRegistrationInteractor } from "../application/gym-user-registration/gym-user-registration-interactor.ts"
+import { SystemAdminAuthenticationInteractor } from "../application/system-admin-authentication/system-admin-authentication-interactor.ts"
 import { SystemAdminBootstrapInteractor } from "../application/system-admin-bootstrap/system-admin-bootstrap-interactor.ts"
 import { AuthLive } from "./live-layer.ts"
 
-export const AuthApplicationTestLayer = Layer.merge(
+export const AuthApplicationTestLayer = Layer.mergeAll(
   GymUserRegistrationInteractor,
-  SystemAdminBootstrapInteractor
+  SystemAdminBootstrapInteractor,
+  SystemAdminAuthenticationInteractor
 ).pipe(
   Layer.provideMerge(GymUserRegistrationRepositoryMemoryAdapter),
   Layer.provideMerge(SystemAdminBootstrapRepositoryMemoryAdapter),

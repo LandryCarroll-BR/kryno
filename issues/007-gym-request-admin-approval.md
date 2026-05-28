@@ -13,6 +13,10 @@ Add the gym creation request and system-admin approval flow. A verified gym-side
 - [ ] A system admin can approve a pending gym request.
 - [ ] Approval activates the gym and assigns the requester as Owner.
 - [ ] Gym-scoped access policies treat active gym status as required for Owner privileges.
+- [ ] Schema-backed Effect HTTP API endpoint contracts exist for gym request creation and system-admin approval.
+- [ ] Endpoints are registered in the auth HTTP group and wired through auth HTTP handlers to the public `Auth` facade.
+- [ ] Endpoint contracts expose typed success and expected gym-user session, admin session, unverified-user, and invalid-request error responses with appropriate HTTP statuses.
+- [ ] Tests or typechecks cover endpoint contract/handler wiring for representative request, approval, and authorization-denial paths.
 - [ ] Behavior tests cover request creation, unverified denial, admin approval, Owner assignment, and active-gym access.
 
 ## Blocked by

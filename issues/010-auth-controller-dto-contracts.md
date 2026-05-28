@@ -4,15 +4,15 @@
 
 ## What to build
 
-Add DTO-facing controller contracts over the completed auth use cases. These should validate input/output shapes and provide a stable surface for future HTTP handlers without implementing routes, UI, cookies, or persistence.
+Add schema-backed Effect HTTP API contracts over the completed auth use cases. These should validate input/output shapes, register endpoints in the auth HTTP group, and provide thin handler wiring to the public `Auth` facade without implementing web app routes, UI, cookies, production server wiring, or persistence.
 
 ## Acceptance criteria
 
-- [ ] Controller contracts exist for admin bootstrap, admin login/logout/current session, gym-side signup/verification/login/logout/current session, password reset, gym request/approval, member join/leave, and Staff invitation.
-- [ ] Controller inputs and outputs are schema-backed.
-- [ ] Controller contracts map use-case success and typed errors into stable DTO-facing results.
-- [ ] No HTTP routes, React UI, cookie adapter, or database adapter is introduced.
-- [ ] Behavior tests cover representative controller success and failure paths without coupling to implementation details.
+- [ ] Schema-backed Effect HTTP API endpoint contracts exist for admin bootstrap, admin login/logout/current session, gym-side signup/verification/login/logout/current session, password reset, gym request/approval, member join/leave, and Staff invitation.
+- [ ] Endpoints are registered in the auth HTTP group and wired through auth HTTP handlers to the public `Auth` facade.
+- [ ] Endpoint contracts expose typed success and expected domain error responses with appropriate HTTP statuses.
+- [ ] No React Router/web app routes, API clients, cookie adapter, production server wiring, or database adapter is introduced.
+- [ ] Behavior tests or typechecks cover representative endpoint contract/handler success and failure paths without coupling to implementation details.
 
 ## Blocked by
 

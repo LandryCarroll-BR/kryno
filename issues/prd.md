@@ -2,13 +2,13 @@
 
 The platform needs a first authentication module for a rock climbing personal training and social media product. The product will support system-level administrators, climbing gyms, gym owners/staff, and gym members, but it is not intended to be a full gym membership management system.
 
-Right now the codebase is a starter monorepo without an auth domain, persistence layer, HTTP API, or production infrastructure. The team needs a clear product and technical definition for an authentication core that can be implemented first and later connected to real infrastructure.
+Right now the codebase is a starter monorepo without a complete auth domain, persistence layer, production HTTP delivery, or production infrastructure. The team needs a clear product and technical definition for an authentication core that can be implemented first and later connected to real infrastructure.
 
 The authentication module must distinguish platform administration from gym-side usage, support gym creation and approval, allow people to join and leave gyms freely, and keep privileged gym staff access controlled. It should define the behavior and boundaries of authentication without prematurely implementing database, email, web routes, or unrelated business logic.
 
 ## Solution
 
-Build a new authentication module as an Effect-native clean architecture core. The module will define domain entities, policies, repository/service ports, application services, controller-level DTO contracts, typed errors, and behavior tests.
+Build a new authentication module as an Effect-native clean architecture core. The module will define domain entities, policies, repository/service ports, application services, schema-backed Effect HTTP API contracts, typed errors, and behavior tests. The HTTP API contracts should remain thin module-local adapters over the public `Auth` facade.
 
 The module will use two separate authentication namespaces:
 
@@ -19,7 +19,7 @@ Gym-side users can sign up with email, password, and display name. They must ver
 
 Gym roles are scoped to a gym and use the vocabulary Owner, Staff, and Member. Members can self-join or leave any active gym at any time. Staff access is privileged and must be granted through an Owner invitation. System administrators can approve gyms and suspend/reactivate gyms. Suspended gyms block gym-scoped access for Owners, Staff, and Members.
 
-The first version will not implement concrete persistence, HTTP routes, UI, real email delivery, cookie handling, or social/training business features. Those will be added later as adapters or separate modules.
+The first version will include module-local Effect `HttpApiEndpoint` contracts, `AuthHttpGroup` registration, and auth HTTP handler delegation. It will not implement concrete persistence, React Router/web app routes, API clients, production server wiring, UI, real email delivery, cookie handling, or social/training business features. Those will be added later as adapters or separate modules.
 
 ## User Stories
 
@@ -62,11 +62,11 @@ The first version will not implement concrete persistence, HTTP routes, UI, real
 37. As a developer, I want token generation behind a service port, so that verification and reset tokens can be implemented securely later.
 38. As a developer, I want email delivery behind a service port, so that verification, reset, and staff invitation flows can be tested without a real provider.
 39. As a developer, I want application services to express auth use cases, so that behavior is testable without HTTP or UI.
-40. As a developer, I want controller-level DTO contracts, so that later HTTP handlers can validate inputs and call the auth core consistently.
+40. As a developer, I want schema-backed HTTP API contracts, so that module-local HTTP handlers can validate inputs and call the auth core consistently.
 41. As a developer, I want policy modules for authorization decisions, so that access rules are centralized and easy to test.
 42. As a developer, I want in-memory test layers, so that auth flows can be tested before real infrastructure exists.
 43. As a developer, I want Effect-native tests, so that service dependencies, typed errors, and async flows are tested in the same style as the module.
-44. As a future API developer, I want the auth module to expose stable interfaces, so that HTTP routes can be added as thin adapters.
+44. As a future API developer, I want the auth module to expose stable interfaces, so that web delivery adapters can be added around the module-local HTTP API contracts.
 45. As a future frontend developer, I want auth screens to be out of the first core module, so that UI decisions can be made after behavior is stable.
 46. As a future infrastructure developer, I want database schema decisions deferred, so that the core can be reviewed before choosing persistence details.
 47. As a future product developer, I want social and training profile fields outside auth, so that the auth model stays small and focused.
@@ -94,7 +94,9 @@ The first version will not implement concrete persistence, HTTP routes, UI, real
 - Require Owner invitation for Staff assignment.
 - Include password reset contracts in the first module.
 - Include email verification, password reset, and staff invitation token behavior in the module contracts.
-- Define controller-level DTO contracts without implementing HTTP routes.
+- Define schema-backed Effect HTTP API endpoint contracts for auth use cases.
+- Register endpoint contracts in an auth HTTP group and wire handlers through the public `Auth` facade.
+- Keep HTTP contracts as thin adapters over application services, without implementing web app routes, cookies, persistence, or production server wiring.
 - Define repository ports for users, admins, gyms, affiliations, sessions, credentials, verification tokens, password reset tokens, and staff invitations.
 - Define service ports for password hashing, secure token generation, email delivery, clock/time, and ID generation where needed.
 - Define application services for signup, verification, login, logout, current session, admin bootstrap, gym requests, gym approval, gym suspension, member join/leave, staff invitation, and password reset.
@@ -109,7 +111,9 @@ The first version will not implement concrete persistence, HTTP routes, UI, real
 - Tests should exercise application services and policies through public module contracts.
 - Tests should use fresh in-memory layers per test to avoid state leakage.
 - Test layers should implement repository and service ports without real infrastructure.
-- The auth module should be tested before adding database, HTTP, or UI adapters.
+- The auth module should be tested before adding database, UI, or production HTTP delivery adapters.
+- HTTP API endpoint contracts should expose typed success and expected domain error responses with appropriate HTTP statuses.
+- Tests or typechecks should cover representative endpoint contract and handler wiring paths.
 - Test admin bootstrap idempotency and first-admin creation.
 - Test separation between admin identity/session namespace and gym-side identity/session namespace.
 - Test that duplicate emails are allowed across namespaces but not within the same namespace.
@@ -129,7 +133,7 @@ The first version will not implement concrete persistence, HTTP routes, UI, real
 ## Out of Scope
 
 - Database schema design, migrations, ORM choice, SQL adapters, and production persistence.
-- HTTP route implementation, React Router loaders/actions, API clients, and request/response wiring.
+- Web app route implementation, React Router loaders/actions, API clients, cookie/browser session wiring, and production HTTP server wiring.
 - Login, signup, verification, reset, admin, or gym management UI.
 - Cookie serialization, browser session adapter, CSRF handling, and deployment-specific security headers.
 - Hosted auth providers.
@@ -145,6 +149,6 @@ The first version will not implement concrete persistence, HTTP routes, UI, real
 
 - The module should be designed as a deep module: a relatively small public interface should encapsulate a large amount of auth behavior.
 - Infrastructure should be added later as adapters that satisfy the auth module's service and repository ports.
-- HTTP routes should eventually be thin adapters over controller-level DTO contracts.
+- Module-local Effect HTTP API contracts should stay thin over the public `Auth` facade; web delivery adapters can be added later.
 - The current repo already includes Effect in the shared module and Effect tooling in the workspace, but the auth module should own its own package boundary.
 - Before implementation, consult the local Effect guidance for services, layers, data modeling, error handling, and testing patterns.

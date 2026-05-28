@@ -14,6 +14,10 @@ Add Owner-controlled Staff invitation behavior. An active gym Owner should be ab
 - [ ] Non-Owners cannot invite Staff.
 - [ ] Users cannot self-assign Staff access.
 - [ ] Pending or inactive gyms do not grant Staff access.
+- [ ] Schema-backed Effect HTTP API endpoint contracts exist for Staff invitation creation and invitation acceptance.
+- [ ] Endpoints are registered in the auth HTTP group and wired through auth HTTP handlers to the public `Auth` facade.
+- [ ] Endpoint contracts expose typed success and expected invalid-session, non-owner, self-assignment, invalid-invitation, and inactive-gym error responses with appropriate HTTP statuses.
+- [ ] Tests or typechecks cover endpoint contract/handler wiring for representative invitation, acceptance, and denial paths.
 - [ ] Behavior tests cover invitation, acceptance, non-owner denial, self-assignment denial, and inactive-gym denial.
 
 ## Blocked by

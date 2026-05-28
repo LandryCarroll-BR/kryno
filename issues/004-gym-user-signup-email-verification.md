@@ -14,6 +14,10 @@ Add gym-side account signup and email verification. Gym-side users should be abl
 - [ ] Verification marks the gym-side user as verified.
 - [ ] The same email can exist once in the admin namespace and once in the gym-side namespace.
 - [ ] Duplicate emails are rejected within the gym-side namespace.
+- [ ] Schema-backed Effect HTTP API endpoint contracts exist for gym-side signup/email reservation and email verification.
+- [ ] Endpoints are registered in the auth HTTP group and wired through auth HTTP handlers to the public `Auth` facade.
+- [ ] Endpoint contracts expose typed success and expected duplicate-email or verification error responses with appropriate HTTP statuses.
+- [ ] Tests or typechecks cover endpoint contract/handler wiring for representative signup, verification, and duplicate-email paths.
 - [ ] Behavior tests cover signup, verification, duplicate handling, and cross-namespace email separation.
 
 ## Blocked by

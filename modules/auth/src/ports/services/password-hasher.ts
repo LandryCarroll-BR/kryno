@@ -5,5 +5,9 @@ export class PasswordHasher extends Context.Service<
   PasswordHasher,
   {
     readonly hashPassword: (password: string) => Effect.Effect<string>
+    readonly verifyPassword: (
+      password: string,
+      passwordHash: string
+    ) => Effect.Effect<boolean>
   }
 >()("@kryno/auth/PasswordHasher") {}

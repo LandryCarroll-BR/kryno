@@ -13,6 +13,10 @@ Add lightweight member affiliation behavior. A verified gym-side user should be 
 - [ ] Leaving records the affiliation as left rather than requiring deletion.
 - [ ] Joining a pending or inactive gym is denied by policy.
 - [ ] Current-session or access lookup can reflect active member affiliations.
+- [ ] Schema-backed Effect HTTP API endpoint contracts exist for member join, member leave, and current-session/access visibility of active affiliations.
+- [ ] Endpoints are registered in the auth HTTP group and wired through auth HTTP handlers to the public `Auth` facade.
+- [ ] Endpoint contracts expose typed success and expected invalid-session, inactive-gym, and affiliation error responses with appropriate HTTP statuses.
+- [ ] Tests or typechecks cover endpoint contract/handler wiring for representative join, leave, inactive-gym denial, and affiliation visibility paths.
 - [ ] Behavior tests cover join, leave, rejoin where supported, pending/inactive denial, and current-affiliation visibility.
 
 ## Blocked by

@@ -13,6 +13,10 @@ Add password reset behavior for gym-side users. Users should be able to request 
 - [ ] Completing a reset replaces the user's password credential.
 - [ ] Reset tokens expire.
 - [ ] Reset tokens are single-use.
+- [ ] Schema-backed Effect HTTP API endpoint contracts exist for password reset request and reset completion.
+- [ ] Endpoints are registered in the auth HTTP group and wired through auth HTTP handlers to the public `Auth` facade.
+- [ ] Endpoint contracts expose typed success and expected unknown-email, expired-token, and replay-denial error responses with appropriate HTTP statuses.
+- [ ] Tests or typechecks cover endpoint contract/handler wiring for representative request, completion, expiration, replay, and unknown-email paths.
 - [ ] Behavior tests cover request, completion, expiration, replay denial, and unknown-email behavior.
 
 ## Blocked by
