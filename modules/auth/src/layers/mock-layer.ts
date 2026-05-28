@@ -1,6 +1,11 @@
 import { Effect, Layer } from "effect"
 import { Auth } from "../auth.ts"
-import { GymUserId } from "../domain/gym-user.ts"
+import {
+  GymUserEmailVerificationSuccess,
+  GymUserId,
+  GymUserRegistrationRecord,
+  GymUserSignupSuccess,
+} from "../domain/gym-user.ts"
 import {
   CurrentSystemAdminSessionSuccess,
   FirstSystemAdminCreated,
@@ -24,12 +29,37 @@ const mockSystemAdminSession = new SystemAdminSessionRecord({
 })
 
 export const AuthMock = Layer.succeed(Auth, {
+  signUpGymUser: (input) =>
+    Effect.succeed(
+      new GymUserSignupSuccess({
+        user: new GymUserRegistrationRecord({
+          id: GymUserId.make("gym-user-mock"),
+          email: input.email,
+          displayName: input.displayName,
+          emailVerified: false,
+        }),
+      })
+    ),
+  verifyGymUserEmail: () =>
+    Effect.succeed(
+      new GymUserEmailVerificationSuccess({
+        user: new GymUserRegistrationRecord({
+          id: GymUserId.make("gym-user-mock"),
+          email: "mock@example.com",
+          displayName: "Mock User",
+          emailVerified: true,
+        }),
+      })
+    ),
   reserveGymUserEmail: (input) =>
-    Effect.succeed({
-      id: GymUserId.make("gym-user-mock"),
-      email: input.email,
-      displayName: input.displayName,
-    }),
+    Effect.succeed(
+      new GymUserRegistrationRecord({
+        id: GymUserId.make("gym-user-mock"),
+        email: input.email,
+        displayName: input.displayName,
+        emailVerified: false,
+      })
+    ),
   bootstrapFirstSystemAdmin: (input) =>
     Effect.succeed(
       new FirstSystemAdminCreated({

@@ -1,6 +1,10 @@
 import { HttpApi, HttpApiGroup } from "effect/unstable/httpapi"
 
-import { ReserveGymUserEmailEndpoint } from "./endpoints/gym-user-registration.ts"
+import {
+  ReserveGymUserEmailEndpoint,
+  SignUpGymUserEndpoint,
+  VerifyGymUserEmailEndpoint,
+} from "./endpoints/gym-user-registration.ts"
 import {
   CurrentSystemAdminSessionEndpoint,
   LoginSystemAdminEndpoint,
@@ -10,6 +14,8 @@ import { BootstrapFirstSystemAdminEndpoint } from "./endpoints/system-admin-boot
 
 export const AuthHttpGroup = HttpApiGroup.make("auth")
   .add(ReserveGymUserEmailEndpoint)
+  .add(SignUpGymUserEndpoint)
+  .add(VerifyGymUserEmailEndpoint)
   .add(BootstrapFirstSystemAdminEndpoint)
   .add(LoginSystemAdminEndpoint)
   .add(CurrentSystemAdminSessionEndpoint)

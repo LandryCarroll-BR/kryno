@@ -12,6 +12,8 @@ export const AuthLive = Layer.effect(
     const systemAdminBootstrap = yield* SystemAdminBootstrap
 
     return {
+      signUpGymUser: gymUserRegistration.signUp,
+      verifyGymUserEmail: gymUserRegistration.verifyEmail,
       reserveGymUserEmail: gymUserRegistration.reserveEmail,
       bootstrapFirstSystemAdmin: systemAdminBootstrap.bootstrapFirstAdmin,
       loginSystemAdmin: systemAdminAuthentication.login,
