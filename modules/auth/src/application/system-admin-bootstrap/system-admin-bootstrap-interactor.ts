@@ -8,9 +8,9 @@ import {
   SystemAdminRecord,
   type BootstrapFirstSystemAdminInput,
 } from "../../domain/system-admin.ts"
-import { AuthIdGenerator } from "../../ports/auth-id-generator.ts"
-import { PasswordHasher } from "../../ports/password-hasher.ts"
-import { SystemAdminBootstrapRepository } from "../../ports/system-admin-bootstrap-repository.ts"
+import { SystemAdminBootstrapRepository } from "../../ports/repositories/system-admin-bootstrap-repository.ts"
+import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
+import { PasswordHasher } from "../../ports/services/password-hasher.ts"
 import { SystemAdminBootstrap } from "./system-admin-bootstrap-input-boundary.ts"
 
 export const SystemAdminBootstrapInteractor = Layer.effect(

@@ -3,8 +3,8 @@ import { Effect, Layer, Option } from "effect"
 import type {
   SystemAdminCredentialRecord,
   SystemAdminRecord,
-} from "../domain/system-admin.ts"
-import { SystemAdminBootstrapRepository } from "../ports/system-admin-bootstrap-repository.ts"
+} from "../../domain/system-admin.ts"
+import { SystemAdminBootstrapRepository } from "../../ports/repositories/system-admin-bootstrap-repository.ts"
 
 export const SystemAdminBootstrapRepositoryMemoryAdapter = Layer.sync(
   SystemAdminBootstrapRepository,

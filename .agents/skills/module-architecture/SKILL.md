@@ -27,11 +27,18 @@ modules/<module>/src/
       <use-case>-policy.ts        # only when the use case has policy logic
 
   ports/
-    <dependency>.ts
+    repositories/
+      <aggregate-or-use-case>-repository.ts
+    services/
+      <capability>.ts
 
   adapters/
-    <dependency>-<variant>.ts
-    http-<use-case>.ts            # only for REST/API transport schemas or handlers
+    controllers/
+      http-<use-case>.ts          # only for REST/API transport schemas or handlers
+    repositories/
+      <repository>-<variant>.ts
+    services/
+      <service>-<variant>.ts
 
   layers/
     live-layer.ts
@@ -47,8 +54,14 @@ modules/<module>/src/
 - Use-case input boundaries live under `application/<use-case>/` and expose the lower-level use-case Effect service.
 - Interactors implement input boundaries and depend on ports, policies, and domain contracts.
 - Ports are Effect service tags for dependencies the application layer needs.
-- Adapters implement ports. Name adapters by port plus variant, for example `password-hasher-deterministic.ts` or `gym-user-registration-repository-memory.ts`.
-- HTTP adapters are for REST/API transport only. Other modules should depend on the module facade, not HTTP adapters.
+- Group ports by role:
+  - `ports/repositories/`: persistence contracts, named for the aggregate/use case, for example `gym-user-registration-repository.ts`.
+  - `ports/services/`: external capabilities, named for the capability, for example `password-hasher.ts` or `auth-id-generator.ts`.
+- Adapters implement ports or define transport boundaries. Group adapters by role:
+  - `adapters/repositories/`: repository implementations, named by repository plus variant, for example `gym-user-registration-repository-memory.ts`.
+  - `adapters/services/`: service implementations, named by service plus variant, for example `password-hasher-deterministic.ts`.
+  - `adapters/controllers/`: REST/API transport schemas or handlers, named by transport plus use case, for example `http-gym-user-registration.ts`.
+- Controller adapters are for transport only. Other modules should depend on the module facade, not controller adapters.
 - Layers compose services:
   - `live-layer.ts`: facade backed by real application/interactor wiring.
   - `mock-layer.ts`: facade implemented directly for tests or consumers that need a simple stand-in.
@@ -78,8 +91,11 @@ Example:
 {
   ".": "./src/index.ts",
   "./application/<use-case>/interactor": "./src/application/<use-case>/<use-case>-interactor.ts",
-  "./ports/<dependency>": "./src/ports/<dependency>.ts",
-  "./adapters/<dependency>-<variant>": "./src/adapters/<dependency>-<variant>.ts",
+  "./ports/repositories/<repository>": "./src/ports/repositories/<repository>.ts",
+  "./ports/services/<service>": "./src/ports/services/<service>.ts",
+  "./adapters/repositories/<repository>-<variant>": "./src/adapters/repositories/<repository>-<variant>.ts",
+  "./adapters/services/<service>-<variant>": "./src/adapters/services/<service>-<variant>.ts",
+  "./adapters/controllers/http-<use-case>": "./src/adapters/controllers/http-<use-case>.ts",
   "./testing": "./src/layers/test-layer.ts"
 }
 ```

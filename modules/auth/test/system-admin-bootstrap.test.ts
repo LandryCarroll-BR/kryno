@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Effect, Exit } from "effect"
 
-import { SystemAdminBootstrap } from "@workspace/auth"
+import { SystemAdminBootstrap } from "../src/application/system-admin-bootstrap/system-admin-bootstrap-input-boundary"
 import { AuthTestLayer } from "../src/layers/test-layer"
 
 describe("SystemAdminBootstrap.bootstrapFirstAdmin", () => {

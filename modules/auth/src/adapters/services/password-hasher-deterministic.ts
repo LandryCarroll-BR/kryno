@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect"
 
-import { PasswordHasher } from "../ports/password-hasher.ts"
+import { PasswordHasher } from "../../ports/services/password-hasher.ts"
 
 export const PasswordHasherDeterministicAdapter = Layer.succeed(
   PasswordHasher,

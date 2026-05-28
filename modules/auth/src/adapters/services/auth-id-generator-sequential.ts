@@ -1,8 +1,8 @@
 import { Effect, Layer } from "effect"
 
-import { GymUserId } from "../domain/gym-user.ts"
-import { SystemAdminId } from "../domain/system-admin.ts"
-import { AuthIdGenerator } from "../ports/auth-id-generator.ts"
+import { GymUserId } from "../../domain/gym-user.ts"
+import { SystemAdminId } from "../../domain/system-admin.ts"
+import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
 
 export const AuthIdGeneratorSequentialAdapter = Layer.sync(
   AuthIdGenerator,

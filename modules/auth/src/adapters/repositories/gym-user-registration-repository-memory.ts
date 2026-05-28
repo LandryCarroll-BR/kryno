@@ -1,7 +1,7 @@
 import { Effect, Layer, Option } from "effect"
 
-import type { GymUserRegistrationRecord } from "../domain/gym-user.ts"
-import { GymUserRegistrationRepository } from "../ports/gym-user-registration-repository.ts"
+import type { GymUserRegistrationRecord } from "../../domain/gym-user.ts"
+import { GymUserRegistrationRepository } from "../../ports/repositories/gym-user-registration-repository.ts"
 
 export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
   GymUserRegistrationRepository,

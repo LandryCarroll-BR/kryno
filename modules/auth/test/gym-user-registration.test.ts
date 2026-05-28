@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Effect, Exit } from "effect"
 
-import { GymUserRegistration } from "@workspace/auth"
+import { GymUserRegistration } from "../src/application/gym-user-registration/gym-user-registration-input-boundary"
 import { AuthTestLayer } from "../src/layers/test-layer"
 
 describe("GymUserRegistration.reserveEmail", () => {

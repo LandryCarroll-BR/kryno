@@ -4,8 +4,8 @@ import {
   GymUserRegistrationRecord,
   type ReserveGymUserEmailInput,
 } from "../../domain/gym-user.ts"
-import { AuthIdGenerator } from "../../ports/auth-id-generator.ts"
-import { GymUserRegistrationRepository } from "../../ports/gym-user-registration-repository.ts"
+import { GymUserRegistrationRepository } from "../../ports/repositories/gym-user-registration-repository.ts"
+import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
 import { GymUserRegistration } from "./gym-user-registration-input-boundary.ts"
 import { ensureGymUserEmailCanBeReserved } from "./gym-user-registration-policy.ts"
 
