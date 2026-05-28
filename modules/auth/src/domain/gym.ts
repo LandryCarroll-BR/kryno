@@ -71,6 +71,20 @@ export class CurrentGymOwnerAccessInput extends Schema.Class<CurrentGymOwnerAcce
   gymId: GymId,
 }) {}
 
+export class JoinGymAsMemberInput extends Schema.Class<JoinGymAsMemberInput>(
+  "JoinGymAsMemberInput"
+)({
+  sessionId: GymUserSessionId,
+  gymId: GymId,
+}) {}
+
+export class LeaveGymAsMemberInput extends Schema.Class<LeaveGymAsMemberInput>(
+  "LeaveGymAsMemberInput"
+)({
+  sessionId: GymUserSessionId,
+  gymId: GymId,
+}) {}
+
 export class GymCreationRequested extends Schema.Class<GymCreationRequested>(
   "GymCreationRequested"
 )({
@@ -89,6 +103,18 @@ export class GymCreationRequestApproved extends Schema.Class<GymCreationRequestA
 export class CurrentGymOwnerAccessSuccess extends Schema.Class<CurrentGymOwnerAccessSuccess>(
   "CurrentGymOwnerAccessSuccess"
 )({
+  gym: GymRecord,
+  affiliation: GymAffiliationRecord,
+}) {}
+
+export class GymMemberJoined extends Schema.Class<GymMemberJoined>(
+  "GymMemberJoined"
+)({
+  gym: GymRecord,
+  affiliation: GymAffiliationRecord,
+}) {}
+
+export class GymMemberLeft extends Schema.Class<GymMemberLeft>("GymMemberLeft")({
   gym: GymRecord,
   affiliation: GymAffiliationRecord,
 }) {}

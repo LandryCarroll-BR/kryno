@@ -30,6 +30,13 @@ export const GymRepositoryMemoryAdapter = Layer.sync(GymRepository, () => {
           affiliationsByGymAndUser.get(affiliationKey(gymId, userId))
         )
       ),
+    findActiveAffiliationsByUserId: (userId: GymAffiliationRecord["userId"]) =>
+      Effect.sync(() =>
+        Array.from(affiliationsByGymAndUser.values()).filter(
+          (affiliation) =>
+            affiliation.userId === userId && affiliation.status === "active"
+        )
+      ),
     saveGym: (gym: GymRecord) =>
       Effect.sync(() => {
         gymsById.set(gym.id, gym)

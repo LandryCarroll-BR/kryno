@@ -96,6 +96,14 @@ export class GymOwnerAccessDenied extends Schema.TaggedErrorClass<GymOwnerAccess
   }
 ) {}
 
+export class GymMemberAffiliationInvalid extends Schema.TaggedErrorClass<GymMemberAffiliationInvalid>()(
+  "GymMemberAffiliationInvalid",
+  {
+    gymId: GymId,
+    userId: GymUserId,
+  }
+) {}
+
 export class FirstSystemAdminAlreadyExists extends Schema.TaggedErrorClass<FirstSystemAdminAlreadyExists>()(
   "FirstSystemAdminAlreadyExists",
   {

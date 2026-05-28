@@ -17,6 +17,8 @@ import {
 import {
   ApproveGymCreationRequestEndpoint,
   CurrentGymOwnerAccessEndpoint,
+  JoinGymAsMemberEndpoint,
+  LeaveGymAsMemberEndpoint,
   RequestGymCreationEndpoint,
 } from "./endpoints/gym-request.ts"
 import {
@@ -38,6 +40,8 @@ export const AuthHttpGroup = HttpApiGroup.make("auth")
   .add(RequestGymCreationEndpoint)
   .add(ApproveGymCreationRequestEndpoint)
   .add(CurrentGymOwnerAccessEndpoint)
+  .add(JoinGymAsMemberEndpoint)
+  .add(LeaveGymAsMemberEndpoint)
   .add(BootstrapFirstSystemAdminEndpoint)
   .add(LoginSystemAdminEndpoint)
   .add(CurrentSystemAdminSessionEndpoint)

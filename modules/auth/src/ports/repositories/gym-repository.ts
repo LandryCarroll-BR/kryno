@@ -23,6 +23,9 @@ export class GymRepository extends Context.Service<
       gymId: GymId,
       userId: GymUserId
     ) => Effect.Effect<Option.Option<GymAffiliationRecord>>
+    readonly findActiveAffiliationsByUserId: (
+      userId: GymUserId
+    ) => Effect.Effect<readonly GymAffiliationRecord[]>
     readonly saveGym: (gym: GymRecord) => Effect.Effect<void>
     readonly saveCreationRequest: (
       request: GymCreationRequestRecord

@@ -4,6 +4,7 @@ import * as Context from "effect/Context"
 import {
   type GymAccessInactive,
   type GymCreationRequestInvalid,
+  type GymMemberAffiliationInvalid,
   type GymOwnerAccessDenied,
   type GymUserSessionInvalid,
   type GymUserUnverified,
@@ -15,6 +16,10 @@ import {
   type CurrentGymOwnerAccessSuccess,
   type GymCreationRequestApproved,
   type GymCreationRequested,
+  type GymMemberJoined,
+  type GymMemberLeft,
+  type JoinGymAsMemberInput,
+  type LeaveGymAsMemberInput,
   type RequestGymCreationInput,
 } from "../../domain/gym.ts"
 
@@ -41,6 +46,24 @@ export class GymRequest extends Context.Service<
       | GymUserUnverified
       | GymAccessInactive
       | GymOwnerAccessDenied
+    >
+    readonly joinAsMember: (
+      input: JoinGymAsMemberInput
+    ) => Effect.Effect<
+      GymMemberJoined,
+      | GymUserSessionInvalid
+      | GymUserUnverified
+      | GymAccessInactive
+      | GymMemberAffiliationInvalid
+    >
+    readonly leaveAsMember: (
+      input: LeaveGymAsMemberInput
+    ) => Effect.Effect<
+      GymMemberLeft,
+      | GymUserSessionInvalid
+      | GymUserUnverified
+      | GymAccessInactive
+      | GymMemberAffiliationInvalid
     >
   }
 >()("@kryno/auth/GymRequest") {}

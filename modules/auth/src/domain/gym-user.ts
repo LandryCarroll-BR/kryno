@@ -1,5 +1,7 @@
 import { Schema } from "effect"
 
+import { GymAffiliationRecord } from "./gym.ts"
+
 export const GymUserId = Schema.String.pipe(Schema.brand("GymUserId"))
 export type GymUserId = typeof GymUserId.Type
 
@@ -126,6 +128,7 @@ export class CurrentGymUserSessionSuccess extends Schema.Class<CurrentGymUserSes
 )({
   user: GymUserRegistrationRecord,
   session: GymUserSessionRecord,
+  activeAffiliations: Schema.Array(Schema.suspend(() => GymAffiliationRecord)),
 }) {}
 
 export class GymUserPasswordResetRequested extends Schema.Class<GymUserPasswordResetRequested>(

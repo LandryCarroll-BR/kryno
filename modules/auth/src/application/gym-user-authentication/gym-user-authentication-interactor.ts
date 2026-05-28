@@ -12,6 +12,7 @@ import {
   type LoginGymUserInput,
   type LogoutGymUserInput,
 } from "../../domain/gym-user.ts"
+import { GymRepository } from "../../ports/repositories/gym-repository.ts"
 import { GymUserRegistrationRepository } from "../../ports/repositories/gym-user-registration-repository.ts"
 import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
 import { PasswordHasher } from "../../ports/services/password-hasher.ts"
@@ -27,6 +28,7 @@ export const GymUserAuthenticationInteractor = Layer.effect(
   Effect.gen(function* () {
     const ids = yield* AuthIdGenerator
     const passwordHasher = yield* PasswordHasher
+    const gymRepository = yield* GymRepository
     const repository = yield* GymUserRegistrationRepository
 
     const login = Effect.fn("GymUserAuthentication.login")(
@@ -84,10 +86,21 @@ export const GymUserAuthenticationInteractor = Layer.effect(
           }
 
           const user = yield* requireVerifiedGymUser(maybeUser.value)
+          const activeAffiliationRecords =
+            yield* gymRepository.findActiveAffiliationsByUserId(user.id)
+          const activeAffiliations = yield* Effect.filter(
+            activeAffiliationRecords,
+            (affiliation) =>
+              Effect.gen(function* () {
+                const gym = yield* gymRepository.findGymById(affiliation.gymId)
+                return Option.isSome(gym) && gym.value.status === "active"
+              })
+          )
 
           return new CurrentGymUserSessionSuccess({
             user,
             session,
+            activeAffiliations,
           })
         })
     )

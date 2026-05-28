@@ -40,6 +40,12 @@ export const buildAuthHttpHandlers = (
     .handle("currentGymOwnerAccess", ({ payload }) =>
       Auth.use((auth) => auth.currentGymOwnerAccess(payload))
     )
+    .handle("joinGymAsMember", ({ payload }) =>
+      Auth.use((auth) => auth.joinGymAsMember(payload))
+    )
+    .handle("leaveGymAsMember", ({ payload }) =>
+      Auth.use((auth) => auth.leaveGymAsMember(payload))
+    )
     .handle("bootstrapFirstSystemAdmin", ({ payload }) =>
       Auth.use((auth) => auth.bootstrapFirstSystemAdmin(payload))
     )

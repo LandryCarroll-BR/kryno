@@ -6,6 +6,8 @@ import {
   GymCreationRequestApproved,
   GymCreationRequested,
   GymCreationRequestId,
+  GymMemberJoined,
+  GymMemberLeft,
   GymCreationRequestRecord,
   GymId,
   GymRecord,
@@ -126,6 +128,7 @@ export const AuthMock = Layer.succeed(Auth, {
       new CurrentGymUserSessionSuccess({
         user: mockGymUser,
         session: mockGymUserSession,
+        activeAffiliations: [mockOwnerAffiliation],
       })
     ),
   logoutGymUser: () => Effect.void,
@@ -174,6 +177,34 @@ export const AuthMock = Layer.succeed(Auth, {
         affiliation: mockOwnerAffiliation,
       })
     ),
+  joinGymAsMember: () => {
+    const affiliation = new GymAffiliationRecord({
+      gymId: mockGym.id,
+      userId: mockGymUser.id,
+      role: "Member",
+      status: "active",
+    })
+    return Effect.succeed(
+      new GymMemberJoined({
+        gym: mockGym,
+        affiliation,
+      })
+    )
+  },
+  leaveGymAsMember: () => {
+    const affiliation = new GymAffiliationRecord({
+      gymId: mockGym.id,
+      userId: mockGymUser.id,
+      role: "Member",
+      status: "left",
+    })
+    return Effect.succeed(
+      new GymMemberLeft({
+        gym: mockGym,
+        affiliation,
+      })
+    )
+  },
   bootstrapFirstSystemAdmin: (input) =>
     Effect.succeed(
       new FirstSystemAdminCreated({

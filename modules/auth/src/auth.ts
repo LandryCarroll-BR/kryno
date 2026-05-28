@@ -15,6 +15,7 @@ import {
   type GymUserEmailAlreadyReserved,
   type GymUserEmailVerificationInvalid,
   type GymUserInvalidCredentials,
+  type GymMemberAffiliationInvalid,
   type GymUserNotFound,
   type GymUserPasswordResetTokenAlreadyUsed,
   type GymUserPasswordResetTokenExpired,
@@ -31,6 +32,10 @@ import {
   type CurrentGymOwnerAccessSuccess,
   type GymCreationRequestApproved,
   type GymCreationRequested,
+  type GymMemberJoined,
+  type GymMemberLeft,
+  type JoinGymAsMemberInput,
+  type LeaveGymAsMemberInput,
   type RequestGymCreationInput,
 } from "./domain/gym.ts"
 import {
@@ -126,6 +131,24 @@ export class Auth extends Context.Service<
       | GymAccessInactive
       | GymOwnerAccessDenied
     >
+    readonly joinGymAsMember: (
+      input: JoinGymAsMemberInput
+    ) => Effect.Effect<
+      GymMemberJoined,
+      | GymUserSessionInvalid
+      | GymUserUnverified
+      | GymAccessInactive
+      | GymMemberAffiliationInvalid
+    >
+    readonly leaveGymAsMember: (
+      input: LeaveGymAsMemberInput
+    ) => Effect.Effect<
+      GymMemberLeft,
+      | GymUserSessionInvalid
+      | GymUserUnverified
+      | GymAccessInactive
+      | GymMemberAffiliationInvalid
+    >
     readonly bootstrapFirstSystemAdmin: (
       input: BootstrapFirstSystemAdminInput
     ) => Effect.Effect<
@@ -168,6 +191,8 @@ export class Auth extends Context.Service<
         requestGymCreation: gymRequest.requestCreation,
         approveGymCreationRequest: gymRequest.approveCreationRequest,
         currentGymOwnerAccess: gymRequest.currentOwnerAccess,
+        joinGymAsMember: gymRequest.joinAsMember,
+        leaveGymAsMember: gymRequest.leaveAsMember,
         bootstrapFirstSystemAdmin: systemAdminBootstrap.bootstrapFirstAdmin,
         loginSystemAdmin: systemAdminAuthentication.login,
         currentSystemAdminSession: systemAdminAuthentication.currentSession,

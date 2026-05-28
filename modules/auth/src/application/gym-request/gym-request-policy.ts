@@ -3,6 +3,7 @@ import { Effect, Option } from "effect"
 import {
   GymAccessInactive,
   GymCreationRequestInvalid,
+  GymMemberAffiliationInvalid,
   GymOwnerAccessDenied,
 } from "../../domain/errors.ts"
 import type {
@@ -40,3 +41,14 @@ export const requireActiveOwnerAffiliation = (
   affiliation.value.role === "Owner"
     ? Effect.succeed(affiliation.value)
     : Effect.fail(new GymOwnerAccessDenied({ gymId, userId }))
+
+export const requireActiveMemberAffiliation = (
+  gymId: GymId,
+  userId: GymUserId,
+  affiliation: Option.Option<GymAffiliationRecord>
+) =>
+  Option.isSome(affiliation) &&
+  affiliation.value.status === "active" &&
+  affiliation.value.role === "Member"
+    ? Effect.succeed(affiliation.value)
+    : Effect.fail(new GymMemberAffiliationInvalid({ gymId, userId }))
