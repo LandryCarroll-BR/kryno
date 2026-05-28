@@ -13,7 +13,7 @@ export const SystemAdminBootstrapRepositoryMemoryAdapter = Layer.sync(
     let firstAdminCredential: SystemAdminCredentialRecord | undefined
 
     return {
-      findFirstAdmin: Effect.sync(() => Option.fromNullable(firstAdmin)),
+      findFirstAdmin: Effect.sync(() => Option.fromNullishOr(firstAdmin)),
       saveFirstAdmin: (
         admin: SystemAdminRecord,
         credential: SystemAdminCredentialRecord

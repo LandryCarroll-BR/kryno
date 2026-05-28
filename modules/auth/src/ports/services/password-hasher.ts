@@ -1,9 +1,9 @@
 import { Effect } from "effect"
 import * as Context from "effect/Context"
 
-export class PasswordHasher extends Context.Tag("@kryno/auth/PasswordHasher")<
+export class PasswordHasher extends Context.Service<
   PasswordHasher,
   {
     readonly hashPassword: (password: string) => Effect.Effect<string>
   }
->() {}
+>()("@kryno/auth/PasswordHasher") {}

@@ -3,9 +3,7 @@ import * as Context from "effect/Context"
 
 import type { GymUserRegistrationRecord } from "../../domain/gym-user.ts"
 
-export class GymUserRegistrationRepository extends Context.Tag(
-  "@kryno/auth/GymUserRegistrationRepository"
-)<
+export class GymUserRegistrationRepository extends Context.Service<
   GymUserRegistrationRepository,
   {
     readonly findByEmail: (
@@ -13,4 +11,4 @@ export class GymUserRegistrationRepository extends Context.Tag(
     ) => Effect.Effect<Option.Option<GymUserRegistrationRecord>>
     readonly save: (record: GymUserRegistrationRecord) => Effect.Effect<void>
   }
->() {}
+>()("@kryno/auth/GymUserRegistrationRepository") {}

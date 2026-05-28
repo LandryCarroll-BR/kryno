@@ -19,14 +19,18 @@
     "./adapters/services/password-hasher-deterministic": "./src/adapters/services/password-hasher-deterministic.ts",
     "./adapters/repositories/gym-user-registration-repository-memory": "./src/adapters/repositories/gym-user-registration-repository-memory.ts",
     "./adapters/repositories/system-admin-bootstrap-repository-memory": "./src/adapters/repositories/system-admin-bootstrap-repository-memory.ts",
+    "./adapters/controllers/http-auth-api": "./src/adapters/controllers/http-auth-api.ts",
+    "./adapters/controllers/http-auth-group": "./src/adapters/controllers/http-auth-group.ts",
+    "./adapters/controllers/http-auth-handlers": "./src/adapters/controllers/http-auth-handlers.ts",
     "./adapters/controllers/http-gym-user-registration": "./src/adapters/controllers/http-gym-user-registration.ts",
+    "./adapters/controllers/http-system-admin-bootstrap": "./src/adapters/controllers/http-system-admin-bootstrap.ts",
     "./testing": "./src/layers/test-layer.ts"
   },
   "dependencies": {
-    "effect": "^3.21.2"
+    "effect": "4.0.0-beta.70"
   },
   "devDependencies": {
-    "@effect/vitest": "^0.23.0",
+    "@effect/vitest": "4.0.0-beta.69",
     "@workspace/tsconfig": "workspace:*",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"

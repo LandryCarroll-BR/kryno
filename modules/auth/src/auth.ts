@@ -14,7 +14,7 @@ import {
   type BootstrapFirstSystemAdminSuccess,
 } from "./domain/system-admin.ts"
 
-export class Auth extends Context.Tag("@kryno/auth/Auth")<
+export class Auth extends Context.Service<
   Auth,
   {
     readonly reserveGymUserEmail: (
@@ -27,4 +27,4 @@ export class Auth extends Context.Tag("@kryno/auth/Auth")<
       FirstSystemAdminAlreadyExists
     >
   }
->() {}
+>()("@kryno/auth/Auth") {}

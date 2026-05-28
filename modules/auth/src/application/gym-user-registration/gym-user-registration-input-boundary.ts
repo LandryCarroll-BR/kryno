@@ -7,13 +7,11 @@ import {
   type ReserveGymUserEmailInput,
 } from "../../domain/gym-user.ts"
 
-export class GymUserRegistration extends Context.Tag(
-  "@kryno/auth/GymUserRegistration"
-)<
+export class GymUserRegistration extends Context.Service<
   GymUserRegistration,
   {
     readonly reserveEmail: (
       input: ReserveGymUserEmailInput
     ) => Effect.Effect<GymUserRegistrationRecord, GymUserEmailAlreadyReserved>
   }
->() {}
+>()("@kryno/auth/GymUserRegistration") {}

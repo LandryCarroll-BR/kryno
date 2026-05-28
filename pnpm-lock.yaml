@@ -91,12 +91,12 @@ importers:
   modules/auth:
     dependencies:
       effect:
-        specifier: ^3.21.2
-        version: 3.21.2
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70
     devDependencies:
       '@effect/vitest':
-        specifier: ^0.23.0
-        version: 0.23.13(effect@3.21.2)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))
+        specifier: 4.0.0-beta.69
+        version: 4.0.0-beta.69(effect@4.0.0-beta.70)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))
       '@workspace/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/tsconfig
@@ -110,8 +110,8 @@ importers:
   modules/shared:
     dependencies:
       effect:
-        specifier: ^3.21.2
-        version: 3.21.2
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70
     devDependencies:
       '@workspace/tsconfig':
         specifier: workspace:*
@@ -379,11 +379,11 @@ packages:
     peerDependencies:
       effect: ^4.0.0-beta.70
 
-  '@effect/vitest@0.23.13':
-    resolution: {integrity: sha512-F3x2phMXuVzqWexdcYp8v0z1qQHkKxp2UaHNbqZaEjPEp8FBz/iMwbi6iS/oIWzLfGF8XqdP8BGJptvGIJONNw==}
+  '@effect/vitest@4.0.0-beta.69':
+    resolution: {integrity: sha512-tlsyoKJfNbyiSMwTkHMBGCGy0eq1dWucrX0eNmTkqlDZt+nU5xnMt18U+1KhCKq1cgzIE/CrBNlCyoOYILTlmA==}
     peerDependencies:
-      effect: ^3.16.13
-      vitest: ^3.0.0
+      effect: ^4.0.0-beta.69
+      vitest: ^3.0.0 || ^4.0.0
 
   '@esbuild/aix-ppc64@0.25.12':
     resolution: {integrity: sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA==}
@@ -2430,11 +2430,11 @@ packages:
     engines: {bun: '>=1.1.0'}
     hasBin: true
 
-  effect@3.21.2:
-    resolution: {integrity: sha512-rXd2FGDM8KdjSIrc+mqEELo7ScW7xTVxEf1iInmPSpIde9/nyGuFM710cjTo7/EreGXiUX2MOonPpprbz2XHCg==}
-
   effect@4.0.0-beta.59:
     resolution: {integrity: sha512-xyUDLeHSe8d6lWGOvR6Fgn2HL6gYeTZ/S4Jzk9uc4ZUxMPPsNZlNXrvk0C7/utQFzeX7uAWcVnG2BjbA0SRoAA==}
+
+  effect@4.0.0-beta.70:
+    resolution: {integrity: sha512-8AwGTRiNriirHGEYHrOS0E9fzdhIqCdZjiHP1YXmNo2UyPGS43ILsymsSHT7V0DJS+8dvlKq2RxnrDBUhDNZHg==}
 
   electron-to-chromium@1.5.361:
     resolution: {integrity: sha512-Q6Hts7N9FnJc5LeGRINFvLhCI9xZmNtTDe5ZbcVezQz7cU4a8Aua3GH1b8J2XY8Al9PF+OCwYqhgsOOheMdvkA==}
@@ -2555,10 +2555,6 @@ packages:
   extend-shallow@2.0.1:
     resolution: {integrity: sha512-zCnTtlxNoAiDc3gqY2aYAWFx7XWWiasuF2K8Me5WbN8otHKTUKBwjPtNpRs/rbUZm7KxWAaNj7P1a/p52GbVug==}
     engines: {node: '>=0.10.0'}
-
-  fast-check@3.23.2:
-    resolution: {integrity: sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==}
-    engines: {node: '>=8.0.0'}
 
   fast-check@4.8.0:
     resolution: {integrity: sha512-GOJ158CUMnN6cSahsv4+ExARvIDuzzinFjkp0E9WtiBa5zcVeLozVkWaE4IzFcc+Y48Wp1EDlUZsXRyAztQcSg==}
@@ -2764,6 +2760,10 @@ packages:
   ini@6.0.0:
     resolution: {integrity: sha512-IBTdIkzZNOpqm7q3dRqJvMaldXjDHWkEDfrwGEQTs5eaQMWV+djAhR+wahyNNMAa+qpbDUhBMVt4ZKNwpPm7xQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
+
+  ini@7.0.0:
+    resolution: {integrity: sha512-ifK0CgjALofS5bkrcTy4RaQ9Vx2Knf/eLeIO+NaswQEpH1UblrtTSCIvN71qQDMq0PeQ/SSPojvEJp9vvvfr+w==}
+    engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
 
   ip-address@10.2.0:
     resolution: {integrity: sha512-/+S6j4E9AHvW9SWMSEY9Xfy66O5PWvVEJ08O0y5JGyEKQpojb0K0GKpz/v5HJ/G0vi3D2sjGK78119oXZeE0qA==}
@@ -3095,6 +3095,9 @@ packages:
   msgpackr@1.11.12:
     resolution: {integrity: sha512-RBdJ1Un7yGlXWajrkxcSa93nvQ0w4zBf60c0yYv7YtBelP8H2FA7XsfBbMHtXKXUMUxH7zV3Zuozh+kUQWhHvg==}
 
+  msgpackr@2.0.2:
+    resolution: {integrity: sha512-c5hYOXFbP79Slh6Dzd2wzk+jnV7mX1UxfMYtilnY1NmalXPqG8DGb5cYCMBrW4AsH3zekBBZd4QrKz9NhtvYLQ==}
+
   msw@2.14.6:
     resolution: {integrity: sha512-ALe+N10S72cyx94cMcy3Zs4HhXCj35sgeAL4c+WTvKi0zWnbd8/h0lcFqv0mb2P+aSgAdD7p9HzvA0DiUPxsyg==}
     engines: {node: '>=18'}
@@ -3354,9 +3357,6 @@ packages:
   proxy-addr@2.0.7:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
-
-  pure-rand@6.1.0:
-    resolution: {integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==}
 
   pure-rand@8.4.0:
     resolution: {integrity: sha512-IoM8YF/jY0hiugFo/wOWqfmarlE6J0wc6fDK1PhftMk7MGhVZl88sZimmqBBFomLOCSmcCCpsfj7wXASCpvK9A==}
@@ -3813,6 +3813,10 @@ packages:
     resolution: {integrity: sha512-vzi9uRZ926x4XV73S/4qQaTwPXM2JBj6/6lI/byHH1jOpCzb0zDbfytgA9LcN/hzb2l7WQSQnxITOVx5un/wGw==}
     hasBin: true
 
+  uuid@14.0.0:
+    resolution: {integrity: sha512-Qo+uWgilfSmAhXCMav1uYFynlQO7fMFiMVZsQqZRMIXp0O7rR7qjkj+cPvBHLgBqi960QCoo/PH2/6ZtVqKvrg==}
+    hasBin: true
+
   valibot@1.4.1:
     resolution: {integrity: sha512-klCmFTz2jeDluy9RwX+F884TCiogtdBJ/YaxSx1EOBYXa3NXNWj8kR1jjN8rzluwojJVWWaHJ4r1U5LfICnM3g==}
     peerDependencies:
@@ -4259,9 +4263,9 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/vitest@0.23.13(effect@3.21.2)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))':
+  '@effect/vitest@4.0.0-beta.69(effect@4.0.0-beta.70)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))':
     dependencies:
-      effect: 3.21.2
+      effect: 4.0.0-beta.70
       vitest: 4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
 
   '@esbuild/aix-ppc64@0.25.12':
@@ -6097,11 +6101,6 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  effect@3.21.2:
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      fast-check: 3.23.2
-
   effect@4.0.0-beta.59:
     dependencies:
       '@standard-schema/spec': 1.1.0
@@ -6113,6 +6112,19 @@ snapshots:
       multipasta: 0.2.7
       toml: 4.1.1
       uuid: 13.0.2
+      yaml: 2.9.0
+
+  effect@4.0.0-beta.70:
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      fast-check: 4.8.0
+      find-my-way-ts: 0.1.6
+      ini: 7.0.0
+      kubernetes-types: 1.30.0
+      msgpackr: 2.0.2
+      multipasta: 0.2.7
+      toml: 4.1.1
+      uuid: 14.0.0
       yaml: 2.9.0
 
   electron-to-chromium@1.5.361: {}
@@ -6338,10 +6350,6 @@ snapshots:
     dependencies:
       is-extendable: 0.1.1
 
-  fast-check@3.23.2:
-    dependencies:
-      pure-rand: 6.1.0
-
   fast-check@4.8.0:
     dependencies:
       pure-rand: 8.4.0
@@ -6543,6 +6551,8 @@ snapshots:
   inherits@2.0.4: {}
 
   ini@6.0.0: {}
+
+  ini@7.0.0: {}
 
   ip-address@10.2.0: {}
 
@@ -6780,6 +6790,10 @@ snapshots:
     optionalDependencies:
       msgpackr-extract: 3.0.4
 
+  msgpackr@2.0.2:
+    optionalDependencies:
+      msgpackr-extract: 3.0.4
+
   msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3):
     dependencies:
       '@inquirer/confirm': 6.1.0(@types/node@25.9.1)
@@ -6975,8 +6989,6 @@ snapshots:
     dependencies:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
-
-  pure-rand@6.1.0: {}
 
   pure-rand@8.4.0: {}
 
@@ -7522,6 +7534,8 @@ snapshots:
   utils-merge@1.0.1: {}
 
   uuid@13.0.2: {}
+
+  uuid@14.0.0: {}
 
   valibot@1.4.1(typescript@5.9.3):
     optionalDependencies:

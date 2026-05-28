@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest"
-import { Effect, Exit } from "effect"
+import { Cause, Effect, Exit } from "effect"
 
 import { SystemAdminBootstrap } from "../src/application/system-admin-bootstrap/system-admin-bootstrap-input-boundary"
 import { AuthTestLayer } from "../src/layers/test-layer"
@@ -72,13 +72,14 @@ describe("SystemAdminBootstrap.bootstrapFirstAdmin", () => {
 
         expect(Exit.isFailure(duplicate)).toBe(true)
         if (Exit.isFailure(duplicate)) {
-          expect(duplicate.cause._tag).toBe("Fail")
-          if (duplicate.cause._tag === "Fail") {
-            expect(duplicate.cause.error._tag).toBe(
+          const failure = duplicate.cause.reasons.find(Cause.isFailReason)
+          expect(failure).toBeDefined()
+          if (failure !== undefined) {
+            expect(failure.error._tag).toBe(
               "FirstSystemAdminAlreadyExists"
             )
-            expect(duplicate.cause.error.existingAdminId).toBe(first.admin.id)
-            expect(duplicate.cause.error.requestedEmail).toBe(
+            expect(failure.error.existingAdminId).toBe(first.admin.id)
+            expect(failure.error.requestedEmail).toBe(
               "other-admin@example.com"
             )
           }

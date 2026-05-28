@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest"
-import { Effect, Exit } from "effect"
+import { Cause, Effect, Exit } from "effect"
 
 import { GymUserRegistration } from "../src/application/gym-user-registration/gym-user-registration-input-boundary"
 import { AuthTestLayer } from "../src/layers/test-layer"
@@ -28,12 +28,13 @@ describe("GymUserRegistration.reserveEmail", () => {
 
         expect(Exit.isFailure(duplicate)).toBe(true)
         if (Exit.isFailure(duplicate)) {
-          expect(duplicate.cause._tag).toBe("Fail")
-          if (duplicate.cause._tag === "Fail") {
-            expect(duplicate.cause.error._tag).toBe(
+          const failure = duplicate.cause.reasons.find(Cause.isFailReason)
+          expect(failure).toBeDefined()
+          if (failure !== undefined) {
+            expect(failure.error._tag).toBe(
               "GymUserEmailAlreadyReserved"
             )
-            expect(duplicate.cause.error.email).toBe("alex@example.com")
+            expect(failure.error.email).toBe("alex@example.com")
           }
         }
       }).pipe(Effect.provide(AuthTestLayer))

@@ -39,9 +39,9 @@ export class FirstSystemAdminAlreadyBootstrapped extends Schema.TaggedClass<Firs
   }
 ) {}
 
-export const BootstrapFirstSystemAdminSuccess = Schema.Union(
+export const BootstrapFirstSystemAdminSuccess = Schema.Union([
   FirstSystemAdminCreated,
-  FirstSystemAdminAlreadyBootstrapped
-)
+  FirstSystemAdminAlreadyBootstrapped,
+])
 export type BootstrapFirstSystemAdminSuccess =
   typeof BootstrapFirstSystemAdminSuccess.Type

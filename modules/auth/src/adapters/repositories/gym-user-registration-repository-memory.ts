@@ -10,7 +10,7 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
 
     return {
       findByEmail: (email: string) =>
-        Effect.sync(() => Option.fromNullable(recordsByEmail.get(email))),
+        Effect.sync(() => Option.fromNullishOr(recordsByEmail.get(email))),
       save: (record: GymUserRegistrationRecord) =>
         Effect.sync(() => {
           recordsByEmail.set(record.email, record)

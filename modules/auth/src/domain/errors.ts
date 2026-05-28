@@ -2,14 +2,14 @@ import { Schema } from "effect"
 
 import { SystemAdminId } from "./system-admin.ts"
 
-export class GymUserEmailAlreadyReserved extends Schema.TaggedError<GymUserEmailAlreadyReserved>()(
+export class GymUserEmailAlreadyReserved extends Schema.TaggedErrorClass<GymUserEmailAlreadyReserved>()(
   "GymUserEmailAlreadyReserved",
   {
     email: Schema.String,
   }
 ) {}
 
-export class FirstSystemAdminAlreadyExists extends Schema.TaggedError<FirstSystemAdminAlreadyExists>()(
+export class FirstSystemAdminAlreadyExists extends Schema.TaggedErrorClass<FirstSystemAdminAlreadyExists>()(
   "FirstSystemAdminAlreadyExists",
   {
     existingAdminId: SystemAdminId,

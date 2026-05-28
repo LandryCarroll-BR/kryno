@@ -6,9 +6,7 @@ import type {
   SystemAdminRecord,
 } from "../../domain/system-admin.ts"
 
-export class SystemAdminBootstrapRepository extends Context.Tag(
-  "@kryno/auth/SystemAdminBootstrapRepository"
-)<
+export class SystemAdminBootstrapRepository extends Context.Service<
   SystemAdminBootstrapRepository,
   {
     readonly findFirstAdmin: Effect.Effect<Option.Option<SystemAdminRecord>>
@@ -17,4 +15,4 @@ export class SystemAdminBootstrapRepository extends Context.Tag(
       credential: SystemAdminCredentialRecord
     ) => Effect.Effect<void>
   }
->() {}
+>()("@kryno/auth/SystemAdminBootstrapRepository") {}
