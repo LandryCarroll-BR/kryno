@@ -27,6 +27,24 @@ describe("Kryno API app", () => {
     })
   })
 
+  it("rejects anonymous requests to protected Auth routes before protected behavior runs", async () => {
+    const response = await handler(
+      new Request("https://kryno.test/api/auth/gyms/requests", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionId: "missing-session",
+          name: "Protected Gym",
+        }),
+      })
+    )
+
+    expect(response.status).toBe(401)
+    expect(await response.text()).toBe("")
+  })
+
   it("keeps the product API contract under /api without a version prefix", () => {
     const endpoints = new Map<string, string>()
 
