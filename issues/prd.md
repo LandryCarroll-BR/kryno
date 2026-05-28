@@ -1,154 +1,109 @@
 ## Problem Statement
 
-The platform needs a first authentication module for a rock climbing personal training and social media product. The product will support system-level administrators, climbing gyms, gym owners/staff, and gym members, but it is not intended to be a full gym membership management system.
+Kryno has an initial Auth module with typed Effect HTTP API contracts, but the product does not yet have a frontend auth experience or a deployable API surface for the React app to use. The frontend app is currently a starter React Router screen, and there is no composed first-party API module or Vercel serverless API app that can host the Auth endpoints alongside future module endpoints.
 
-Right now the codebase is a starter monorepo without a complete auth domain, persistence layer, production HTTP delivery, or production infrastructure. The team needs a clear product and technical definition for an authentication core that can be implemented first and later connected to real infrastructure.
-
-The authentication module must distinguish platform administration from gym-side usage, support gym creation and approval, allow people to join and leave gyms freely, and keep privileged gym staff access controlled. It should define the behavior and boundaries of authentication without prematurely implementing database, email, web routes, or unrelated business logic.
+The user needs a first gym-user authentication vertical slice that proves the Auth module can be consumed by the web app through a typed API boundary. This slice must establish durable architectural patterns for future modules, serverless hosting, session handling, and React Router data fetching without prematurely building production infrastructure such as persistent repositories, real email delivery, or mobile-specific flows.
 
 ## Solution
 
-Build a new authentication module as an Effect-native clean architecture core. The module will define domain entities, policies, repository/service ports, application services, schema-backed Effect HTTP API contracts, typed errors, and behavior tests. The HTTP API contracts should remain thin module-local adapters over the public `Auth` facade.
+Build a first gym-user auth vertical slice that includes a shared composed API contract, a Vercel serverless API shell, a typed request-scoped API client for the React Router app, and the initial gym-user auth UI.
 
-The module will use two separate authentication namespaces:
+The API will be exposed under `/api` from a separate API app and hosted on Vercel serverless functions. A new first-party API module will compose module-owned Effect HTTP API groups into one `KrynoHttpApi` contract. The API app will use that contract, compose Auth handlers, and use the existing Auth test layer for the first integration pass.
 
-- System administrators authenticate through a dedicated admin identity model, credential model, session model, and policy surface.
-- Gym-side users authenticate through a separate user identity model used by owners, staff, and members.
+The web app will use React Router loaders and actions as the primary data-fetching and mutation boundary. It will create one Kryno API client module, request-scoped for loaders/actions, that uses the composed Effect HTTP API contract. Gym-user auth will use server-set HTTP-only session cookies for the browser, while the HTTP auth edge will also support `Authorization: Bearer <sessionId>` for future non-browser clients. Login will continue to return the session DTO while also setting a session cookie.
 
-Gym-side users can sign up with email, password, and display name. They must verify their email before accessing authenticated gym-side features. A gym-side user may request creation of a gym. A system administrator approves the gym request, activating the gym and assigning the requester as the gym Owner.
-
-Gym roles are scoped to a gym and use the vocabulary Owner, Staff, and Member. Members can self-join or leave any active gym at any time. Staff access is privileged and must be granted through an Owner invitation. System administrators can approve gyms and suspend/reactivate gyms. Suspended gyms block gym-scoped access for Owners, Staff, and Members.
-
-The first version will include module-local Effect `HttpApiEndpoint` contracts, `AuthHttpGroup` registration, and auth HTTP handler delegation. It will not implement concrete persistence, React Router/web app routes, API clients, production server wiring, UI, real email delivery, cookie handling, or social/training business features. Those will be added later as adapters or separate modules.
+The first frontend flow will support gym-user signup, manual email verification token entry, login, current-session loading, logout, and a protected `/app` dashboard shell.
 
 ## User Stories
 
-1. As a platform founder, I want a dedicated auth module, so that user identity and access rules are consistent across the product.
-2. As a platform founder, I want auth behavior defined before infrastructure, so that the core domain is not coupled to a database or hosting choice.
-3. As a platform founder, I want system administrators separated from gym-side users, so that platform administration has a stronger boundary.
-4. As a system administrator, I want to authenticate with a dedicated admin account, so that I can perform platform-level operations.
-5. As a system administrator, I want admin sessions to be separate from gym-side sessions, so that admin access cannot accidentally bleed into the gym-side app.
-6. As a system administrator, I want to approve new gym requests, so that fake or unwanted gyms do not become active automatically.
-7. As a system administrator, I want to suspend a gym, so that I can block access for gyms that should not currently operate on the platform.
-8. As a system administrator, I want to reactivate a suspended gym, so that a gym can regain access after a platform-level issue is resolved.
-9. As a system administrator, I want only verified and authenticated admin users to perform admin actions, so that platform operations are protected.
-10. As a platform operator, I want a bootstrap flow for the first admin, so that the system can be initialized without open admin registration.
-11. As a gym-side user, I want to create an account with email, password, and display name, so that I can use the climbing training and social app.
-12. As a gym-side user, I want to verify my email address, so that the platform can trust my account before granting access.
-13. As a gym-side user, I want unverified access to be blocked from authenticated features, so that account trust rules are simple and consistent.
-14. As a gym-side user, I want to log in with email and password, so that I can access my account.
-15. As a gym-side user, I want to log out, so that I can end access on a device.
-16. As a gym-side user, I want to request a password reset, so that I can recover access if I forget my password.
-17. As a gym-side user, I want password reset tokens to expire, so that old recovery links cannot be used indefinitely.
-18. As a gym-side user, I want password reset tokens to be single-use, so that a used recovery link cannot be replayed.
-19. As a gym-side user, I want the same email to be allowed in the admin namespace and gym-side namespace, so that one person can be both a platform admin and an app user.
-20. As a prospective gym owner, I want to request a new gym, so that my gym can participate in the platform.
-21. As a prospective gym owner, I want my gym request to remain pending until approval, so that the platform can review new gyms before activation.
-22. As an approved gym owner, I want to automatically become the Owner of the gym I requested, so that I can manage privileged gym access.
-23. As a gym Owner, I want to invite Staff, so that trusted employees or collaborators can help represent the gym.
-24. As a gym Owner, I want Staff access to require invitation, so that users cannot self-assign privileged gym permissions.
-25. As gym Staff, I want to accept privileged access to a gym, so that I can act on behalf of that gym where authorized.
-26. As gym Staff, I want my permissions to be scoped to a specific gym, so that staff access at one gym does not grant access at another.
-27. As a gym member, I want to join any active gym myself, so that I can affiliate with the places where I climb.
-28. As a gym member, I want to leave a gym myself, so that I can manage my own gym affiliations.
-29. As a gym member, I want joining a gym to be lightweight, so that the app feels social and training-focused rather than like a billing system.
-30. As a gym member, I want leaving a gym to preserve enough state for future product history, so that the platform can later support useful social or training context.
-31. As a gym-side user, I want a clear current-session contract, so that the app can determine who I am and what gym-scoped roles I hold.
-32. As a gym-side user, I want suspended gyms to block access, so that inactive or problematic gyms do not remain usable.
-33. As a developer, I want typed domain errors, so that expected failures are explicit and recoverable.
-34. As a developer, I want branded IDs and schema-backed models, so that domain data is validated and IDs are not accidentally mixed.
-35. As a developer, I want repository ports instead of concrete storage, so that persistence can be implemented later without rewriting auth behavior.
-36. As a developer, I want password hashing behind a service port, so that secure credential handling can be implemented by an adapter.
-37. As a developer, I want token generation behind a service port, so that verification and reset tokens can be implemented securely later.
-38. As a developer, I want email delivery behind a service port, so that verification, reset, and staff invitation flows can be tested without a real provider.
-39. As a developer, I want application services to express auth use cases, so that behavior is testable without HTTP or UI.
-40. As a developer, I want schema-backed HTTP API contracts, so that module-local HTTP handlers can validate inputs and call the auth core consistently.
-41. As a developer, I want policy modules for authorization decisions, so that access rules are centralized and easy to test.
-42. As a developer, I want in-memory test layers, so that auth flows can be tested before real infrastructure exists.
-43. As a developer, I want Effect-native tests, so that service dependencies, typed errors, and async flows are tested in the same style as the module.
-44. As a future API developer, I want the auth module to expose stable interfaces, so that web delivery adapters can be added around the module-local HTTP API contracts.
-45. As a future frontend developer, I want auth screens to be out of the first core module, so that UI decisions can be made after behavior is stable.
-46. As a future infrastructure developer, I want database schema decisions deferred, so that the core can be reviewed before choosing persistence details.
-47. As a future product developer, I want social and training profile fields outside auth, so that the auth model stays small and focused.
-48. As a future product developer, I want gym membership management out of scope, so that the app can remain focused on training and social affiliation.
+1. As a gym user, I want to create an account with my email, password, and display name, so that I can start using Kryno.
+2. As a gym user, I want to see clear validation feedback when signup fails, so that I know how to correct my input.
+3. As a gym user, I want duplicate or reserved email errors to be shown in the signup form, so that I understand why signup did not complete.
+4. As a gym user, I want to be sent to email verification after signup, so that I can complete the required account activation step.
+5. As a gym user in the initial development environment, I want to manually enter an email verification token, so that the flow can be tested before real email delivery exists.
+6. As a gym user, I want clear feedback when an email verification token is invalid, so that I can retry with the correct token.
+7. As a gym user, I want to log in with my email and password after verification, so that I can access authenticated areas.
+8. As a gym user, I want invalid login credentials to be shown as an inline form error, so that I can recover without losing context.
+9. As an unverified gym user, I want login attempts to explain that verification is required, so that I know what step remains.
+10. As a logged-in gym user, I want my session to persist across page refreshes, so that I do not have to log in repeatedly.
+11. As a logged-in gym user, I want to land on a protected `/app` dashboard after login, so that I can tell authentication succeeded.
+12. As a logged-in gym user, I want the app shell to load my current session on the server, so that protected UI is based on trusted session state.
+13. As an unauthenticated visitor, I want protected pages to redirect me to login, so that I do not see authenticated screens without a session.
+14. As a logged-in gym user, I want to log out, so that my session is no longer usable in the browser.
+15. As a logged-out gym user, I want refreshes and direct visits to protected pages to continue treating me as logged out, so that logout is reliable.
+16. As a frontend developer, I want one typed Kryno API client module in the web app, so that route loaders and actions do not create ad hoc clients.
+17. As a frontend developer, I want React Router actions to forward API session cookies, so that HTTP-only session cookies work with server-side route actions.
+18. As a frontend developer, I want auth form failures to be represented as action data, so that normal auth failures do not crash route error boundaries.
+19. As a frontend developer, I want the auth UI to use shadcn/ui primitives consistently, so that the first auth screens fit the existing design system.
+20. As a backend developer, I want a composed first-party API contract module, so that future modules can add endpoint groups without coupling the web app to server runtime code.
+21. As a backend developer, I want the API app to compose module-provided handlers and layers, so that app-level hosting does not recreate module internals.
+22. As a backend developer, I want Auth test layers reused for the initial serverless integration, so that the frontend can be developed before production adapters exist.
+23. As a backend developer, I want the Auth HTTP edge to support HTTP-only cookies for web and bearer session IDs for future clients, so that session transport remains an edge concern.
+24. As a future mobile developer, I want login to continue returning a session DTO, so that a mobile client can later authenticate without browser cookies.
+25. As a platform developer, I want the API to be hosted under `/api`, so that the frontend and backend can share an origin on Vercel.
+26. As a platform developer, I want one catch-all Vercel API entrypoint, so that Auth and future module endpoints can share one serverless API surface.
+27. As a platform developer, I want no `/v1` prefix yet, so that the initial API stays simple while preserving the option to add versioning later.
+28. As a tester, I want API contract tests for session cookies and bearer headers, so that the transport behavior is verified at the HTTP boundary.
+29. As a tester, I want route-level tests or typechecks for redirects and cookie forwarding, so that auth behavior is verified through user-visible outcomes.
+30. As a product owner, I want the first slice to be gym-user focused, so that the primary user authentication path is established before admin or staff UI work.
 
 ## Implementation Decisions
 
-- Build a new dedicated auth package rather than placing auth inside the shared package or web app.
-- Use Effect-native architecture for the core module.
-- Use service-driven development with Context service contracts and Layers.
-- Use schema-backed domain models, branded identifiers, and typed errors.
-- Keep domain behavior independent of infrastructure adapters.
-- Model system administrators as a separate identity namespace from gym-side users.
-- Allow the same email address to exist once in each auth namespace.
-- Use email and password as the initial credential method.
-- Require gym-side email verification before authenticated app access.
-- Use a bootstrap use case for creating the first system administrator.
-- Define admin sessions separately from gym-side sessions.
-- Plan for database-backed session semantics through repository contracts, while deferring actual persistence.
-- Model gym states as pending, active, and suspended.
-- Model gym affiliation states as active and left.
-- Model gym-scoped roles as Owner, Staff, and Member.
-- Treat a Gym Manager signup as a gym creation request that becomes an Owner assignment after system-admin approval.
-- Allow members to self-join and self-leave active gyms.
-- Require Owner invitation for Staff assignment.
-- Include password reset contracts in the first module.
-- Include email verification, password reset, and staff invitation token behavior in the module contracts.
-- Define schema-backed Effect HTTP API endpoint contracts for auth use cases.
-- Register endpoint contracts in an auth HTTP group and wire handlers through the public `Auth` facade.
-- Keep HTTP contracts as thin adapters over application services, without implementing web app routes, cookies, persistence, or production server wiring.
-- Define repository ports for users, admins, gyms, affiliations, sessions, credentials, verification tokens, password reset tokens, and staff invitations.
-- Define service ports for password hashing, secure token generation, email delivery, clock/time, and ID generation where needed.
-- Define application services for signup, verification, login, logout, current session, admin bootstrap, gym requests, gym approval, gym suspension, member join/leave, staff invitation, and password reset.
-- Define policies for session validity, verified-user access, admin-only actions, active-gym access, Owner-only Staff invitation, and member self-affiliation.
-- Keep display name as the only profile-like field in auth.
-- Keep athlete profile, trainer profile, avatar, social graph, feed, messaging, workouts, and training business rules out of this module.
+- Create a first-party API contract module under the modules workspace. It will compose module-owned Effect HTTP API groups and export only contracts, schemas, and API definitions.
+- Do not place the composed API contract in the packages workspace because packages are reserved for external infrastructure, UI libraries, tooling, and similar shared infrastructure.
+- Do not name the module `core`; use an API-specific module name to avoid creating a vague catch-all module.
+- Create a separate API app for Vercel serverless hosting.
+- Serve all API endpoints through one catch-all `/api/*` entrypoint.
+- Keep the public API base path as `/api`; do not add `/v1` in this slice.
+- Keep runtime handler and layer composition in the API app, not the contract module.
+- Compose the Auth HTTP handlers from the Auth module instead of recreating Auth internals inside the API app.
+- Use the Auth test layer for the first API integration. This is explicitly an integration/demo layer, not production auth infrastructure.
+- Update the Auth HTTP contract so gym-user current-session and logout can resolve the session from transport instead of requiring a session ID path parameter for web usage.
+- Support both audience-specific HTTP-only cookies and `Authorization: Bearer <sessionId>` at the Auth HTTP edge.
+- Use separate session cookies for gym users and system admins to avoid role/session collisions.
+- Login responses continue returning the session DTO while also setting the appropriate session cookie for browser clients.
+- Logout invalidates the session through the Auth facade and clears the corresponding browser cookie.
+- Keep session transport out of the Auth domain model; the Auth facade continues to operate on session IDs.
+- Build one API client module in the React app. It is request-scoped for loaders/actions rather than a global singleton.
+- React Router loaders and actions are the primary frontend data-fetching and mutation boundary.
+- Auth mutations that can set or clear cookies must capture the API response and forward `Set-Cookie` headers from the route action response.
+- Local development uses an API base URL environment variable. Production defaults to same-origin `/api`.
+- Build the first UI slice for gym users only.
+- Use nested auth routes for public auth screens.
+- Use `/app` as the first protected authenticated route.
+- Use React Router forms/actions with shadcn/ui inputs, buttons, and alerts.
+- Show expected auth failures inline in forms. Reserve route error boundaries for unexpected failures.
+- Handle email verification through manual token entry while test email delivery is in use.
 
 ## Testing Decisions
 
-- Add Vitest and Effect-native testing support.
-- Tests should validate external behavior and user-observable outcomes rather than implementation details.
-- Tests should exercise application services and policies through public module contracts.
-- Tests should use fresh in-memory layers per test to avoid state leakage.
-- Test layers should implement repository and service ports without real infrastructure.
-- The auth module should be tested before adding database, UI, or production HTTP delivery adapters.
-- HTTP API endpoint contracts should expose typed success and expected domain error responses with appropriate HTTP statuses.
-- Tests or typechecks should cover representative endpoint contract and handler wiring paths.
-- Test admin bootstrap idempotency and first-admin creation.
-- Test separation between admin identity/session namespace and gym-side identity/session namespace.
-- Test that duplicate emails are allowed across namespaces but not within the same namespace.
-- Test gym-side signup, email verification, and verified-access gating.
-- Test login success, login failure, logout, and invalidated sessions.
-- Test password reset request, expiration, single-use behavior, and password update.
-- Test gym creation request, pending state, approval, active state, and Owner assignment.
-- Test gym suspension and reactivation access effects.
-- Test member self-join and self-leave behavior for active gyms.
-- Test that members cannot self-join suspended or pending gyms.
-- Test Staff invitation by Owner.
-- Test that Staff cannot self-assign privileged access.
-- Test that non-Owners cannot invite Staff.
-- Test policy behavior independently where it is exposed as a stable module interface.
-- There is no prior auth test suite in the current codebase; the closest prior art will be the repo's existing TypeScript package boundaries and Effect setup.
+- Tests should verify external behavior and contracts, not implementation details such as private helper functions or internal layer construction.
+- Auth HTTP API tests should verify login success still returns the expected DTO, sets the correct cookie, current-session accepts cookie and bearer session transport, missing sessions fail as unauthorized domain errors, and logout clears the cookie.
+- API app tests should verify the composed API serves Auth routes through `/api/auth/...` using the module-provided handlers and Auth test layer.
+- Web app tests or typechecks should verify route actions call the single Kryno API client module, forward cookies correctly, return inline action errors for expected auth failures, and redirect unauthenticated users away from `/app`.
+- The existing Auth module tests are prior art for Effect service behavior, domain error assertions, and HTTP API contract reflection.
+- The existing Auth HTTP API tests are prior art for verifying endpoint names, methods, paths, statuses, and handler delegation.
+- Manual acceptance testing should cover signup, manual verification token entry, login, protected app load, refresh persistence, logout, and redirect after logout.
 
 ## Out of Scope
 
-- Database schema design, migrations, ORM choice, SQL adapters, and production persistence.
-- Web app route implementation, React Router loaders/actions, API clients, cookie/browser session wiring, and production HTTP server wiring.
-- Login, signup, verification, reset, admin, or gym management UI.
-- Cookie serialization, browser session adapter, CSRF handling, and deployment-specific security headers.
-- Hosted auth providers.
-- Full gym membership management, billing, waivers, check-ins, facility access, and payment status.
-- Social media features such as profiles beyond display name, posts, follows, comments, direct messages, notifications, and feeds.
-- Personal training features such as workouts, programming, coaching plans, exercise libraries, progress tracking, and trainer/client relationships.
-- Gym discovery, search, location data, branding, media, or public gym pages.
-- Role hierarchies beyond Owner, Staff, and Member.
-- Multi-factor authentication and single sign-on.
-- Audit logs and compliance reporting.
+- Production database-backed Auth repositories.
+- Real password hashing suitable for production.
+- Real token generation suitable for production.
+- Real email delivery and email-link verification.
+- CSRF hardening beyond the initial same-site cookie baseline.
+- Full system-admin frontend flows.
+- Staff invitation UI.
+- Gym creation, gym membership, and owner/staff dashboards.
+- Mobile app implementation.
+- API versioning with `/v1`.
+- Replacing the Auth test layer with production runtime layers.
+- Polished final visual design beyond a functional, consistent shadcn/ui auth experience.
 
 ## Further Notes
 
-- The module should be designed as a deep module: a relatively small public interface should encapsulate a large amount of auth behavior.
-- Infrastructure should be added later as adapters that satisfy the auth module's service and repository ports.
-- Module-local Effect HTTP API contracts should stay thin over the public `Auth` facade; web delivery adapters can be added later.
-- The current repo already includes Effect in the shared module and Effect tooling in the workspace, but the auth module should own its own package boundary.
-- Before implementation, consult the local Effect guidance for services, layers, data modeling, error handling, and testing patterns.
+- HTTP-only cookies are the preferred browser session transport for this web app because browser JavaScript cannot read them, reducing token exposure if client-side code is compromised.
+- Supporting bearer session IDs at the HTTP edge keeps the door open for future mobile clients without changing the Auth domain.
+- Same-origin Vercel deployment is assumed so that `/api` and the React app share cookie behavior naturally.
+- The first API layer intentionally uses in-memory/test Auth infrastructure. This makes the slice useful for frontend integration but not production-ready.
+- Future API versioning should be handled through Effect HTTP API composition and path prefixes when a breaking API change is actually needed.
