@@ -1,5 +1,6 @@
 import { Schema } from "effect"
 
+import { GymCreationRequestId, GymId } from "./gym.ts"
 import { GymUserId, GymUserSessionId } from "./gym-user.ts"
 import { SystemAdminId, SystemAdminSessionId } from "./system-admin.ts"
 
@@ -70,6 +71,28 @@ export class GymUserPasswordResetTokenAlreadyUsed extends Schema.TaggedErrorClas
   "GymUserPasswordResetTokenAlreadyUsed",
   {
     token: Schema.String,
+  }
+) {}
+
+export class GymCreationRequestInvalid extends Schema.TaggedErrorClass<GymCreationRequestInvalid>()(
+  "GymCreationRequestInvalid",
+  {
+    requestId: GymCreationRequestId,
+  }
+) {}
+
+export class GymAccessInactive extends Schema.TaggedErrorClass<GymAccessInactive>()(
+  "GymAccessInactive",
+  {
+    gymId: GymId,
+  }
+) {}
+
+export class GymOwnerAccessDenied extends Schema.TaggedErrorClass<GymOwnerAccessDenied>()(
+  "GymOwnerAccessDenied",
+  {
+    gymId: GymId,
+    userId: GymUserId,
   }
 ) {}
 

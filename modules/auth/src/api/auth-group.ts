@@ -15,6 +15,11 @@ import {
   RequestGymUserPasswordResetEndpoint,
 } from "./endpoints/gym-user-password-reset.ts"
 import {
+  ApproveGymCreationRequestEndpoint,
+  CurrentGymOwnerAccessEndpoint,
+  RequestGymCreationEndpoint,
+} from "./endpoints/gym-request.ts"
+import {
   CurrentSystemAdminSessionEndpoint,
   LoginSystemAdminEndpoint,
   LogoutSystemAdminEndpoint,
@@ -30,6 +35,9 @@ export const AuthHttpGroup = HttpApiGroup.make("auth")
   .add(LogoutGymUserEndpoint)
   .add(RequestGymUserPasswordResetEndpoint)
   .add(CompleteGymUserPasswordResetEndpoint)
+  .add(RequestGymCreationEndpoint)
+  .add(ApproveGymCreationRequestEndpoint)
+  .add(CurrentGymOwnerAccessEndpoint)
   .add(BootstrapFirstSystemAdminEndpoint)
   .add(LoginSystemAdminEndpoint)
   .add(CurrentSystemAdminSessionEndpoint)

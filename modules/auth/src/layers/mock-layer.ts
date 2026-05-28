@@ -1,6 +1,16 @@
 import { Effect, Layer } from "effect"
 import { Auth } from "../auth.ts"
 import {
+  CurrentGymOwnerAccessSuccess,
+  GymAffiliationRecord,
+  GymCreationRequestApproved,
+  GymCreationRequested,
+  GymCreationRequestId,
+  GymCreationRequestRecord,
+  GymId,
+  GymRecord,
+} from "../domain/gym.ts"
+import {
   CurrentGymUserSessionSuccess,
   GymUserPasswordResetCompleted,
   GymUserPasswordResetRequested,
@@ -45,6 +55,26 @@ const mockGymUserSession = new GymUserSessionRecord({
   id: GymUserSessionId.make("gym-user-session-mock"),
   userId: mockGymUser.id,
   active: true,
+})
+
+const mockGym = new GymRecord({
+  id: GymId.make("gym-mock"),
+  name: "Mock Gym",
+  status: "active",
+})
+
+const mockGymCreationRequest = new GymCreationRequestRecord({
+  id: GymCreationRequestId.make("gym-creation-request-mock"),
+  gymId: mockGym.id,
+  requesterUserId: mockGymUser.id,
+  status: "approved",
+})
+
+const mockOwnerAffiliation = new GymAffiliationRecord({
+  gymId: mockGym.id,
+  userId: mockGymUser.id,
+  role: "Owner",
+  status: "active",
 })
 
 export const AuthMock = Layer.succeed(Auth, {
@@ -109,6 +139,39 @@ export const AuthMock = Layer.succeed(Auth, {
     Effect.succeed(
       new GymUserPasswordResetCompleted({
         user: mockGymUser,
+      })
+    ),
+  requestGymCreation: (input) => {
+    const gym = new GymRecord({
+      id: mockGym.id,
+      name: input.name,
+      status: "pending",
+    })
+    return Effect.succeed(
+      new GymCreationRequested({
+        gym,
+        request: new GymCreationRequestRecord({
+          id: GymCreationRequestId.make("gym-creation-request-mock"),
+          gymId: gym.id,
+          requesterUserId: mockGymUser.id,
+          status: "pending",
+        }),
+      })
+    )
+  },
+  approveGymCreationRequest: () =>
+    Effect.succeed(
+      new GymCreationRequestApproved({
+        request: mockGymCreationRequest,
+        gym: mockGym,
+        ownerAffiliation: mockOwnerAffiliation,
+      })
+    ),
+  currentGymOwnerAccess: () =>
+    Effect.succeed(
+      new CurrentGymOwnerAccessSuccess({
+        gym: mockGym,
+        affiliation: mockOwnerAffiliation,
       })
     ),
   bootstrapFirstSystemAdmin: (input) =>

@@ -1,5 +1,6 @@
 import { Effect, Layer } from "effect"
 
+import { GymCreationRequestId, GymId } from "../../domain/gym.ts"
 import { GymUserId, GymUserSessionId } from "../../domain/gym-user.ts"
 import {
   SystemAdminId,
@@ -12,6 +13,8 @@ export const AuthIdGeneratorSequentialAdapter = Layer.sync(
   () => {
     let nextGymUserId = 1
     let nextGymUserSessionId = 1
+    let nextGymId = 1
+    let nextGymCreationRequestId = 1
     let nextSystemAdminId = 1
     let nextSystemAdminSessionId = 1
 
@@ -21,6 +24,12 @@ export const AuthIdGeneratorSequentialAdapter = Layer.sync(
       ),
       nextGymUserSessionId: Effect.sync(() =>
         GymUserSessionId.make(`gym-user-session-${nextGymUserSessionId++}`)
+      ),
+      nextGymId: Effect.sync(() => GymId.make(`gym-${nextGymId++}`)),
+      nextGymCreationRequestId: Effect.sync(() =>
+        GymCreationRequestId.make(
+          `gym-creation-request-${nextGymCreationRequestId++}`
+        )
       ),
       nextSystemAdminId: Effect.sync(() =>
         SystemAdminId.make(`system-admin-${nextSystemAdminId++}`)

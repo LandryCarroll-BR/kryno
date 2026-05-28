@@ -4,10 +4,14 @@ import * as Context from "effect/Context"
 import { GymUserAuthentication } from "./application/gym-user-authentication/gym-user-authentication-input-boundary.ts"
 import { GymUserPasswordReset } from "./application/gym-user-password-reset/gym-user-password-reset-input-boundary.ts"
 import { GymUserRegistration } from "./application/gym-user-registration/gym-user-registration-input-boundary.ts"
+import { GymRequest } from "./application/gym-request/gym-request-input-boundary.ts"
 import { SystemAdminAuthentication } from "./application/system-admin-authentication/system-admin-authentication-input-boundary.ts"
 import { SystemAdminBootstrap } from "./application/system-admin-bootstrap/system-admin-bootstrap-input-boundary.ts"
 import {
   type FirstSystemAdminAlreadyExists,
+  type GymAccessInactive,
+  type GymCreationRequestInvalid,
+  type GymOwnerAccessDenied,
   type GymUserEmailAlreadyReserved,
   type GymUserEmailVerificationInvalid,
   type GymUserInvalidCredentials,
@@ -21,6 +25,14 @@ import {
   type SystemAdminInvalidCredentials,
   type SystemAdminSessionInvalid,
 } from "./domain/errors.ts"
+import {
+  type ApproveGymCreationRequestInput,
+  type CurrentGymOwnerAccessInput,
+  type CurrentGymOwnerAccessSuccess,
+  type GymCreationRequestApproved,
+  type GymCreationRequested,
+  type RequestGymCreationInput,
+} from "./domain/gym.ts"
 import {
   type CurrentGymUserSessionInput,
   type CurrentGymUserSessionSuccess,
@@ -93,6 +105,27 @@ export class Auth extends Context.Service<
       | GymUserPasswordResetTokenAlreadyUsed
       | GymUserNotFound
     >
+    readonly requestGymCreation: (
+      input: RequestGymCreationInput
+    ) => Effect.Effect<
+      GymCreationRequested,
+      GymUserSessionInvalid | GymUserUnverified
+    >
+    readonly approveGymCreationRequest: (
+      input: ApproveGymCreationRequestInput
+    ) => Effect.Effect<
+      GymCreationRequestApproved,
+      SystemAdminSessionInvalid | GymCreationRequestInvalid
+    >
+    readonly currentGymOwnerAccess: (
+      input: CurrentGymOwnerAccessInput
+    ) => Effect.Effect<
+      CurrentGymOwnerAccessSuccess,
+      | GymUserSessionInvalid
+      | GymUserUnverified
+      | GymAccessInactive
+      | GymOwnerAccessDenied
+    >
     readonly bootstrapFirstSystemAdmin: (
       input: BootstrapFirstSystemAdminInput
     ) => Effect.Effect<
@@ -119,6 +152,7 @@ export class Auth extends Context.Service<
       const gymUserAuthentication = yield* GymUserAuthentication
       const gymUserPasswordReset = yield* GymUserPasswordReset
       const gymUserRegistration = yield* GymUserRegistration
+      const gymRequest = yield* GymRequest
       const systemAdminAuthentication = yield* SystemAdminAuthentication
       const systemAdminBootstrap = yield* SystemAdminBootstrap
 
@@ -131,6 +165,9 @@ export class Auth extends Context.Service<
         logoutGymUser: gymUserAuthentication.logout,
         requestGymUserPasswordReset: gymUserPasswordReset.request,
         completeGymUserPasswordReset: gymUserPasswordReset.complete,
+        requestGymCreation: gymRequest.requestCreation,
+        approveGymCreationRequest: gymRequest.approveCreationRequest,
+        currentGymOwnerAccess: gymRequest.currentOwnerAccess,
         bootstrapFirstSystemAdmin: systemAdminBootstrap.bootstrapFirstAdmin,
         loginSystemAdmin: systemAdminAuthentication.login,
         currentSystemAdminSession: systemAdminAuthentication.currentSession,
