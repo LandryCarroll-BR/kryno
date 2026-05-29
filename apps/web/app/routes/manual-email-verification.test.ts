@@ -19,15 +19,18 @@ const actionArgs = (request: Request) =>
     context: {},
   }) as never
 
+const noopClient: KrynoApiClient = {
+  signUpGymUser: async () => undefined,
+  verifyGymUserEmail: async () => undefined,
+  loginGymUser: async () => ({ setCookieHeaders: [] }),
+}
+
 describe("manual email verification action", () => {
   it("returns inline validation errors before calling the API client", async () => {
     let calls = 0
     const action = createManualEmailVerificationAction(async () => {
       calls += 1
-      return {
-        signUpGymUser: async () => undefined,
-        verifyGymUserEmail: async () => undefined,
-      }
+      return noopClient
     })
 
     const result = (await action(
@@ -43,7 +46,7 @@ describe("manual email verification action", () => {
 
   it("returns invalid verification token failures as inline action data", async () => {
     const client: KrynoApiClient = {
-      signUpGymUser: async () => undefined,
+      ...noopClient,
       verifyGymUserEmail: async () => {
         throw { _tag: "GymUserEmailVerificationInvalid", token: "missing" }
       },
@@ -64,7 +67,7 @@ describe("manual email verification action", () => {
     const calls: Array<Parameters<KrynoApiClient["verifyGymUserEmail"]>[0]> =
       []
     const client: KrynoApiClient = {
-      signUpGymUser: async () => undefined,
+      ...noopClient,
       verifyGymUserEmail: async (input) => {
         calls.push(input)
       },

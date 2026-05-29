@@ -19,15 +19,18 @@ const actionArgs = (request: Request) =>
     context: {},
   }) as never
 
+const noopClient: KrynoApiClient = {
+  signUpGymUser: async () => undefined,
+  verifyGymUserEmail: async () => undefined,
+  loginGymUser: async () => ({ setCookieHeaders: [] }),
+}
+
 describe("gym-user signup action", () => {
   it("returns inline validation errors before calling the API client", async () => {
     let calls = 0
     const action = createGymUserSignupAction(async () => {
       calls += 1
-      return {
-        signUpGymUser: async () => undefined,
-        verifyGymUserEmail: async () => undefined,
-      }
+      return noopClient
     })
 
     const result = (await action(
@@ -53,10 +56,10 @@ describe("gym-user signup action", () => {
 
   it("returns duplicate email failures as inline action data", async () => {
     const client: KrynoApiClient = {
+      ...noopClient,
       signUpGymUser: async () => {
         throw { _tag: "GymUserEmailAlreadyReserved", email: "taken@test.dev" }
       },
-      verifyGymUserEmail: async () => undefined,
     }
     const action = createGymUserSignupAction(async () => client)
 
@@ -79,10 +82,10 @@ describe("gym-user signup action", () => {
   it("redirects successful signups to manual email verification", async () => {
     const calls: Array<Parameters<KrynoApiClient["signUpGymUser"]>[0]> = []
     const client: KrynoApiClient = {
+      ...noopClient,
       signUpGymUser: async (input) => {
         calls.push(input)
       },
-      verifyGymUserEmail: async () => undefined,
     }
     const action = createGymUserSignupAction(async () => client)
 

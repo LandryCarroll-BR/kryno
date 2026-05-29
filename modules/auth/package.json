@@ -9,6 +9,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./domain/gym-user": "./src/domain/gym-user.ts",
     "./application/gym-user-registration/interactor": "./src/application/gym-user-registration/gym-user-registration-interactor.ts",
     "./application/gym-user-authentication/interactor": "./src/application/gym-user-authentication/gym-user-authentication-interactor.ts",
     "./application/gym-user-password-reset/interactor": "./src/application/gym-user-password-reset/gym-user-password-reset-interactor.ts",
