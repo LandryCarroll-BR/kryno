@@ -1,26 +1,13 @@
 import { Layer } from "effect"
-import { HttpApiBuilder, HttpApiGroup } from "effect/unstable/httpapi"
-import {
-  type ApiPrefixedAuthHttpGroup,
-  buildAuthHttpHandlers,
-} from "@workspace/auth/api/auth-handlers"
-import { AuthSessionTransportRequiredLive } from "./auth-authorization.ts"
-import { KrynoAuthHttpGroup, KrynoHttpApi } from "./kryno-http-api.ts"
-
-const buildKrynoAuthHttpHandlers = (
-  handlers: HttpApiBuilder.Handlers.FromGroup<
-    HttpApiGroup.AddPrefix<typeof KrynoAuthHttpGroup, "/api">
-  >
-) =>
-  // The composed API adds edge middleware without changing Auth handler request shapes.
-  buildAuthHttpHandlers(
-    handlers as unknown as HttpApiBuilder.Handlers.FromGroup<ApiPrefixedAuthHttpGroup>
-  ) as unknown as HttpApiBuilder.Handlers<any, never>
+import { HttpApiBuilder } from "effect/unstable/httpapi"
+import { AuthSessionTransportRequiredLive } from "@workspace/auth/api/auth-authorization"
+import { buildAuthHttpHandlers } from "@workspace/auth/api/auth-handlers"
+import { KrynoHttpApi } from "./kryno-http-api.ts"
 
 export const KrynoAuthHttpHandlersLive = HttpApiBuilder.group(
   KrynoHttpApi,
   "auth",
-  buildKrynoAuthHttpHandlers
+  buildAuthHttpHandlers
 )
 
 export const KrynoHttpHandlersLive = KrynoAuthHttpHandlersLive.pipe(

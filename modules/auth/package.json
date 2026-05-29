@@ -33,6 +33,7 @@
     "./adapters/repositories/gym-staff-invitation-repository-memory": "./src/adapters/repositories/gym-staff-invitation-repository-memory.ts",
     "./adapters/repositories/system-admin-bootstrap-repository-memory": "./src/adapters/repositories/system-admin-bootstrap-repository-memory.ts",
     "./api/auth-api": "./src/api/auth-api.ts",
+    "./api/auth-authorization": "./src/api/auth-authorization.ts",
     "./api/auth-group": "./src/api/auth-group.ts",
     "./api/auth-handlers": "./src/api/auth-handlers.ts",
     "./api/endpoints/gym-user-registration": "./src/api/endpoints/gym-user-registration.ts",

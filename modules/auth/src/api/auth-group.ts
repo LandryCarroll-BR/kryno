@@ -1,5 +1,6 @@
 import { HttpApi, HttpApiGroup } from "effect/unstable/httpapi"
 
+import { AuthSessionTransportRequired } from "./auth-authorization.ts"
 import {
   ReserveGymUserEmailEndpoint,
   SignUpGymUserEndpoint,
@@ -37,21 +38,21 @@ export const AuthHttpGroup = HttpApiGroup.make("auth")
   .add(SignUpGymUserEndpoint)
   .add(VerifyGymUserEmailEndpoint)
   .add(LoginGymUserEndpoint)
-  .add(CurrentGymUserSessionEndpoint)
-  .add(LogoutGymUserEndpoint)
+  .add(CurrentGymUserSessionEndpoint.middleware(AuthSessionTransportRequired))
+  .add(LogoutGymUserEndpoint.middleware(AuthSessionTransportRequired))
   .add(RequestGymUserPasswordResetEndpoint)
   .add(CompleteGymUserPasswordResetEndpoint)
-  .add(RequestGymCreationEndpoint)
-  .add(ApproveGymCreationRequestEndpoint)
-  .add(CurrentGymOwnerAccessEndpoint)
-  .add(JoinGymAsMemberEndpoint)
-  .add(LeaveGymAsMemberEndpoint)
-  .add(CreateGymStaffInvitationEndpoint)
-  .add(AcceptGymStaffInvitationEndpoint)
+  .add(RequestGymCreationEndpoint.middleware(AuthSessionTransportRequired))
+  .add(ApproveGymCreationRequestEndpoint.middleware(AuthSessionTransportRequired))
+  .add(CurrentGymOwnerAccessEndpoint.middleware(AuthSessionTransportRequired))
+  .add(JoinGymAsMemberEndpoint.middleware(AuthSessionTransportRequired))
+  .add(LeaveGymAsMemberEndpoint.middleware(AuthSessionTransportRequired))
+  .add(CreateGymStaffInvitationEndpoint.middleware(AuthSessionTransportRequired))
+  .add(AcceptGymStaffInvitationEndpoint.middleware(AuthSessionTransportRequired))
   .add(BootstrapFirstSystemAdminEndpoint)
   .add(LoginSystemAdminEndpoint)
-  .add(CurrentSystemAdminSessionEndpoint)
-  .add(LogoutSystemAdminEndpoint)
+  .add(CurrentSystemAdminSessionEndpoint.middleware(AuthSessionTransportRequired))
+  .add(LogoutSystemAdminEndpoint.middleware(AuthSessionTransportRequired))
   .prefix("/auth")
 
 export const AuthHttpApi = HttpApi.make("AuthApi").add(AuthHttpGroup)

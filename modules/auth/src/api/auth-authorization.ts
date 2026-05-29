@@ -1,4 +1,3 @@
-import { Auth } from "@workspace/auth"
 import { Effect, Layer, Redacted } from "effect"
 import {
   HttpApiError,
@@ -6,20 +5,21 @@ import {
   HttpApiSecurity,
 } from "effect/unstable/httpapi"
 
+import { Auth } from "../auth.ts"
+import { SystemAdminSessionId } from "../domain/system-admin.ts"
+import { GymUserSessionId } from "../domain/gym-user.ts"
+
 export class AuthSessionTransportRequired extends HttpApiMiddleware.Service<
   AuthSessionTransportRequired,
   {
     requires: Auth
   }
->()(
-  "@workspace/api/AuthSessionTransportRequired",
-  {
-    error: HttpApiError.UnauthorizedNoContent,
-    security: {
-      bearer: HttpApiSecurity.bearer,
-    },
-  }
-) {}
+>()("@workspace/auth/AuthSessionTransportRequired", {
+  error: HttpApiError.UnauthorizedNoContent,
+  security: {
+    bearer: HttpApiSecurity.bearer,
+  },
+}) {}
 
 export const AuthSessionTransportRequiredLive = Layer.succeed(
   AuthSessionTransportRequired,
@@ -37,13 +37,13 @@ export const AuthSessionTransportRequiredLive = Layer.succeed(
         endpoint.name === "logoutSystemAdmin"
           ? Auth.use((auth) =>
               auth.currentSystemAdminSession({
-                sessionId,
-              } as never)
+                sessionId: SystemAdminSessionId.make(sessionId),
+              })
             )
           : Auth.use((auth) =>
               auth.currentGymUserSession({
-                sessionId,
-              } as never)
+                sessionId: GymUserSessionId.make(sessionId),
+              })
             )
 
       return validateSession.pipe(
