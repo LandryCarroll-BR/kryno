@@ -1,4 +1,6 @@
-import { Button } from "@workspace/ui/components/button"
+import { Link } from "react-router"
+
+import { buttonVariants } from "@workspace/ui/components/button"
 
 export default function Home() {
   return (
@@ -8,7 +10,9 @@ export default function Home() {
           <h1 className="font-medium">Project ready!</h1>
           <p>You may now add components and start building.</p>
           <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
+          <Link to="/signup" className={buttonVariants({ className: "mt-2" })}>
+            Create account
+          </Link>
         </div>
       </div>
     </div>
