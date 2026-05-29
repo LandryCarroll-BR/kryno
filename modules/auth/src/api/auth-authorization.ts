@@ -6,50 +6,84 @@ import {
 } from "effect/unstable/httpapi"
 
 import { Auth } from "../auth.ts"
-import { SystemAdminSessionId } from "../domain/system-admin.ts"
 import { GymUserSessionId } from "../domain/gym-user.ts"
+import { SystemAdminSessionId } from "../domain/system-admin.ts"
 
-export class AuthSessionTransportRequired extends HttpApiMiddleware.Service<
-  AuthSessionTransportRequired,
+export class GymUserSessionRequired extends HttpApiMiddleware.Service<
+  GymUserSessionRequired,
   {
     requires: Auth
   }
->()("@workspace/auth/AuthSessionTransportRequired", {
+>()("@workspace/auth/GymUserSessionRequired", {
   error: HttpApiError.UnauthorizedNoContent,
   security: {
     bearer: HttpApiSecurity.bearer,
   },
 }) {}
 
-export const AuthSessionTransportRequiredLive = Layer.succeed(
-  AuthSessionTransportRequired,
+export class SystemAdminSessionRequired extends HttpApiMiddleware.Service<
+  SystemAdminSessionRequired,
   {
-    bearer: (httpEffect, { credential, endpoint }) => {
-      const sessionId = Redacted.value(credential).trim()
+    requires: Auth
+  }
+>()("@workspace/auth/SystemAdminSessionRequired", {
+  error: HttpApiError.UnauthorizedNoContent,
+  security: {
+    bearer: HttpApiSecurity.bearer,
+  },
+}) {}
 
-      if (sessionId.length === 0) {
-        return Effect.fail(new HttpApiError.Unauthorized({}))
-      }
+const bearerSessionId = (credential: Redacted.Redacted<string>) => {
+  const sessionId = Redacted.value(credential).trim()
 
-      const validateSession: Effect.Effect<unknown, unknown, Auth> =
-        endpoint.name === "approveGymCreationRequest" ||
-        endpoint.name === "currentSystemAdminSession" ||
-        endpoint.name === "logoutSystemAdmin"
-          ? Auth.use((auth) =>
-              auth.currentSystemAdminSession({
-                sessionId: SystemAdminSessionId.make(sessionId),
-              })
-            )
-          : Auth.use((auth) =>
-              auth.currentGymUserSession({
-                sessionId: GymUserSessionId.make(sessionId),
-              })
-            )
+  return sessionId.length === 0
+    ? Effect.fail(new HttpApiError.Unauthorized({}))
+    : Effect.succeed(sessionId)
+}
 
-      return validateSession.pipe(
-        Effect.mapError(() => new HttpApiError.Unauthorized({})),
-        Effect.andThen(httpEffect)
-      )
-    },
+export const GymUserSessionRequiredLive = Layer.succeed(
+  GymUserSessionRequired,
+  {
+    bearer: (httpEffect, { credential }) =>
+      Effect.gen(function* () {
+        const sessionId = yield* bearerSessionId(credential)
+
+        yield* Auth.use((auth) =>
+          auth.currentGymUserSession({
+            sessionId: GymUserSessionId.make(sessionId),
+          })
+        ).pipe(Effect.mapError(() => new HttpApiError.Unauthorized({})))
+
+        return yield* httpEffect
+      }),
   }
 )
+
+export const SystemAdminSessionRequiredLive = Layer.succeed(
+  SystemAdminSessionRequired,
+  {
+    bearer: (httpEffect, { credential }) =>
+      Effect.gen(function* () {
+        const sessionId = yield* bearerSessionId(credential)
+
+        yield* Auth.use((auth) =>
+          auth.currentSystemAdminSession({
+            sessionId: SystemAdminSessionId.make(sessionId),
+          })
+        ).pipe(Effect.mapError(() => new HttpApiError.Unauthorized({})))
+
+        return yield* httpEffect
+      }),
+  }
+)
+
+export const AuthHttpAuthorizationLive = Layer.mergeAll(
+  GymUserSessionRequiredLive,
+  SystemAdminSessionRequiredLive
+)
+
+export const AuthHttpAuthorization = {
+  gymUser: GymUserSessionRequired,
+  systemAdmin: SystemAdminSessionRequired,
+  layer: AuthHttpAuthorizationLive,
+} as const

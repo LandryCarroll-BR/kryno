@@ -4,20 +4,24 @@ import { HttpApi } from "effect/unstable/httpapi"
 import { KrynoHttpApi } from "@workspace/api"
 import { handler } from "../src/handler.ts"
 
+const postJson = (path: string, body: unknown, bearer?: string) =>
+  handler(
+    new Request(`https://kryno.test${path}`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...(bearer === undefined ? {} : { authorization: `Bearer ${bearer}` }),
+      },
+      body: JSON.stringify(body),
+    })
+  )
+
 describe("Kryno API app", () => {
   it("serves Auth routes through the composed /api contract", async () => {
-    const response = await handler(
-      new Request("https://kryno.test/api/auth/gym-users/email-reservations", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          email: "member@example.com",
-          displayName: "Member Example",
-        }),
-      })
-    )
+    const response = await postJson("/api/auth/gym-users/email-reservations", {
+      email: "member@example.com",
+      displayName: "Member Example",
+    })
 
     expect(response.status).toBe(201)
     expect(await response.json()).toMatchObject({
@@ -28,17 +32,61 @@ describe("Kryno API app", () => {
   })
 
   it("rejects anonymous requests to protected Auth routes before protected behavior runs", async () => {
-    const response = await handler(
-      new Request("https://kryno.test/api/auth/gyms/requests", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          sessionId: "missing-session",
-          name: "Protected Gym",
-        }),
-      })
+    const response = await postJson("/api/auth/gyms/requests", {
+      sessionId: "missing-session",
+      name: "Protected Gym",
+    })
+
+    expect(response.status).toBe(401)
+    expect(await response.text()).toBe("")
+  })
+
+  it("rejects a system-admin session on gym-user protected routes", async () => {
+    await postJson("/api/auth/system-admin/bootstrap", {
+      email: "admin-audience@example.com",
+      password: "correct horse battery staple",
+    })
+    const loginResponse = await postJson("/api/auth/system-admin/sessions", {
+      email: "admin-audience@example.com",
+      password: "correct horse battery staple",
+    })
+    const login = await loginResponse.json()
+
+    const response = await postJson(
+      "/api/auth/gyms/requests",
+      {
+        sessionId: login.session.id,
+        name: "Wrong Audience Gym",
+      },
+      login.session.id
+    )
+
+    expect(response.status).toBe(401)
+    expect(await response.text()).toBe("")
+  })
+
+  it("rejects a gym-user session on system-admin protected routes", async () => {
+    await postJson("/api/auth/gym-users/signups", {
+      email: "gym-audience@example.com",
+      password: "correct horse battery staple",
+      displayName: "Gym Audience",
+    })
+    await postJson("/api/auth/gym-users/email-verifications", {
+      token: "gym-user-email-verification-token-1",
+    })
+    const loginResponse = await postJson("/api/auth/gym-users/sessions", {
+      email: "gym-audience@example.com",
+      password: "correct horse battery staple",
+    })
+    const login = await loginResponse.json()
+
+    const response = await postJson(
+      "/api/auth/gyms/requests/approvals",
+      {
+        sessionId: login.session.id,
+        requestId: "missing-request",
+      },
+      login.session.id
     )
 
     expect(response.status).toBe(401)

@@ -31,13 +31,8 @@ export class SystemAdminSessionRequired extends HttpApiMiddleware.Service<
 }) {}
 
 export const AuthHttpAuthorization = {
-  gymUser: <Endpoint extends HttpApiEndpoint.AnyWithProps>(endpoint: Endpoint) =>
-    endpoint.middleware(GymUserSessionRequired),
-
-  systemAdmin: <Endpoint extends HttpApiEndpoint.AnyWithProps>(
-    endpoint: Endpoint
-  ) => endpoint.middleware(SystemAdminSessionRequired),
-
+  gymUser: GymUserSessionRequired,
+  systemAdmin: SystemAdminSessionRequired,
   layer: AuthHttpAuthorizationLive,
 } as const
 ```
@@ -52,19 +47,19 @@ export const AuthHttpGroup = HttpApiGroup.make("auth")
   .add(SignUpGymUserEndpoint)
   .add(VerifyGymUserEmailEndpoint)
   .add(LoginGymUserEndpoint)
-  .add(gymUser(CurrentGymUserSessionEndpoint))
-  .add(gymUser(LogoutGymUserEndpoint))
-  .add(gymUser(RequestGymCreationEndpoint))
-  .add(systemAdmin(ApproveGymCreationRequestEndpoint))
-  .add(gymUser(CurrentGymOwnerAccessEndpoint))
-  .add(gymUser(JoinGymAsMemberEndpoint))
-  .add(gymUser(LeaveGymAsMemberEndpoint))
-  .add(gymUser(CreateGymStaffInvitationEndpoint))
-  .add(gymUser(AcceptGymStaffInvitationEndpoint))
+  .add(CurrentGymUserSessionEndpoint.middleware(gymUser))
+  .add(LogoutGymUserEndpoint.middleware(gymUser))
+  .add(RequestGymCreationEndpoint.middleware(gymUser))
+  .add(ApproveGymCreationRequestEndpoint.middleware(systemAdmin))
+  .add(CurrentGymOwnerAccessEndpoint.middleware(gymUser))
+  .add(JoinGymAsMemberEndpoint.middleware(gymUser))
+  .add(LeaveGymAsMemberEndpoint.middleware(gymUser))
+  .add(CreateGymStaffInvitationEndpoint.middleware(gymUser))
+  .add(AcceptGymStaffInvitationEndpoint.middleware(gymUser))
   .add(BootstrapFirstSystemAdminEndpoint)
   .add(LoginSystemAdminEndpoint)
-  .add(systemAdmin(CurrentSystemAdminSessionEndpoint))
-  .add(systemAdmin(LogoutSystemAdminEndpoint))
+  .add(CurrentSystemAdminSessionEndpoint.middleware(systemAdmin))
+  .add(LogoutSystemAdminEndpoint.middleware(systemAdmin))
   .prefix("/auth")
 ```
 
@@ -138,4 +133,4 @@ auth.currentSystemAdminSession({
 - Do not introduce request-scoped principal services yet. Handlers can continue to call the `Auth` facade for their business operation.
 - Do not introduce an authorization metadata registry yet. The current module only has two principal audiences, and separate middleware services make that distinction clearer than a generic rule system.
 - Update `KrynoHttpHandlersLive` to provide the new authorization layer instead of the old `AuthSessionTransportRequiredLive`.
-- Prefer the wrapper calls in `auth-group.ts` over raw `.middleware(...)` calls so endpoint authors have one obvious authoring path.
+- Prefer `AuthHttpAuthorization.gymUser` and `AuthHttpAuthorization.systemAdmin` as direct middleware service tags in `auth-group.ts` so Effect's endpoint typing carries the contract without custom wrapper casts.

@@ -1,13 +1,12 @@
 import { describe, expect, it } from "@effect/vitest"
-import { Cause, Effect, Exit } from "effect"
 import { HttpApi } from "effect/unstable/httpapi"
 
-import { Auth } from "@workspace/auth"
 import {
   AcceptGymStaffInvitationEndpoint,
   ApproveGymCreationRequestEndpoint,
   AuthHttpApi,
   AuthHttpGroup,
+  GymUserSessionRequired,
   BootstrapFirstSystemAdminEndpoint,
   CompleteGymUserPasswordResetEndpoint,
   CreateGymStaffInvitationEndpoint,
@@ -24,11 +23,9 @@ import {
   RequestGymUserPasswordResetEndpoint,
   ReserveGymUserEmailEndpoint,
   SignUpGymUserEndpoint,
+  SystemAdminSessionRequired,
   VerifyGymUserEmailEndpoint,
-  buildAuthHttpHandlers,
 } from "../src/api/auth-api"
-import { AuthMock } from "../src/layers/mock-layer"
-import { AuthTestLayer } from "../src/layers/test-layer"
 
 const expectedEndpointNames = [
   "acceptGymStaffInvitation",
@@ -50,6 +47,34 @@ const expectedEndpointNames = [
   "reserveGymUserEmail",
   "signUpGymUser",
   "verifyGymUserEmail",
+] as const
+
+const publicEndpointNames = [
+  "bootstrapFirstSystemAdmin",
+  "completeGymUserPasswordReset",
+  "loginGymUser",
+  "loginSystemAdmin",
+  "requestGymUserPasswordReset",
+  "reserveGymUserEmail",
+  "signUpGymUser",
+  "verifyGymUserEmail",
+] as const
+
+const gymUserEndpointNames = [
+  "acceptGymStaffInvitation",
+  "createGymStaffInvitation",
+  "currentGymOwnerAccess",
+  "currentGymUserSession",
+  "joinGymAsMember",
+  "leaveGymAsMember",
+  "logoutGymUser",
+  "requestGymCreation",
+] as const
+
+const systemAdminEndpointNames = [
+  "approveGymCreationRequest",
+  "currentSystemAdminSession",
+  "logoutSystemAdmin",
 ] as const
 
 const exportedEndpoints = [
@@ -74,36 +99,10 @@ const exportedEndpoints = [
   VerifyGymUserEmailEndpoint,
 ] as const
 
-const collectHandlers = () => {
-  const handlersByName = new Map<
-    string,
-    (request: unknown) => Effect.Effect<unknown, unknown, Auth>
-  >()
-  const handlers = {
-    handle: (
-      name: string,
-      handler: (request: unknown) => Effect.Effect<unknown, unknown, Auth>
-    ) => {
-      handlersByName.set(name, handler)
-      return handlers
-    },
-  }
-
-  buildAuthHttpHandlers(handlers as never)
-
-  return handlersByName
-}
-
-const expectFailureTag = <Tag extends string>(
-  exit: Exit.Exit<unknown, { readonly _tag: string }>,
-  tag: Tag
-) => {
-  expect(Exit.isFailure(exit)).toBe(true)
-  if (Exit.isFailure(exit)) {
-    const failure = exit.cause.reasons.find(Cause.isFailReason)
-    expect(failure?.error._tag).toBe(tag)
-  }
-}
+const hasMiddleware = (
+  middlewares: ReadonlySet<unknown>,
+  middleware: unknown
+) => middlewares.has(middleware)
 
 describe("Auth HTTP API contracts", () => {
   it("exports every auth endpoint contract from the module API surface", () => {
@@ -136,7 +135,9 @@ describe("Auth HTTP API contracts", () => {
       },
     })
 
-    expect([...endpoints.keys()].sort()).toEqual([...expectedEndpointNames].sort())
+    expect([...endpoints.keys()].sort()).toEqual(
+      [...expectedEndpointNames].sort()
+    )
     expect(endpoints.get("bootstrapFirstSystemAdmin")).toEqual({
       method: "POST",
       path: "/auth/system-admin/bootstrap",
@@ -162,50 +163,48 @@ describe("Auth HTTP API contracts", () => {
       errors: [401, 403],
     })
   })
-})
 
-describe("Auth HTTP handlers", () => {
-  it.effect("delegates success paths to the public Auth facade", () =>
-    Effect.gen(function* () {
-      const handlers = collectHandlers()
-      const loginGymUser = handlers.get("loginGymUser")
-      expect(loginGymUser).toBeDefined()
+  it("declares the intended session audience for protected endpoints", () => {
+    const endpoints = new Map<
+      string,
+      {
+        readonly gymUser: boolean
+        readonly systemAdmin: boolean
+      }
+    >()
 
-      const result = yield* loginGymUser!({
-        payload: {
-          email: "member@example.com",
-          password: "correct horse battery staple",
-        },
+    HttpApi.reflect(AuthHttpApi, {
+      onGroup: () => undefined,
+      onEndpoint: ({ endpoint }) => {
+        endpoints.set(endpoint.name, {
+          gymUser: hasMiddleware(endpoint.middlewares, GymUserSessionRequired),
+          systemAdmin: hasMiddleware(
+            endpoint.middlewares,
+            SystemAdminSessionRequired
+          ),
+        })
+      },
+    })
+
+    for (const name of publicEndpointNames) {
+      expect(endpoints.get(name)).toEqual({
+        gymUser: false,
+        systemAdmin: false,
       })
+    }
 
-      expect(result).toMatchObject({
-        user: {
-          email: "member@example.com",
-        },
-        session: {
-          active: true,
-        },
+    for (const name of gymUserEndpointNames) {
+      expect(endpoints.get(name)).toEqual({
+        gymUser: true,
+        systemAdmin: false,
       })
-    }).pipe(Effect.provide(AuthMock))
-  )
+    }
 
-  it.effect("delegates expected domain failures through the HTTP handler effect", () =>
-    Effect.gen(function* () {
-      const handlers = collectHandlers()
-      const currentGymUserSession = handlers.get("currentGymUserSession")
-      expect(currentGymUserSession).toBeDefined()
-
-      const result = yield* Effect.exit(
-        (
-          currentGymUserSession!({
-            params: {
-              sessionId: "missing-session",
-            },
-          }) as Effect.Effect<unknown, { readonly _tag: string }, Auth>
-        )
-      )
-
-      expectFailureTag(result, "GymUserSessionInvalid")
-    }).pipe(Effect.provide(AuthTestLayer))
-  )
+    for (const name of systemAdminEndpointNames) {
+      expect(endpoints.get(name)).toEqual({
+        gymUser: false,
+        systemAdmin: true,
+      })
+    }
+  })
 })

@@ -1,6 +1,6 @@
 import { HttpApi, HttpApiGroup } from "effect/unstable/httpapi"
 
-import { AuthSessionTransportRequired } from "./auth-authorization.ts"
+import { AuthHttpAuthorization } from "./auth-authorization.ts"
 import {
   ReserveGymUserEmailEndpoint,
   SignUpGymUserEndpoint,
@@ -33,26 +33,28 @@ import {
 } from "./endpoints/system-admin-authentication.ts"
 import { BootstrapFirstSystemAdminEndpoint } from "./endpoints/system-admin-bootstrap.ts"
 
+const { gymUser, systemAdmin } = AuthHttpAuthorization
+
 export const AuthHttpGroup = HttpApiGroup.make("auth")
   .add(ReserveGymUserEmailEndpoint)
   .add(SignUpGymUserEndpoint)
   .add(VerifyGymUserEmailEndpoint)
   .add(LoginGymUserEndpoint)
-  .add(CurrentGymUserSessionEndpoint.middleware(AuthSessionTransportRequired))
-  .add(LogoutGymUserEndpoint.middleware(AuthSessionTransportRequired))
+  .add(CurrentGymUserSessionEndpoint.middleware(gymUser))
+  .add(LogoutGymUserEndpoint.middleware(gymUser))
   .add(RequestGymUserPasswordResetEndpoint)
   .add(CompleteGymUserPasswordResetEndpoint)
-  .add(RequestGymCreationEndpoint.middleware(AuthSessionTransportRequired))
-  .add(ApproveGymCreationRequestEndpoint.middleware(AuthSessionTransportRequired))
-  .add(CurrentGymOwnerAccessEndpoint.middleware(AuthSessionTransportRequired))
-  .add(JoinGymAsMemberEndpoint.middleware(AuthSessionTransportRequired))
-  .add(LeaveGymAsMemberEndpoint.middleware(AuthSessionTransportRequired))
-  .add(CreateGymStaffInvitationEndpoint.middleware(AuthSessionTransportRequired))
-  .add(AcceptGymStaffInvitationEndpoint.middleware(AuthSessionTransportRequired))
+  .add(RequestGymCreationEndpoint.middleware(gymUser))
+  .add(ApproveGymCreationRequestEndpoint.middleware(systemAdmin))
+  .add(CurrentGymOwnerAccessEndpoint.middleware(gymUser))
+  .add(JoinGymAsMemberEndpoint.middleware(gymUser))
+  .add(LeaveGymAsMemberEndpoint.middleware(gymUser))
+  .add(CreateGymStaffInvitationEndpoint.middleware(gymUser))
+  .add(AcceptGymStaffInvitationEndpoint.middleware(gymUser))
   .add(BootstrapFirstSystemAdminEndpoint)
   .add(LoginSystemAdminEndpoint)
-  .add(CurrentSystemAdminSessionEndpoint.middleware(AuthSessionTransportRequired))
-  .add(LogoutSystemAdminEndpoint.middleware(AuthSessionTransportRequired))
+  .add(CurrentSystemAdminSessionEndpoint.middleware(systemAdmin))
+  .add(LogoutSystemAdminEndpoint.middleware(systemAdmin))
   .prefix("/auth")
 
 export const AuthHttpApi = HttpApi.make("AuthApi").add(AuthHttpGroup)
