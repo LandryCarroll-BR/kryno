@@ -14,9 +14,7 @@ export interface VerifyGymUserEmailInput {
 }
 
 export interface KrynoApiClient {
-  readonly signUpGymUser: (
-    input: GymUserSignupInput
-  ) => Promise<unknown>
+  readonly signUpGymUser: (input: GymUserSignupInput) => Promise<unknown>
   readonly verifyGymUserEmail: (
     input: VerifyGymUserEmailInput
   ) => Promise<unknown>
@@ -36,6 +34,8 @@ export const getKrynoApiClient = async (
     signUpGymUser: (input) =>
       client.auth.signUpGymUser({ payload: input }).pipe(Effect.runPromise),
     verifyGymUserEmail: (input) =>
-      client.auth.verifyGymUserEmail({ payload: input }).pipe(Effect.runPromise),
+      client.auth
+        .verifyGymUserEmail({ payload: input })
+        .pipe(Effect.runPromise),
   }
 }

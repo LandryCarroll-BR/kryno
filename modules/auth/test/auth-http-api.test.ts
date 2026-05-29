@@ -1,31 +1,41 @@
 import { describe, expect, it } from "@effect/vitest"
 import { HttpApi } from "effect/unstable/httpapi"
-
 import {
   AcceptGymStaffInvitationEndpoint,
-  ApproveGymCreationRequestEndpoint,
-  AuthHttpApi,
-  AuthHttpGroup,
-  GymUserSessionRequired,
-  BootstrapFirstSystemAdminEndpoint,
-  CompleteGymUserPasswordResetEndpoint,
   CreateGymStaffInvitationEndpoint,
+} from "../src/api/endpoints/gym-staff-invitation"
+import {
+  ApproveGymCreationRequestEndpoint,
   CurrentGymOwnerAccessEndpoint,
-  CurrentGymUserSessionEndpoint,
-  CurrentSystemAdminSessionEndpoint,
   JoinGymAsMemberEndpoint,
   LeaveGymAsMemberEndpoint,
-  LoginGymUserEndpoint,
-  LoginSystemAdminEndpoint,
-  LogoutGymUserEndpoint,
-  LogoutSystemAdminEndpoint,
   RequestGymCreationEndpoint,
+} from "../src/api/endpoints/gym-request"
+import { BootstrapFirstSystemAdminEndpoint } from "../src/api/endpoints/system-admin-bootstrap"
+import {
+  CompleteGymUserPasswordResetEndpoint,
   RequestGymUserPasswordResetEndpoint,
+} from "../src/api/endpoints/gym-user-password-reset"
+import {
+  CurrentGymUserSessionEndpoint,
+  LoginGymUserEndpoint,
+  LogoutGymUserEndpoint,
+} from "../src/api/endpoints/gym-user-authentication"
+import {
+  CurrentSystemAdminSessionEndpoint,
+  LoginSystemAdminEndpoint,
+  LogoutSystemAdminEndpoint,
+} from "../src/api/endpoints/system-admin-authentication"
+import {
   ReserveGymUserEmailEndpoint,
   SignUpGymUserEndpoint,
-  SystemAdminSessionRequired,
   VerifyGymUserEmailEndpoint,
-} from "../src/api/auth-api"
+} from "../src/api/endpoints/gym-user-registration"
+import { AuthHttpApi, AuthHttpGroup } from "../src/api/auth-group"
+import {
+  GymUserSessionRequired,
+  SystemAdminSessionRequired,
+} from "../src/api/auth-authorization"
 
 const expectedEndpointNames = [
   "acceptGymStaffInvitation",
