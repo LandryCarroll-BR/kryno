@@ -71,12 +71,37 @@ const loginFailureMessage = (error: unknown) =>
     ? failureMessages.unverified
     : failureMessages.invalidCredentials
 
-const redirectToAppWithCookies = (setCookieHeaders: readonly string[]) => {
-  const headers = new Headers()
+const sessionCookieName = "kryno_gym_user_session"
 
-  for (const cookie of setCookieHeaders) {
-    headers.append("Set-Cookie", cookie)
+const isLocalHttpDevelopment = (request: Request) => {
+  const url = new URL(request.url)
+
+  return (
+    url.protocol === "http:" &&
+    (url.hostname === "localhost" ||
+      url.hostname === "127.0.0.1" ||
+      url.hostname === "::1")
+  )
+}
+
+const serializeSessionCookie = (sessionId: string, request: Request) => {
+  const attributes = [
+    `${sessionCookieName}=${encodeURIComponent(sessionId)}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+  ]
+
+  if (!isLocalHttpDevelopment(request)) {
+    attributes.push("Secure")
   }
+
+  return attributes.join("; ")
+}
+
+const redirectToAppWithSessionCookie = (sessionId: string, request: Request) => {
+  const headers = new Headers()
+  headers.append("Set-Cookie", serializeSessionCookie(sessionId, request))
 
   return redirect("/app", { headers })
 }
@@ -103,7 +128,7 @@ export const createGymUserLoginAction =
 
     try {
       const response = await client.loginGymUser(input)
-      return redirectToAppWithCookies(response.setCookieHeaders)
+      return redirectToAppWithSessionCookie(response.session.id, request)
     } catch (error) {
       if (isExpectedLoginFailure(error)) {
         return {

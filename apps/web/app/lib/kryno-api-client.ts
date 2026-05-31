@@ -5,7 +5,7 @@ import {
   VerifyGymUserEmailInput as AuthVerifyGymUserEmailInput,
 } from "@workspace/auth/domain/gym-user"
 import { Effect } from "effect"
-import { Cookies, FetchHttpClient } from "effect/unstable/http"
+import { FetchHttpClient } from "effect/unstable/http"
 import { HttpApiClient } from "effect/unstable/httpapi"
 
 export interface GymUserSignupInput {
@@ -23,8 +23,18 @@ export interface LoginGymUserInput {
   readonly password: string
 }
 
-export interface KrynoApiResponse {
-  readonly setCookieHeaders: readonly string[]
+export interface LoginGymUserSession {
+  readonly user: {
+    readonly id: string
+    readonly email: string
+    readonly displayName: string
+    readonly emailVerified: boolean
+  }
+  readonly session: {
+    readonly id: string
+    readonly userId: string
+    readonly active: boolean
+  }
 }
 
 export interface KrynoApiClient {
@@ -34,7 +44,7 @@ export interface KrynoApiClient {
   ) => Promise<unknown>
   readonly loginGymUser: (
     input: LoginGymUserInput
-  ) => Promise<KrynoApiResponse>
+  ) => Promise<LoginGymUserSession>
 }
 
 const getKrynoApiBaseUrl = (request: Request) =>
@@ -59,16 +69,14 @@ export const getKrynoApiClient = async (
         })
         .pipe(Effect.runPromise),
     loginGymUser: async (input) => {
-      const [, response] = await client.auth
+      const [login] = await client.auth
         .loginGymUser({
           payload: new AuthLoginGymUserInput(input),
           responseMode: "decoded-and-response",
         })
         .pipe(Effect.runPromise)
 
-      return {
-        setCookieHeaders: Cookies.toSetCookieHeaders(response.cookies),
-      }
+      return login
     },
   }
 }

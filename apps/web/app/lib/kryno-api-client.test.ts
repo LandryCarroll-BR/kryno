@@ -8,12 +8,9 @@ describe("Kryno API client", () => {
     vi.unstubAllEnvs()
   })
 
-  it("captures set-cookie headers from gym-user login responses", async () => {
+  it("returns the decoded gym-user login session without relying on set-cookie headers", async () => {
     const requests: Request[] = []
     const bodies: unknown[] = []
-    const setCookie =
-      "kryno_gym_user_session=gym-user-session-1; Path=/; HttpOnly"
-
     vi.stubGlobal(
       "fetch",
       vi.fn(async (request: RequestInfo | URL, init?: RequestInit) => {
@@ -38,7 +35,8 @@ describe("Kryno API client", () => {
           },
           {
             headers: {
-              "Set-Cookie": setCookie,
+              "Set-Cookie":
+                "core_api_session=should-not-be-used; Path=/; HttpOnly",
             },
           }
         )
@@ -49,7 +47,7 @@ describe("Kryno API client", () => {
     const client = await getKrynoApiClient(
       new Request("https://web.kryno.test/login")
     )
-    const response = await client.loginGymUser({
+    const login = await client.loginGymUser({
       email: "member@test.dev",
       password: "correct horse battery staple",
     })
@@ -64,6 +62,7 @@ describe("Kryno API client", () => {
         password: "correct horse battery staple",
       },
     ])
-    expect(response.setCookieHeaders).toEqual([setCookie])
+    expect(login.session.id).toBe("gym-user-session-1")
+    expect(login.user.email).toBe("member@test.dev")
   })
 })

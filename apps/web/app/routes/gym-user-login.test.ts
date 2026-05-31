@@ -12,6 +12,12 @@ const actionRequest = (body: URLSearchParams) =>
     body,
   })
 
+const localActionRequest = (body: URLSearchParams) =>
+  new Request("http://localhost:5173/login", {
+    method: "POST",
+    body,
+  })
+
 const actionArgs = (request: Request) =>
   ({
     request,
@@ -22,7 +28,19 @@ const actionArgs = (request: Request) =>
 const noopClient: KrynoApiClient = {
   signUpGymUser: async () => undefined,
   verifyGymUserEmail: async () => undefined,
-  loginGymUser: async () => ({ setCookieHeaders: [] }),
+  loginGymUser: async () => ({
+    user: {
+      id: "gym-user-1",
+      email: "member@test.dev",
+      displayName: "Member Test",
+      emailVerified: true,
+    },
+    session: {
+      id: "gym-user-session-1",
+      userId: "gym-user-1",
+      active: true,
+    },
+  }),
 }
 
 describe("gym-user login action", () => {
@@ -100,16 +118,24 @@ describe("gym-user login action", () => {
     expect(result.formError).toContain("verify your email")
   })
 
-  it("redirects successful logins to the app and forwards API cookies", async () => {
+  it("redirects successful logins to the app with a web-owned session cookie", async () => {
     const calls: Array<Parameters<KrynoApiClient["loginGymUser"]>[0]> = []
     const client: KrynoApiClient = {
       ...noopClient,
       loginGymUser: async (input) => {
         calls.push(input)
         return {
-          setCookieHeaders: [
-            "kryno_gym_user_session=gym-user-session-1; Path=/; HttpOnly",
-          ],
+          user: {
+            id: "gym-user-1",
+            email: "member@test.dev",
+            displayName: "Member Test",
+            emailVerified: true,
+          },
+          session: {
+            id: "gym-user-session-1",
+            userId: "gym-user-1",
+            active: true,
+          },
         }
       },
     }
@@ -135,7 +161,26 @@ describe("gym-user login action", () => {
     expect(response.status).toBe(302)
     expect(response.headers.get("Location")).toBe("/app")
     expect(response.headers.getSetCookie()).toEqual([
-      "kryno_gym_user_session=gym-user-session-1; Path=/; HttpOnly",
+      "kryno_gym_user_session=gym-user-session-1; Path=/; HttpOnly; SameSite=Lax; Secure",
+    ])
+  })
+
+  it("does not mark the session cookie secure for local HTTP development", async () => {
+    const action = createGymUserLoginAction(async () => noopClient)
+
+    const response = (await action(
+      actionArgs(
+        localActionRequest(
+          new URLSearchParams({
+            email: "member@test.dev",
+            password: "correct horse battery staple",
+          })
+        )
+      )
+    )) as Response
+
+    expect(response.headers.getSetCookie()).toEqual([
+      "kryno_gym_user_session=gym-user-session-1; Path=/; HttpOnly; SameSite=Lax",
     ])
   })
 })

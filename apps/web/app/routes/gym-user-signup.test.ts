@@ -22,7 +22,19 @@ const actionArgs = (request: Request) =>
 const noopClient: KrynoApiClient = {
   signUpGymUser: async () => undefined,
   verifyGymUserEmail: async () => undefined,
-  loginGymUser: async () => ({ setCookieHeaders: [] }),
+  loginGymUser: async () => ({
+    user: {
+      id: "gym-user-1",
+      email: "member@test.dev",
+      displayName: "Member Test",
+      emailVerified: true,
+    },
+    session: {
+      id: "gym-user-session-1",
+      userId: "gym-user-1",
+      active: true,
+    },
+  }),
 }
 
 describe("gym-user signup action", () => {
