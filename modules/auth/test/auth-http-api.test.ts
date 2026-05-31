@@ -172,6 +172,18 @@ describe("Auth HTTP API contracts", () => {
       successes: [204],
       errors: [401],
     })
+    expect(endpoints.get("currentSystemAdminSession")).toEqual({
+      method: "GET",
+      path: "/auth/system-admin/session",
+      successes: [200],
+      errors: [401],
+    })
+    expect(endpoints.get("logoutSystemAdmin")).toEqual({
+      method: "DELETE",
+      path: "/auth/system-admin/session",
+      successes: [204],
+      errors: [401],
+    })
     expect(endpoints.get("createGymStaffInvitation")).toEqual({
       method: "POST",
       path: "/auth/gyms/staff-invitations",
@@ -181,6 +193,9 @@ describe("Auth HTTP API contracts", () => {
     expect(
       [...endpoints.values()].map((endpoint) => endpoint.path)
     ).not.toContain("/auth/gym-users/sessions/:sessionId")
+    expect(
+      [...endpoints.values()].map((endpoint) => endpoint.path)
+    ).not.toContain("/auth/system-admin/sessions/:sessionId")
   })
 
   it("declares the intended session audience for protected endpoints", () => {

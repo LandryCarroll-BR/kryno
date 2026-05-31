@@ -8,7 +8,6 @@ import {
   CurrentSystemAdminSessionSuccess,
   LoginSystemAdminInput,
   SystemAdminLoginSuccess,
-  SystemAdminSessionId,
 } from "../../domain/system-admin.ts"
 
 export const SystemAdminInvalidCredentialsUnauthorized =
@@ -29,9 +28,8 @@ export const LoginSystemAdminEndpoint = HttpApiEndpoint.post(
 
 export const CurrentSystemAdminSessionEndpoint = HttpApiEndpoint.get(
   "currentSystemAdminSession",
-  "/system-admin/sessions/:sessionId",
+  "/system-admin/session",
   {
-    params: { sessionId: SystemAdminSessionId },
     success: CurrentSystemAdminSessionSuccess,
     error: SystemAdminSessionInvalidUnauthorized,
   }
@@ -39,9 +37,8 @@ export const CurrentSystemAdminSessionEndpoint = HttpApiEndpoint.get(
 
 export const LogoutSystemAdminEndpoint = HttpApiEndpoint.delete(
   "logoutSystemAdmin",
-  "/system-admin/sessions/:sessionId",
+  "/system-admin/session",
   {
-    params: { sessionId: SystemAdminSessionId },
     error: SystemAdminSessionInvalidUnauthorized,
   }
 )

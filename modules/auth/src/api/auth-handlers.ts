@@ -1,7 +1,10 @@
 import { Effect } from "effect"
 import { HttpApiBuilder, HttpApiGroup } from "effect/unstable/httpapi"
 
-import { CurrentGymUserSessionId } from "./auth-authorization.ts"
+import {
+  CurrentGymUserSessionId,
+  CurrentSystemAdminSessionId,
+} from "./auth-authorization.ts"
 import { AuthHttpGroup } from "./auth-group.ts"
 import { Auth } from "../auth.ts"
 
@@ -73,9 +76,17 @@ export const buildAuthHttpHandlers = (
     .handle("loginSystemAdmin", ({ payload }) =>
       Auth.use((auth) => auth.loginSystemAdmin(payload))
     )
-    .handle("currentSystemAdminSession", ({ params }) =>
-      Auth.use((auth) => auth.currentSystemAdminSession(params))
+    .handle("currentSystemAdminSession", () =>
+      CurrentSystemAdminSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) => auth.currentSystemAdminSession({ sessionId }))
+        )
+      )
     )
-    .handle("logoutSystemAdmin", ({ params }) =>
-      Auth.use((auth) => auth.logoutSystemAdmin(params))
+    .handle("logoutSystemAdmin", () =>
+      CurrentSystemAdminSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) => auth.logoutSystemAdmin({ sessionId }))
+        )
+      )
     )

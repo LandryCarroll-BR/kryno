@@ -14,6 +14,11 @@ export class CurrentGymUserSessionId extends Context.Service<
   GymUserSessionId
 >()("@workspace/auth/CurrentGymUserSessionId") {}
 
+export class CurrentSystemAdminSessionId extends Context.Service<
+  CurrentSystemAdminSessionId,
+  SystemAdminSessionId
+>()("@workspace/auth/CurrentSystemAdminSessionId") {}
+
 export class GymUserSessionRequired extends HttpApiMiddleware.Service<
   GymUserSessionRequired,
   {
@@ -30,6 +35,7 @@ export class GymUserSessionRequired extends HttpApiMiddleware.Service<
 export class SystemAdminSessionRequired extends HttpApiMiddleware.Service<
   SystemAdminSessionRequired,
   {
+    provides: CurrentSystemAdminSessionId
     requires: Auth
   }
 >()("@workspace/auth/SystemAdminSessionRequired", {
@@ -76,14 +82,19 @@ export const SystemAdminSessionRequiredLive = Layer.succeed(
     bearer: (httpEffect, { credential }) =>
       Effect.gen(function* () {
         const sessionId = yield* bearerSessionId(credential)
+        const systemAdminSessionId = SystemAdminSessionId.make(sessionId)
 
         yield* Auth.use((auth) =>
           auth.currentSystemAdminSession({
-            sessionId: SystemAdminSessionId.make(sessionId),
+            sessionId: systemAdminSessionId,
           })
         ).pipe(Effect.mapError(() => new HttpApiError.Unauthorized({})))
 
-        return yield* httpEffect
+        return yield* Effect.provideService(
+          httpEffect,
+          CurrentSystemAdminSessionId,
+          systemAdminSessionId
+        )
       }),
   }
 )

@@ -1,8 +1,13 @@
-import { describe, expect, it } from "@effect/vitest"
+import { beforeAll, describe, expect, it } from "@effect/vitest"
 import { HttpApi } from "effect/unstable/httpapi"
 
 import { KrynoHttpApi } from "@workspace/api"
 import { handler } from "../src/handler.ts"
+
+const systemAdminCredentials = {
+  email: "admin-audience@example.com",
+  password: "correct horse battery staple",
+} as const
 
 const postJson = (path: string, body: unknown, bearer?: string) =>
   handler(
@@ -37,6 +42,10 @@ const deleteRequest = (path: string, bearer?: string) =>
   )
 
 describe("Kryno API app", () => {
+  beforeAll(async () => {
+    await postJson("/api/auth/system-admin/bootstrap", systemAdminCredentials)
+  })
+
   it("serves Auth routes through the composed /api contract", async () => {
     const response = await postJson("/api/auth/gym-users/email-reservations", {
       email: "member@example.com",
@@ -62,14 +71,10 @@ describe("Kryno API app", () => {
   })
 
   it("rejects a system-admin session on gym-user protected routes", async () => {
-    await postJson("/api/auth/system-admin/bootstrap", {
-      email: "admin-audience@example.com",
-      password: "correct horse battery staple",
-    })
-    const loginResponse = await postJson("/api/auth/system-admin/sessions", {
-      email: "admin-audience@example.com",
-      password: "correct horse battery staple",
-    })
+    const loginResponse = await postJson(
+      "/api/auth/system-admin/sessions",
+      systemAdminCredentials
+    )
     const login = await loginResponse.json()
 
     const response = await postJson(
@@ -147,6 +152,38 @@ describe("Kryno API app", () => {
 
     const afterLogoutResponse = await get(
       "/api/auth/gym-users/session",
+      login.session.id
+    )
+    expect(afterLogoutResponse.status).toBe(401)
+    expect(await afterLogoutResponse.text()).toBe("")
+  })
+
+  it("resolves and logs out the current system-admin session from bearer authentication", async () => {
+    const loginResponse = await postJson(
+      "/api/auth/system-admin/sessions",
+      systemAdminCredentials
+    )
+    const login = await loginResponse.json()
+
+    const currentResponse = await get(
+      "/api/auth/system-admin/session",
+      login.session.id
+    )
+    expect(currentResponse.status).toBe(200)
+    await expect(currentResponse.json()).resolves.toMatchObject({
+      session: {
+        id: login.session.id,
+      },
+    })
+
+    const logoutResponse = await deleteRequest(
+      "/api/auth/system-admin/session",
+      login.session.id
+    )
+    expect(logoutResponse.status).toBe(204)
+
+    const afterLogoutResponse = await get(
+      "/api/auth/system-admin/session",
       login.session.id
     )
     expect(afterLogoutResponse.status).toBe(401)
