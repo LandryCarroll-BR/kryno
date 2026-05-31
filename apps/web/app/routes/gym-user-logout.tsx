@@ -1,11 +1,16 @@
 import { redirect } from "react-router"
+import { Effect } from "effect"
 
 import type { Route } from "./+types/gym-user-logout"
 import {
   readGymUserSessionCookie,
   serializeExpiredGymUserSessionCookie,
 } from "../lib/gym-user-session-cookie"
-import { getKrynoApiClient, type KrynoApiClient } from "../lib/kryno-api-client"
+import {
+  getKrynoApiClient,
+  type KrynoApiEffect,
+  type KrynoApiClientGetter,
+} from "../lib/kryno-api-client"
 
 const isExpectedLogoutFailure = (error: unknown) =>
   typeof error === "object" &&
@@ -21,7 +26,13 @@ const redirectToLoginWithExpiredSessionCookie = (request: Request) => {
 }
 
 export const createGymUserLogoutAction =
-  (getClient: (request: Request) => Promise<KrynoApiClient>) =>
+  (
+    getClient: KrynoApiClientGetter<{
+      readonly auth: {
+        readonly logoutGymUser: () => KrynoApiEffect
+      }
+    }>
+  ) =>
   async ({ request }: Route.ActionArgs): Promise<Response> => {
     const sessionId = readGymUserSessionCookie(request)
 
@@ -29,10 +40,10 @@ export const createGymUserLogoutAction =
       return redirectToLoginWithExpiredSessionCookie(request)
     }
 
-    const client = await getClient(request)
+    const client = await getClient({ sessionId })
 
     try {
-      await client.logoutGymUser(sessionId)
+      await Effect.runPromise(client.auth.logoutGymUser())
     } catch (error) {
       if (!isExpectedLogoutFailure(error)) {
         throw error

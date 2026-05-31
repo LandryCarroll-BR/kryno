@@ -15,18 +15,14 @@ import {
   GymStaffInvitationCreated,
 } from "../../domain/gym.ts"
 
-export class CreateGymStaffInvitationPayload extends Schema.Class<CreateGymStaffInvitationPayload>(
-  "CreateGymStaffInvitationPayload"
-)({
+export const CreateGymStaffInvitationPayload = Schema.Struct({
   gymId: GymId,
   email: Schema.String,
-}) {}
+})
 
-export class AcceptGymStaffInvitationPayload extends Schema.Class<AcceptGymStaffInvitationPayload>(
-  "AcceptGymStaffInvitationPayload"
-)({
+export const AcceptGymStaffInvitationPayload = Schema.Struct({
   token: Schema.String,
-}) {}
+})
 
 export const GymStaffInvitationCreatedCreated =
   GymStaffInvitationCreated.pipe(HttpApiSchema.status(201))

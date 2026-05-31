@@ -7,6 +7,7 @@ import {
   useNavigation,
   useSearchParams,
 } from "react-router"
+import { Effect } from "effect"
 
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
@@ -20,9 +21,16 @@ import {
 import { Input } from "@workspace/ui/components/input"
 
 import type { Route } from "./+types/manual-email-verification"
-import { getKrynoApiClient, type KrynoApiClient } from "../lib/kryno-api-client"
+import {
+  getKrynoApiClient,
+  type KrynoApiClient,
+  type KrynoApiEffect,
+} from "../lib/kryno-api-client"
 
 type FieldName = "token"
+type VerifyGymUserEmailRequest = Parameters<
+  KrynoApiClient["auth"]["verifyGymUserEmail"]
+>[0]
 
 export interface ManualEmailVerificationActionData {
   readonly status: "error"
@@ -58,10 +66,20 @@ const isExpectedVerificationFailure = (error: unknown) =>
     error._tag === "GymUserNotFound")
 
 export const createManualEmailVerificationAction =
-  (getClient: (request: Request) => Promise<KrynoApiClient>) =>
+  (
+    getClient: () => Promise<{
+      readonly auth: {
+        readonly verifyGymUserEmail: (
+          request: VerifyGymUserEmailRequest
+        ) => KrynoApiEffect
+      }
+    }>
+  ) =>
   async ({
     request,
-  }: Route.ActionArgs): Promise<Response | ManualEmailVerificationActionData> => {
+  }: Route.ActionArgs): Promise<
+    Response | ManualEmailVerificationActionData
+  > => {
     const formData = await request.formData()
     const input = {
       token: readFormString(formData, "token"),
@@ -76,10 +94,12 @@ export const createManualEmailVerificationAction =
       }
     }
 
-    const client = await getClient(request)
+    const client = await getClient()
 
     try {
-      await client.verifyGymUserEmail(input)
+      await Effect.runPromise(
+        client.auth.verifyGymUserEmail({ payload: input })
+      )
     } catch (error) {
       if (isExpectedVerificationFailure(error)) {
         return {

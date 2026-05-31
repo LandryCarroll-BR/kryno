@@ -75,9 +75,6 @@ importers:
       '@workspace/api':
         specifier: workspace:*
         version: link:../../modules/api
-      '@workspace/auth':
-        specifier: workspace:*
-        version: link:../../modules/auth
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui

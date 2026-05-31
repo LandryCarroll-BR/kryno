@@ -1,10 +1,21 @@
 import { describe, expect, it } from "vitest"
+import { Effect } from "effect"
 
 import {
   createGymUserSignupAction,
   type SignupActionData,
 } from "./gym-user-signup"
-import type { KrynoApiClient } from "../lib/kryno-api-client"
+import type { KrynoApiClient, KrynoApiEffect } from "../lib/kryno-api-client"
+
+type SignupApiClient = {
+  readonly auth: {
+    readonly signUpGymUser: (request: SignUpGymUserRequest) => KrynoApiEffect
+  }
+}
+
+type SignUpGymUserRequest = Parameters<
+  KrynoApiClient["auth"]["signUpGymUser"]
+>[0]
 
 const actionRequest = (body: URLSearchParams) =>
   new Request("https://kryno.test/signup", {
@@ -19,37 +30,10 @@ const actionArgs = (request: Request) =>
     context: {},
   }) as never
 
-const noopClient: KrynoApiClient = {
-  signUpGymUser: async () => undefined,
-  verifyGymUserEmail: async () => undefined,
-  loginGymUser: async () => ({
-    user: {
-      id: "gym-user-1",
-      email: "member@test.dev",
-      displayName: "Member Test",
-      emailVerified: true,
-    },
-    session: {
-      id: "gym-user-session-1",
-      userId: "gym-user-1",
-      active: true,
-    },
-  }),
-  currentGymUserSession: async () => ({
-    user: {
-      id: "gym-user-1",
-      email: "member@test.dev",
-      displayName: "Member Test",
-      emailVerified: true,
-    },
-    session: {
-      id: "gym-user-session-1",
-      userId: "gym-user-1",
-      active: true,
-    },
-    activeAffiliations: [],
-  }),
-  logoutGymUser: async () => undefined,
+const noopClient: SignupApiClient = {
+  auth: {
+    signUpGymUser: () => Effect.void,
+  },
 }
 
 describe("gym-user signup action", () => {
@@ -82,10 +66,13 @@ describe("gym-user signup action", () => {
   })
 
   it("returns duplicate email failures as inline action data", async () => {
-    const client: KrynoApiClient = {
-      ...noopClient,
-      signUpGymUser: async () => {
-        throw { _tag: "GymUserEmailAlreadyReserved", email: "taken@test.dev" }
+    const client: SignupApiClient = {
+      auth: {
+        signUpGymUser: () =>
+          Effect.fail({
+            _tag: "GymUserEmailAlreadyReserved",
+            email: "taken@test.dev",
+          }),
       },
     }
     const action = createGymUserSignupAction(async () => client)
@@ -108,10 +95,9 @@ describe("gym-user signup action", () => {
 
   it("does not swallow unexpected API failures", async () => {
     const unexpected = new Error("API server unavailable")
-    const client: KrynoApiClient = {
-      ...noopClient,
-      signUpGymUser: async () => {
-        throw unexpected
+    const client: SignupApiClient = {
+      auth: {
+        signUpGymUser: () => Effect.fail(unexpected),
       },
     }
     const action = createGymUserSignupAction(async () => client)
@@ -132,11 +118,13 @@ describe("gym-user signup action", () => {
   })
 
   it("redirects successful signups to manual email verification", async () => {
-    const calls: Array<Parameters<KrynoApiClient["signUpGymUser"]>[0]> = []
-    const client: KrynoApiClient = {
-      ...noopClient,
-      signUpGymUser: async (input) => {
-        calls.push(input)
+    const calls: SignUpGymUserRequest[] = []
+    const client: SignupApiClient = {
+      auth: {
+        signUpGymUser: (request) => {
+          calls.push(request)
+          return Effect.void
+        },
       },
     }
     const action = createGymUserSignupAction(async () => client)
@@ -153,7 +141,7 @@ describe("gym-user signup action", () => {
       )
     )) as Response
 
-    expect(calls).toEqual([
+    expect(calls.map((call) => call.payload)).toEqual([
       {
         email: "new@test.dev",
         password: "correct horse battery staple",

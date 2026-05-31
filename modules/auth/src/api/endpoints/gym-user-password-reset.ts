@@ -1,3 +1,4 @@
+import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiSchema } from "effect/unstable/httpapi"
 
 import {
@@ -8,11 +9,18 @@ import {
   GymUserPasswordResetUnknownEmail,
 } from "../../domain/errors.ts"
 import {
-  CompleteGymUserPasswordResetInput,
   GymUserPasswordResetCompleted,
   GymUserPasswordResetRequested,
-  RequestGymUserPasswordResetInput,
 } from "../../domain/gym-user.ts"
+
+export const RequestGymUserPasswordResetPayload = Schema.Struct({
+  email: Schema.String,
+})
+
+export const CompleteGymUserPasswordResetPayload = Schema.Struct({
+  token: Schema.String,
+  newPassword: Schema.String,
+})
 
 export const GymUserPasswordResetUnknownEmailNotFound =
   GymUserPasswordResetUnknownEmail.pipe(HttpApiSchema.status(404))
@@ -34,7 +42,7 @@ export const RequestGymUserPasswordResetEndpoint = HttpApiEndpoint.post(
   "requestGymUserPasswordReset",
   "/gym-users/password-resets",
   {
-    payload: RequestGymUserPasswordResetInput,
+    payload: RequestGymUserPasswordResetPayload,
     success: GymUserPasswordResetRequested,
     error: GymUserPasswordResetUnknownEmailNotFound,
   }
@@ -44,7 +52,7 @@ export const CompleteGymUserPasswordResetEndpoint = HttpApiEndpoint.post(
   "completeGymUserPasswordReset",
   "/gym-users/password-resets/completions",
   {
-    payload: CompleteGymUserPasswordResetInput,
+    payload: CompleteGymUserPasswordResetPayload,
     success: GymUserPasswordResetCompleted,
     error: [
       GymUserPasswordResetTokenInvalidBadRequest,

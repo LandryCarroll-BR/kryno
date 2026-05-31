@@ -1,10 +1,23 @@
 import { describe, expect, it } from "vitest"
+import { Effect } from "effect"
 
 import {
   createManualEmailVerificationAction,
   type ManualEmailVerificationActionData,
 } from "./manual-email-verification"
-import type { KrynoApiClient } from "../lib/kryno-api-client"
+import type { KrynoApiClient, KrynoApiEffect } from "../lib/kryno-api-client"
+
+type VerificationApiClient = {
+  readonly auth: {
+    readonly verifyGymUserEmail: (
+      request: VerifyGymUserEmailRequest
+    ) => KrynoApiEffect
+  }
+}
+
+type VerifyGymUserEmailRequest = Parameters<
+  KrynoApiClient["auth"]["verifyGymUserEmail"]
+>[0]
 
 const actionRequest = (body: URLSearchParams) =>
   new Request("https://kryno.test/verify-email", {
@@ -19,37 +32,10 @@ const actionArgs = (request: Request) =>
     context: {},
   }) as never
 
-const noopClient: KrynoApiClient = {
-  signUpGymUser: async () => undefined,
-  verifyGymUserEmail: async () => undefined,
-  loginGymUser: async () => ({
-    user: {
-      id: "gym-user-1",
-      email: "member@test.dev",
-      displayName: "Member Test",
-      emailVerified: true,
-    },
-    session: {
-      id: "gym-user-session-1",
-      userId: "gym-user-1",
-      active: true,
-    },
-  }),
-  currentGymUserSession: async () => ({
-    user: {
-      id: "gym-user-1",
-      email: "member@test.dev",
-      displayName: "Member Test",
-      emailVerified: true,
-    },
-    session: {
-      id: "gym-user-session-1",
-      userId: "gym-user-1",
-      active: true,
-    },
-    activeAffiliations: [],
-  }),
-  logoutGymUser: async () => undefined,
+const noopClient: VerificationApiClient = {
+  auth: {
+    verifyGymUserEmail: () => Effect.void,
+  },
 }
 
 describe("manual email verification action", () => {
@@ -72,10 +58,13 @@ describe("manual email verification action", () => {
   })
 
   it("returns invalid verification token failures as inline action data", async () => {
-    const client: KrynoApiClient = {
-      ...noopClient,
-      verifyGymUserEmail: async () => {
-        throw { _tag: "GymUserEmailVerificationInvalid", token: "missing" }
+    const client: VerificationApiClient = {
+      auth: {
+        verifyGymUserEmail: () =>
+          Effect.fail({
+            _tag: "GymUserEmailVerificationInvalid",
+            token: "missing",
+          }),
       },
     }
     const action = createManualEmailVerificationAction(async () => client)
@@ -90,10 +79,9 @@ describe("manual email verification action", () => {
 
   it("does not swallow unexpected API failures", async () => {
     const unexpected = new Error("API server unavailable")
-    const client: KrynoApiClient = {
-      ...noopClient,
-      verifyGymUserEmail: async () => {
-        throw unexpected
+    const client: VerificationApiClient = {
+      auth: {
+        verifyGymUserEmail: () => Effect.fail(unexpected),
       },
     }
     const action = createManualEmailVerificationAction(async () => client)
@@ -112,11 +100,13 @@ describe("manual email verification action", () => {
   })
 
   it("redirects successful verification to gym-user login", async () => {
-    const calls: Array<Parameters<KrynoApiClient["verifyGymUserEmail"]>[0]> = []
-    const client: KrynoApiClient = {
-      ...noopClient,
-      verifyGymUserEmail: async (input) => {
-        calls.push(input)
+    const calls: VerifyGymUserEmailRequest[] = []
+    const client: VerificationApiClient = {
+      auth: {
+        verifyGymUserEmail: (request) => {
+          calls.push(request)
+          return Effect.void
+        },
       },
     }
     const action = createManualEmailVerificationAction(async () => client)
@@ -131,7 +121,9 @@ describe("manual email verification action", () => {
       )
     )) as Response
 
-    expect(calls).toEqual([{ token: "gym-user-email-verification-token-1" }])
+    expect(calls.map((call) => call.payload)).toEqual([
+      { token: "gym-user-email-verification-token-1" },
+    ])
     expect(response.status).toBe(302)
     expect(response.headers.get("Location")).toBe("/login")
   })

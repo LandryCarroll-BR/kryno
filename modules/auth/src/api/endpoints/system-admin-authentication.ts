@@ -1,3 +1,4 @@
+import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiSchema } from "effect/unstable/httpapi"
 
 import {
@@ -6,9 +7,13 @@ import {
 } from "../../domain/errors.ts"
 import {
   CurrentSystemAdminSessionSuccess,
-  LoginSystemAdminInput,
   SystemAdminLoginSuccess,
 } from "../../domain/system-admin.ts"
+
+export const LoginSystemAdminPayload = Schema.Struct({
+  email: Schema.String,
+  password: Schema.String,
+})
 
 export const SystemAdminInvalidCredentialsUnauthorized =
   SystemAdminInvalidCredentials.pipe(HttpApiSchema.status(401))
@@ -20,7 +25,7 @@ export const LoginSystemAdminEndpoint = HttpApiEndpoint.post(
   "loginSystemAdmin",
   "/system-admin/sessions",
   {
-    payload: LoginSystemAdminInput,
+    payload: LoginSystemAdminPayload,
     success: SystemAdminLoginSuccess,
     error: SystemAdminInvalidCredentialsUnauthorized,
   }

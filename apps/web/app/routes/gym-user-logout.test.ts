@@ -1,7 +1,17 @@
 import { describe, expect, it } from "vitest"
+import { Effect } from "effect"
 
 import { createGymUserLogoutAction } from "./gym-user-logout"
-import type { KrynoApiClient } from "../lib/kryno-api-client"
+import type {
+  KrynoApiEffect,
+  KrynoApiClientOptions,
+} from "../lib/kryno-api-client"
+
+type LogoutApiClient = {
+  readonly auth: {
+    readonly logoutGymUser: () => KrynoApiEffect
+  }
+}
 
 const actionArgs = (request: Request) =>
   ({
@@ -10,49 +20,24 @@ const actionArgs = (request: Request) =>
     context: {},
   }) as never
 
-const noopClient: KrynoApiClient = {
-  signUpGymUser: async () => undefined,
-  verifyGymUserEmail: async () => undefined,
-  loginGymUser: async () => ({
-    user: {
-      id: "gym-user-1",
-      email: "member@test.dev",
-      displayName: "Member Test",
-      emailVerified: true,
-    },
-    session: {
-      id: "gym-user-session-1",
-      userId: "gym-user-1",
-      active: true,
-    },
-  }),
-  currentGymUserSession: async () => ({
-    user: {
-      id: "gym-user-1",
-      email: "member@test.dev",
-      displayName: "Member Test",
-      emailVerified: true,
-    },
-    session: {
-      id: "gym-user-session-1",
-      userId: "gym-user-1",
-      active: true,
-    },
-    activeAffiliations: [],
-  }),
-  logoutGymUser: async () => undefined,
+const noopClient: LogoutApiClient = {
+  auth: {
+    logoutGymUser: () => Effect.void,
+  },
 }
 
 describe("gym-user logout action", () => {
   it("logs out the bearer session, clears the web cookie, and redirects to login", async () => {
-    const sessions: string[] = []
-    const client: KrynoApiClient = {
-      ...noopClient,
-      logoutGymUser: async (sessionId) => {
-        sessions.push(sessionId)
+    const clientOptions: KrynoApiClientOptions[] = []
+    const client: LogoutApiClient = {
+      auth: {
+        logoutGymUser: () => Effect.void,
       },
     }
-    const action = createGymUserLogoutAction(async () => client)
+    const action = createGymUserLogoutAction(async (options) => {
+      clientOptions.push(options ?? {})
+      return client
+    })
 
     const response = (await action(
       actionArgs(
@@ -66,7 +51,7 @@ describe("gym-user logout action", () => {
       )
     )) as Response
 
-    expect(sessions).toEqual(["gym-user-session-1"])
+    expect(clientOptions).toEqual([{ sessionId: "gym-user-session-1" }])
     expect(response.status).toBe(302)
     expect(response.headers.get("Location")).toBe("/login")
     expect(response.headers.getSetCookie()).toEqual([
@@ -95,9 +80,12 @@ describe("gym-user logout action", () => {
 
   it("still clears the web cookie when the server session is already invalid", async () => {
     const action = createGymUserLogoutAction(async () => ({
-      ...noopClient,
-      logoutGymUser: async () => {
-        throw { _tag: "GymUserSessionInvalid", sessionId: "expired-session" }
+      auth: {
+        logoutGymUser: () =>
+          Effect.fail({
+            _tag: "GymUserSessionInvalid",
+            sessionId: "expired-session",
+          }),
       },
     }))
 

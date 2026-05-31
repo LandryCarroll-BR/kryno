@@ -20,9 +20,21 @@ import { Input } from "@workspace/ui/components/input"
 
 import type { Route } from "./+types/gym-user-login"
 import { serializeGymUserSessionCookie } from "../lib/gym-user-session-cookie"
-import { getKrynoApiClient, type KrynoApiClient } from "../lib/kryno-api-client"
+import {
+  getKrynoApiClient,
+  type KrynoApiClient,
+  type KrynoApiEffect,
+} from "../lib/kryno-api-client"
+import { Effect } from "effect"
 
 type FieldName = "email" | "password"
+type LoginGymUserRequest = Parameters<KrynoApiClient["auth"]["loginGymUser"]>[0]
+
+interface LoginGymUserSuccess {
+  readonly session: {
+    readonly id: string
+  }
+}
 
 export interface LoginActionData {
   readonly status: "error"
@@ -34,7 +46,17 @@ const failureMessages = {
   invalidInput: "Check the highlighted fields and try again.",
   invalidCredentials: "That email and password combination did not work.",
   unverified: "Please verify your email before signing in.",
+  unknown: "An unexpected error occurred. Please try again later.",
 }
+
+const loginActionError = (
+  formError: string,
+  fieldErrors: LoginActionData["fieldErrors"] = {}
+): LoginActionData => ({
+  status: "error",
+  formError,
+  fieldErrors,
+})
 
 const readFormString = (formData: FormData, name: FieldName) => {
   const value = formData.get(name)
@@ -57,21 +79,6 @@ const validateLogin = (input: Record<FieldName, string>) => {
   return fieldErrors
 }
 
-const isExpectedLoginFailure = (error: unknown) =>
-  typeof error === "object" &&
-  error !== null &&
-  "_tag" in error &&
-  (error._tag === "GymUserInvalidCredentials" ||
-    error._tag === "GymUserUnverified")
-
-const loginFailureMessage = (error: unknown) =>
-  typeof error === "object" &&
-  error !== null &&
-  "_tag" in error &&
-  error._tag === "GymUserUnverified"
-    ? failureMessages.unverified
-    : failureMessages.invalidCredentials
-
 const redirectToAppWithSessionCookie = (
   sessionId: string,
   request: Request
@@ -86,7 +93,15 @@ const redirectToAppWithSessionCookie = (
 }
 
 export const createGymUserLoginAction =
-  (getClient: (request: Request) => Promise<KrynoApiClient>) =>
+  (
+    getClient: () => Promise<{
+      readonly auth: {
+        readonly loginGymUser: (
+          request: LoginGymUserRequest
+        ) => KrynoApiEffect<LoginGymUserSuccess>
+      }
+    }>
+  ) =>
   async ({
     request,
   }: Route.ActionArgs): Promise<Response | LoginActionData> => {
@@ -105,21 +120,26 @@ export const createGymUserLoginAction =
       }
     }
 
-    const client = await getClient(request)
+    const client = await getClient()
 
-    try {
-      const response = await client.loginGymUser(input)
-      return redirectToAppWithSessionCookie(response.session.id, request)
-    } catch (error) {
-      if (isExpectedLoginFailure(error)) {
-        return {
-          status: "error",
-          formError: loginFailureMessage(error),
-        }
-      }
-
-      throw error
-    }
+    return await client.auth.loginGymUser({ payload: input }).pipe(
+      Effect.andThen((response) =>
+        Effect.succeed(
+          redirectToAppWithSessionCookie(response.session.id, request)
+        )
+      ),
+      Effect.catchTags({
+        GymUserInvalidCredentials: () =>
+          Effect.succeed(loginActionError(failureMessages.invalidCredentials)),
+        GymUserUnverified: () =>
+          Effect.succeed(loginActionError(failureMessages.unverified)),
+        HttpClientError: () =>
+          Effect.succeed(loginActionError(failureMessages.unknown)),
+        SchemaError: () =>
+          Effect.succeed(loginActionError(failureMessages.invalidInput)),
+      }),
+      Effect.runPromise
+    )
   }
 
 export const action = createGymUserLoginAction(getKrynoApiClient)

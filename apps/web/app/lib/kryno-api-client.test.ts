@@ -8,6 +8,7 @@ import {
   it,
   vi,
 } from "vitest"
+import { Effect } from "effect"
 
 import { getKrynoApiClient } from "./kryno-api-client"
 
@@ -63,18 +64,16 @@ describe("Kryno API client", () => {
     }
     vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
 
-    const client = await getKrynoApiClient(
-      new Request("https://web.kryno.test/signup", {
-        headers: {
-          Cookie: "kryno_gym_user_session=web-session",
+    const client = await getKrynoApiClient()
+    await Effect.runPromise(
+      client.auth.signUpGymUser({
+        payload: {
+          email: "new@test.dev",
+          password: "correct horse battery staple",
+          displayName: "New User",
         },
       })
     )
-    await client.signUpGymUser({
-      email: "new@test.dev",
-      password: "correct horse battery staple",
-      displayName: "New User",
-    })
 
     expect(requests).toHaveLength(1)
     expect(requests[0]?.method).toBe("POST")
@@ -112,16 +111,14 @@ describe("Kryno API client", () => {
     }
     vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
 
-    const client = await getKrynoApiClient(
-      new Request("https://web.kryno.test/verify-email", {
-        headers: {
-          Cookie: "kryno_gym_user_session=web-session",
+    const client = await getKrynoApiClient()
+    await Effect.runPromise(
+      client.auth.verifyGymUserEmail({
+        payload: {
+          token: "gym-user-email-verification-token-1",
         },
       })
     )
-    await client.verifyGymUserEmail({
-      token: "gym-user-email-verification-token-1",
-    })
 
     expect(requests).toHaveLength(1)
     expect(requests[0]?.method).toBe("POST")
@@ -170,13 +167,15 @@ describe("Kryno API client", () => {
     }
     vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
 
-    const client = await getKrynoApiClient(
-      new Request("https://web.kryno.test/login")
+    const client = await getKrynoApiClient()
+    const login = await Effect.runPromise(
+      client.auth.loginGymUser({
+        payload: {
+          email: "member@test.dev",
+          password: "correct horse battery staple",
+        },
+      })
     )
-    const login = await client.loginGymUser({
-      email: "member@test.dev",
-      password: "correct horse battery staple",
-    })
 
     expect(requests).toHaveLength(1)
     expect(requests[0]?.url).toBe(
@@ -216,14 +215,10 @@ describe("Kryno API client", () => {
     }
     vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
 
-    const client = await getKrynoApiClient(
-      new Request("https://web.kryno.test/app", {
-        headers: {
-          Cookie: "kryno_gym_user_session=gym-user-session-1",
-        },
-      })
-    )
-    const current = await client.currentGymUserSession("gym-user-session-1")
+    const client = await getKrynoApiClient({
+      sessionId: "gym-user-session-1",
+    })
+    const current = await Effect.runPromise(client.auth.currentGymUserSession())
 
     expect(requests).toHaveLength(1)
     expect(requests[0]?.url).toBe(
@@ -247,14 +242,10 @@ describe("Kryno API client", () => {
     }
     vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
 
-    const client = await getKrynoApiClient(
-      new Request("https://web.kryno.test/logout", {
-        headers: {
-          Cookie: "kryno_gym_user_session=gym-user-session-1",
-        },
-      })
-    )
-    await client.logoutGymUser("gym-user-session-1")
+    const client = await getKrynoApiClient({
+      sessionId: "gym-user-session-1",
+    })
+    await Effect.runPromise(client.auth.logoutGymUser())
 
     expect(requests).toHaveLength(1)
     expect(requests[0]?.method).toBe("DELETE")
@@ -265,5 +256,11 @@ describe("Kryno API client", () => {
       "Bearer gym-user-session-1"
     )
     expect(requests[0]?.headers.get("Cookie")).toBeNull()
+  })
+
+  it("requires the API base URL to be configured", async () => {
+    await expect(getKrynoApiClient()).rejects.toThrow(
+      "KRYNO_API_BASE_URL must be configured"
+    )
   })
 })

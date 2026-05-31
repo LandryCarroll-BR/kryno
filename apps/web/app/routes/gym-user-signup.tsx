@@ -6,6 +6,7 @@ import {
   useActionData,
   useNavigation,
 } from "react-router"
+import { Effect } from "effect"
 
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
@@ -19,9 +20,16 @@ import {
 import { Input } from "@workspace/ui/components/input"
 
 import type { Route } from "./+types/gym-user-signup"
-import { getKrynoApiClient, type KrynoApiClient } from "../lib/kryno-api-client"
+import {
+  getKrynoApiClient,
+  type KrynoApiClient,
+  type KrynoApiEffect,
+} from "../lib/kryno-api-client"
 
 type FieldName = "email" | "password" | "displayName"
+type SignUpGymUserRequest = Parameters<
+  KrynoApiClient["auth"]["signUpGymUser"]
+>[0]
 
 export interface SignupActionData {
   readonly status: "error"
@@ -68,7 +76,15 @@ const isExpectedSignupFailure = (error: unknown) =>
   error._tag === "GymUserEmailAlreadyReserved"
 
 export const createGymUserSignupAction =
-  (getClient: (request: Request) => Promise<KrynoApiClient>) =>
+  (
+    getClient: () => Promise<{
+      readonly auth: {
+        readonly signUpGymUser: (
+          request: SignUpGymUserRequest
+        ) => KrynoApiEffect
+      }
+    }>
+  ) =>
   async ({
     request,
   }: Route.ActionArgs): Promise<Response | SignupActionData> => {
@@ -88,10 +104,10 @@ export const createGymUserSignupAction =
       }
     }
 
-    const client = await getClient(request)
+    const client = await getClient()
 
     try {
-      await client.signUpGymUser(input)
+      await Effect.runPromise(client.auth.signUpGymUser({ payload: input }))
     } catch (error) {
       if (isExpectedSignupFailure(error)) {
         return {

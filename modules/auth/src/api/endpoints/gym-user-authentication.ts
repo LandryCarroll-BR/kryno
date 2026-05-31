@@ -1,3 +1,4 @@
+import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiSchema } from "effect/unstable/httpapi"
 
 import {
@@ -8,8 +9,12 @@ import {
 import {
   CurrentGymUserSessionSuccess,
   GymUserLoginSuccess,
-  LoginGymUserInput,
 } from "../../domain/gym-user.ts"
+
+export const LoginGymUserPayload = Schema.Struct({
+  email: Schema.String,
+  password: Schema.String,
+})
 
 export const GymUserInvalidCredentialsUnauthorized =
   GymUserInvalidCredentials.pipe(HttpApiSchema.status(401))
@@ -18,19 +23,17 @@ export const GymUserUnverifiedForbidden = GymUserUnverified.pipe(
   HttpApiSchema.status(403)
 )
 
-export const GymUserSessionInvalidUnauthorized =
-  GymUserSessionInvalid.pipe(HttpApiSchema.status(401))
+export const GymUserSessionInvalidUnauthorized = GymUserSessionInvalid.pipe(
+  HttpApiSchema.status(401)
+)
 
 export const LoginGymUserEndpoint = HttpApiEndpoint.post(
   "loginGymUser",
   "/gym-users/sessions",
   {
-    payload: LoginGymUserInput,
+    payload: LoginGymUserPayload,
     success: GymUserLoginSuccess,
-    error: [
-      GymUserInvalidCredentialsUnauthorized,
-      GymUserUnverifiedForbidden,
-    ],
+    error: [GymUserInvalidCredentialsUnauthorized, GymUserUnverifiedForbidden],
   }
 )
 

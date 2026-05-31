@@ -1,10 +1,30 @@
 import { Form, redirect, useLoaderData } from "react-router"
+import { Effect } from "effect"
 
 import { Button } from "@workspace/ui/components/button"
 
 import type { Route } from "./+types/app"
 import { readGymUserSessionCookie } from "../lib/gym-user-session-cookie"
-import { getKrynoApiClient, type KrynoApiClient } from "../lib/kryno-api-client"
+import {
+  getKrynoApiClient,
+  type KrynoApiEffect,
+  type KrynoApiClientGetter,
+} from "../lib/kryno-api-client"
+
+interface CurrentGymUserSession {
+  readonly user: {
+    readonly id: string
+    readonly email: string
+    readonly displayName: string
+    readonly emailVerified: boolean
+  }
+  readonly session: {
+    readonly id: string
+    readonly userId: string
+    readonly active: boolean
+  }
+  readonly activeAffiliations: readonly unknown[]
+}
 
 const isExpectedSessionFailure = (error: unknown) =>
   typeof error === "object" &&
@@ -13,7 +33,13 @@ const isExpectedSessionFailure = (error: unknown) =>
   (error._tag === "GymUserSessionInvalid" || error._tag === "GymUserUnverified")
 
 export const createAppLoader =
-  (getClient: (request: Request) => Promise<KrynoApiClient>) =>
+  (
+    getClient: KrynoApiClientGetter<{
+      readonly auth: {
+        readonly currentGymUserSession: () => KrynoApiEffect<CurrentGymUserSession>
+      }
+    }>
+  ) =>
   async ({ request }: Route.LoaderArgs) => {
     const sessionId = readGymUserSessionCookie(request)
 
@@ -21,10 +47,10 @@ export const createAppLoader =
       return redirect("/login")
     }
 
-    const client = await getClient(request)
+    const client = await getClient({ sessionId })
 
     try {
-      return await client.currentGymUserSession(sessionId)
+      return await Effect.runPromise(client.auth.currentGymUserSession())
     } catch (error) {
       if (isExpectedSessionFailure(error)) {
         return redirect("/login")

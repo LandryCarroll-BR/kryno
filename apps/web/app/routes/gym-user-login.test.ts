@@ -1,10 +1,35 @@
 import { describe, expect, it } from "vitest"
+import { Effect } from "effect"
 
 import {
   createGymUserLoginAction,
   type LoginActionData,
 } from "./gym-user-login"
-import type { KrynoApiClient } from "../lib/kryno-api-client"
+import type { KrynoApiClient, KrynoApiEffect } from "../lib/kryno-api-client"
+
+type LoginGymUserRequest = Parameters<KrynoApiClient["auth"]["loginGymUser"]>[0]
+
+interface LoginSuccess {
+  readonly user: {
+    readonly id: string
+    readonly email: string
+    readonly displayName: string
+    readonly emailVerified: boolean
+  }
+  readonly session: {
+    readonly id: string
+    readonly userId: string
+    readonly active: boolean
+  }
+}
+
+type LoginApiClient = {
+  readonly auth: {
+    readonly loginGymUser: (
+      request: LoginGymUserRequest
+    ) => KrynoApiEffect<LoginSuccess>
+  }
+}
 
 const actionRequest = (body: URLSearchParams) =>
   new Request("https://kryno.test/login", {
@@ -25,37 +50,24 @@ const actionArgs = (request: Request) =>
     context: {},
   }) as never
 
-const noopClient: KrynoApiClient = {
-  signUpGymUser: async () => undefined,
-  verifyGymUserEmail: async () => undefined,
-  loginGymUser: async () => ({
-    user: {
-      id: "gym-user-1",
-      email: "member@test.dev",
-      displayName: "Member Test",
-      emailVerified: true,
-    },
-    session: {
-      id: "gym-user-session-1",
-      userId: "gym-user-1",
-      active: true,
-    },
-  }),
-  currentGymUserSession: async () => ({
-    user: {
-      id: "gym-user-1",
-      email: "member@test.dev",
-      displayName: "Member Test",
-      emailVerified: true,
-    },
-    session: {
-      id: "gym-user-session-1",
-      userId: "gym-user-1",
-      active: true,
-    },
-    activeAffiliations: [],
-  }),
-  logoutGymUser: async () => undefined,
+const loginSuccess: LoginSuccess = {
+  user: {
+    id: "gym-user-1",
+    email: "member@test.dev",
+    displayName: "Member Test",
+    emailVerified: true,
+  },
+  session: {
+    id: "gym-user-session-1",
+    userId: "gym-user-1",
+    active: true,
+  },
+}
+
+const noopClient: LoginApiClient = {
+  auth: {
+    loginGymUser: () => Effect.succeed(loginSuccess),
+  },
 }
 
 describe("gym-user login action", () => {
@@ -86,10 +98,13 @@ describe("gym-user login action", () => {
   })
 
   it("returns expected auth failures as inline action data", async () => {
-    const client: KrynoApiClient = {
-      ...noopClient,
-      loginGymUser: async () => {
-        throw { _tag: "GymUserInvalidCredentials", email: "missing@test.dev" }
+    const client: LoginApiClient = {
+      auth: {
+        loginGymUser: () =>
+          Effect.fail({
+            _tag: "GymUserInvalidCredentials",
+            email: "missing@test.dev",
+          }),
       },
     }
     const action = createGymUserLoginAction(async () => client)
@@ -110,10 +125,10 @@ describe("gym-user login action", () => {
   })
 
   it("returns unverified-user failures as inline action data", async () => {
-    const client: KrynoApiClient = {
-      ...noopClient,
-      loginGymUser: async () => {
-        throw { _tag: "GymUserUnverified", userId: "gym-user-1" }
+    const client: LoginApiClient = {
+      auth: {
+        loginGymUser: () =>
+          Effect.fail({ _tag: "GymUserUnverified", userId: "gym-user-1" }),
       },
     }
     const action = createGymUserLoginAction(async () => client)
@@ -135,10 +150,9 @@ describe("gym-user login action", () => {
 
   it("does not swallow unexpected API failures", async () => {
     const unexpected = new Error("API server unavailable")
-    const client: KrynoApiClient = {
-      ...noopClient,
-      loginGymUser: async () => {
-        throw unexpected
+    const client: LoginApiClient = {
+      auth: {
+        loginGymUser: () => Effect.fail(unexpected),
       },
     }
     const action = createGymUserLoginAction(async () => client)
@@ -158,24 +172,13 @@ describe("gym-user login action", () => {
   })
 
   it("redirects successful logins to the app with a web-owned session cookie", async () => {
-    const calls: Array<Parameters<KrynoApiClient["loginGymUser"]>[0]> = []
-    const client: KrynoApiClient = {
-      ...noopClient,
-      loginGymUser: async (input) => {
-        calls.push(input)
-        return {
-          user: {
-            id: "gym-user-1",
-            email: "member@test.dev",
-            displayName: "Member Test",
-            emailVerified: true,
-          },
-          session: {
-            id: "gym-user-session-1",
-            userId: "gym-user-1",
-            active: true,
-          },
-        }
+    const calls: LoginGymUserRequest[] = []
+    const client: LoginApiClient = {
+      auth: {
+        loginGymUser: (request) => {
+          calls.push(request)
+          return Effect.succeed(loginSuccess)
+        },
       },
     }
     const action = createGymUserLoginAction(async () => client)
@@ -191,7 +194,7 @@ describe("gym-user login action", () => {
       )
     )) as Response
 
-    expect(calls).toEqual([
+    expect(calls.map((call) => call.payload)).toEqual([
       {
         email: "member@test.dev",
         password: "correct horse battery staple",

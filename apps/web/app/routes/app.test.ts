@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest"
+import { Effect } from "effect"
 
 import { createAppLoader } from "./app"
-import type { KrynoApiClient } from "../lib/kryno-api-client"
+import type {
+  KrynoApiEffect,
+  KrynoApiClientOptions,
+} from "../lib/kryno-api-client"
 
 const loaderArgs = (request: Request) =>
   ({
@@ -25,28 +29,32 @@ const authenticatedSession = {
   activeAffiliations: [],
 }
 
-const noopClient: KrynoApiClient = {
-  signUpGymUser: async () => undefined,
-  verifyGymUserEmail: async () => undefined,
-  loginGymUser: async () => ({
-    user: authenticatedSession.user,
-    session: authenticatedSession.session,
-  }),
-  currentGymUserSession: async () => authenticatedSession,
-  logoutGymUser: async () => undefined,
+type CurrentSessionApiClient = {
+  readonly auth: {
+    readonly currentGymUserSession: () => KrynoApiEffect<
+      typeof authenticatedSession
+    >
+  }
+}
+
+const noopClient: CurrentSessionApiClient = {
+  auth: {
+    currentGymUserSession: () => Effect.succeed(authenticatedSession),
+  },
 }
 
 describe("app loader", () => {
   it("reads the web-owned session cookie and resolves the current gym-user session", async () => {
-    const sessions: string[] = []
-    const client: KrynoApiClient = {
-      ...noopClient,
-      currentGymUserSession: async (sessionId) => {
-        sessions.push(sessionId)
-        return authenticatedSession
+    const clientOptions: KrynoApiClientOptions[] = []
+    const client: CurrentSessionApiClient = {
+      auth: {
+        currentGymUserSession: () => Effect.succeed(authenticatedSession),
       },
     }
-    const loader = createAppLoader(async () => client)
+    const loader = createAppLoader(async (options) => {
+      clientOptions.push(options ?? {})
+      return client
+    })
 
     const result = await loader(
       loaderArgs(
@@ -59,7 +67,7 @@ describe("app loader", () => {
       )
     )
 
-    expect(sessions).toEqual(["gym-user-session-1"])
+    expect(clientOptions).toEqual([{ sessionId: "gym-user-session-1" }])
     expect(result).toEqual(authenticatedSession)
   })
 
@@ -80,10 +88,13 @@ describe("app loader", () => {
   })
 
   it("redirects visitors with an invalid session cookie to login", async () => {
-    const client: KrynoApiClient = {
-      ...noopClient,
-      currentGymUserSession: async () => {
-        throw { _tag: "GymUserSessionInvalid", sessionId: "expired-session" }
+    const client: CurrentSessionApiClient = {
+      auth: {
+        currentGymUserSession: () =>
+          Effect.fail({
+            _tag: "GymUserSessionInvalid",
+            sessionId: "expired-session",
+          }),
       },
     }
     const loader = createAppLoader(async () => client)

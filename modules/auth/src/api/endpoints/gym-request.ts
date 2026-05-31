@@ -20,35 +20,25 @@ import {
   GymMemberLeft,
 } from "../../domain/gym.ts"
 
-export class RequestGymCreationPayload extends Schema.Class<RequestGymCreationPayload>(
-  "RequestGymCreationPayload"
-)({
+export const RequestGymCreationPayload = Schema.Struct({
   name: Schema.String,
-}) {}
+})
 
-export class ApproveGymCreationRequestPayload extends Schema.Class<ApproveGymCreationRequestPayload>(
-  "ApproveGymCreationRequestPayload"
-)({
+export const ApproveGymCreationRequestPayload = Schema.Struct({
   requestId: GymCreationRequestId,
-}) {}
+})
 
-export class CurrentGymOwnerAccessPayload extends Schema.Class<CurrentGymOwnerAccessPayload>(
-  "CurrentGymOwnerAccessPayload"
-)({
+export const CurrentGymOwnerAccessPayload = Schema.Struct({
   gymId: GymId,
-}) {}
+})
 
-export class JoinGymAsMemberPayload extends Schema.Class<JoinGymAsMemberPayload>(
-  "JoinGymAsMemberPayload"
-)({
+export const JoinGymAsMemberPayload = Schema.Struct({
   gymId: GymId,
-}) {}
+})
 
-export class LeaveGymAsMemberPayload extends Schema.Class<LeaveGymAsMemberPayload>(
-  "LeaveGymAsMemberPayload"
-)({
+export const LeaveGymAsMemberPayload = Schema.Struct({
   gymId: GymId,
-}) {}
+})
 
 export const GymCreationRequestedCreated = GymCreationRequested.pipe(
   HttpApiSchema.status(201)

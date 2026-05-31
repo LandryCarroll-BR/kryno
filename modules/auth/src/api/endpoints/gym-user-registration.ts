@@ -1,3 +1,4 @@
+import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiSchema } from "effect/unstable/httpapi"
 
 import {
@@ -9,10 +10,22 @@ import {
   GymUserEmailVerificationSuccess,
   GymUserRegistrationRecord,
   GymUserSignupSuccess,
-  ReserveGymUserEmailInput,
-  SignUpGymUserInput,
-  VerifyGymUserEmailInput,
 } from "../../domain/gym-user.ts"
+
+export const ReserveGymUserEmailPayload = Schema.Struct({
+  email: Schema.String,
+  displayName: Schema.String,
+})
+
+export const SignUpGymUserPayload = Schema.Struct({
+  email: Schema.String,
+  password: Schema.String,
+  displayName: Schema.String,
+})
+
+export const VerifyGymUserEmailPayload = Schema.Struct({
+  token: Schema.String,
+})
 
 export const GymUserRegistrationCreated = GymUserRegistrationRecord.pipe(
   HttpApiSchema.status(201)
@@ -32,7 +45,7 @@ export const ReserveGymUserEmailEndpoint = HttpApiEndpoint.post(
   "reserveGymUserEmail",
   "/gym-users/email-reservations",
   {
-    payload: ReserveGymUserEmailInput,
+    payload: ReserveGymUserEmailPayload,
     success: GymUserRegistrationCreated,
     error: GymUserEmailAlreadyReservedConflict,
   }
@@ -42,7 +55,7 @@ export const SignUpGymUserEndpoint = HttpApiEndpoint.post(
   "signUpGymUser",
   "/gym-users/signups",
   {
-    payload: SignUpGymUserInput,
+    payload: SignUpGymUserPayload,
     success: GymUserSignupSuccess.pipe(HttpApiSchema.status(201)),
     error: GymUserEmailAlreadyReservedConflict,
   }
@@ -52,7 +65,7 @@ export const VerifyGymUserEmailEndpoint = HttpApiEndpoint.post(
   "verifyGymUserEmail",
   "/gym-users/email-verifications",
   {
-    payload: VerifyGymUserEmailInput,
+    payload: VerifyGymUserEmailPayload,
     success: GymUserEmailVerificationSuccess,
     error: [GymUserEmailVerificationInvalidBadRequest, GymUserNotFoundNotFound],
   }
