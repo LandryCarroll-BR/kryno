@@ -1,8 +1,19 @@
 import { beforeAll, describe, expect, it } from "@effect/vitest"
+import { ConfigProvider, Effect } from "effect"
+import { FetchHttpClient } from "effect/unstable/http"
+import { HttpServer } from "effect/unstable/http"
 import { HttpApi } from "effect/unstable/httpapi"
+import { HttpApiClient } from "effect/unstable/httpapi"
 
 import { KrynoHttpApi } from "@workspace/api"
+import { ReserveGymUserEmailInput } from "@workspace/auth/domain/gym-user"
 import { handler } from "../src/handler.ts"
+import {
+  DEFAULT_LOCAL_API_HOSTNAME,
+  DEFAULT_LOCAL_API_PORT,
+  makeKrynoLocalApiServerLayer,
+  readLocalApiServerOptions,
+} from "../src/local-api-server.ts"
 
 const systemAdminCredentials = {
   email: "admin-audience@example.com",
@@ -69,6 +80,61 @@ describe("Kryno API app", () => {
       emailVerified: false,
     })
   })
+
+  it.effect("serves the typed Auth contract over a local Node HTTP server", () =>
+    Effect.gen(function* () {
+      const server = yield* HttpServer.HttpServer
+      const baseUrl = HttpServer.formatAddress(server.address)
+      const client = yield* HttpApiClient.make(KrynoHttpApi, { baseUrl }).pipe(
+        Effect.provide(FetchHttpClient.layer)
+      )
+
+      const registration = yield* client.auth.reserveGymUserEmail({
+        payload: new ReserveGymUserEmailInput({
+          email: "local-node-server@example.com",
+          displayName: "Local Node Server",
+        }),
+      })
+
+      expect(registration).toMatchObject({
+        email: "local-node-server@example.com",
+        displayName: "Local Node Server",
+        emailVerified: false,
+      })
+    }).pipe(
+      Effect.provide(
+        makeKrynoLocalApiServerLayer({
+          hostname: DEFAULT_LOCAL_API_HOSTNAME,
+          port: 0,
+          disableListenLog: true,
+        })
+      )
+    )
+  )
+
+  it("defaults the local API server to 127.0.0.1:4000", () => {
+    expect(DEFAULT_LOCAL_API_HOSTNAME).toBe("127.0.0.1")
+    expect(DEFAULT_LOCAL_API_PORT).toBe(4000)
+  })
+
+  it.effect("uses PORT to override the local API server port", () =>
+    Effect.gen(function* () {
+      const options = yield* readLocalApiServerOptions
+
+      expect(options).toEqual({
+        hostname: "127.0.0.1",
+        port: 4217,
+      })
+    }).pipe(
+      Effect.provide(
+        ConfigProvider.layer(
+          ConfigProvider.fromUnknown({
+            PORT: "4217",
+          })
+        )
+      )
+    )
+  )
 
   it("rejects anonymous requests to protected Auth routes before protected behavior runs", async () => {
     const response = await postJson("/api/auth/gyms/requests", {
