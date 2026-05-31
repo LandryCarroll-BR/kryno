@@ -31,6 +31,16 @@ const get = (path: string, bearer?: string) =>
     })
   )
 
+const getWithCookie = (path: string, cookie: string) =>
+  handler(
+    new Request(`https://kryno.test${path}`, {
+      method: "GET",
+      headers: {
+        cookie,
+      },
+    })
+  )
+
 const deleteRequest = (path: string, bearer?: string) =>
   handler(
     new Request(`https://kryno.test${path}`, {
@@ -129,6 +139,13 @@ describe("Kryno API app", () => {
       password: "correct horse battery staple",
     })
     const login = await loginResponse.json()
+
+    const cookieOnlyResponse = await getWithCookie(
+      "/api/auth/gym-users/session",
+      `kryno_gym_user_session=${login.session.id}`
+    )
+    expect(cookieOnlyResponse.status).toBe(401)
+    expect(await cookieOnlyResponse.text()).toBe("")
 
     const currentResponse = await get(
       "/api/auth/gym-users/session",
@@ -352,6 +369,13 @@ describe("Kryno API app", () => {
       systemAdminCredentials
     )
     const login = await loginResponse.json()
+
+    const cookieOnlyResponse = await getWithCookie(
+      "/api/auth/system-admin/session",
+      `kryno_system_admin_session=${login.session.id}`
+    )
+    expect(cookieOnlyResponse.status).toBe(401)
+    expect(await cookieOnlyResponse.text()).toBe("")
 
     const currentResponse = await get(
       "/api/auth/system-admin/session",
