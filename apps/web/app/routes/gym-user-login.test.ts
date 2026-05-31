@@ -55,6 +55,7 @@ const noopClient: KrynoApiClient = {
     },
     activeAffiliations: [],
   }),
+  logoutGymUser: async () => undefined,
 }
 
 describe("gym-user login action", () => {

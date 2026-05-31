@@ -49,6 +49,7 @@ const noopClient: KrynoApiClient = {
     },
     activeAffiliations: [],
   }),
+  logoutGymUser: async () => undefined,
 }
 
 describe("manual email verification action", () => {

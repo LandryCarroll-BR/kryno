@@ -59,6 +59,7 @@ export interface KrynoApiClient {
   readonly currentGymUserSession: (
     sessionId: string
   ) => Promise<CurrentGymUserSession>
+  readonly logoutGymUser: (sessionId: string) => Promise<void>
 }
 
 const getKrynoApiBaseUrl = (request: Request) =>
@@ -109,6 +110,10 @@ export const getKrynoApiClient = async (
         .pipe(Effect.runPromise)
 
       return current as AuthCurrentGymUserSessionSuccess
+    },
+    logoutGymUser: async (sessionId) => {
+      const authenticatedClient = await makeHttpApiClient(request, sessionId)
+      await authenticatedClient.auth.logoutGymUser().pipe(Effect.runPromise)
     },
   }
 }

@@ -46,3 +46,19 @@ export const serializeGymUserSessionCookie = (
 
   return attributes.join("; ")
 }
+
+export const serializeExpiredGymUserSessionCookie = (request: Request) => {
+  const attributes = [
+    `${sessionCookieName}=`,
+    "Max-Age=0",
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+  ]
+
+  if (!isLocalHttpDevelopment(request)) {
+    attributes.push("Secure")
+  }
+
+  return attributes.join("; ")
+}

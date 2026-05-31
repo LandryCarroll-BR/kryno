@@ -138,4 +138,35 @@ describe("Kryno API client", () => {
     expect(requests[0]?.headers.get("Cookie")).toBeNull()
     expect(current.user.email).toBe("member@test.dev")
   })
+
+  it("logs out the current gym-user session with bearer auth instead of forwarded cookies", async () => {
+    const requests: Request[] = []
+    fetchHandler = async (request: RequestInfo | URL, init?: RequestInit) => {
+      const nextRequest =
+        request instanceof Request ? request : new Request(request, init)
+      requests.push(nextRequest)
+
+      return new Response(null, { status: 204 })
+    }
+    vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
+
+    const client = await getKrynoApiClient(
+      new Request("https://web.kryno.test/logout", {
+        headers: {
+          Cookie: "kryno_gym_user_session=gym-user-session-1",
+        },
+      })
+    )
+    await client.logoutGymUser("gym-user-session-1")
+
+    expect(requests).toHaveLength(1)
+    expect(requests[0]?.method).toBe("DELETE")
+    expect(requests[0]?.url).toBe(
+      "https://api.kryno.test/api/auth/gym-users/session"
+    )
+    expect(requests[0]?.headers.get("Authorization")).toBe(
+      "Bearer gym-user-session-1"
+    )
+    expect(requests[0]?.headers.get("Cookie")).toBeNull()
+  })
 })

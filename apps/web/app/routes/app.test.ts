@@ -33,6 +33,7 @@ const noopClient: KrynoApiClient = {
     session: authenticatedSession.session,
   }),
   currentGymUserSession: async () => authenticatedSession,
+  logoutGymUser: async () => undefined,
 }
 
 describe("app loader", () => {
