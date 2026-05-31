@@ -62,7 +62,6 @@ describe("Kryno API app", () => {
 
   it("rejects anonymous requests to protected Auth routes before protected behavior runs", async () => {
     const response = await postJson("/api/auth/gyms/requests", {
-      sessionId: "missing-session",
       name: "Protected Gym",
     })
 
@@ -80,7 +79,6 @@ describe("Kryno API app", () => {
     const response = await postJson(
       "/api/auth/gyms/requests",
       {
-        sessionId: login.session.id,
         name: "Wrong Audience Gym",
       },
       login.session.id
@@ -108,7 +106,6 @@ describe("Kryno API app", () => {
     const response = await postJson(
       "/api/auth/gyms/requests/approvals",
       {
-        sessionId: login.session.id,
         requestId: "missing-request",
       },
       login.session.id
@@ -156,6 +153,73 @@ describe("Kryno API app", () => {
     )
     expect(afterLogoutResponse.status).toBe(401)
     expect(await afterLogoutResponse.text()).toBe("")
+  })
+
+  it("creates and approves gym requests from bearer sessions instead of client-supplied payload session ids", async () => {
+    await postJson("/api/auth/gym-users/signups", {
+      email: "bearer-gym-request@example.com",
+      password: "correct horse battery staple",
+      displayName: "Bearer Gym Request",
+    })
+    await postJson("/api/auth/gym-users/email-verifications", {
+      token: "gym-user-email-verification-token-3",
+    })
+    const gymUserLoginResponse = await postJson("/api/auth/gym-users/sessions", {
+      email: "bearer-gym-request@example.com",
+      password: "correct horse battery staple",
+    })
+    const gymUserLogin = await gymUserLoginResponse.json()
+
+    const requestResponse = await postJson(
+      "/api/auth/gyms/requests",
+      {
+        name: "Bearer Boulder House",
+      },
+      gymUserLogin.session.id
+    )
+
+    expect(requestResponse.status).toBe(201)
+    const request = await requestResponse.json()
+    expect(request).toMatchObject({
+      request: {
+        requesterUserId: gymUserLogin.user.id,
+        status: "pending",
+      },
+      gym: {
+        name: "Bearer Boulder House",
+        status: "pending",
+      },
+    })
+
+    const adminLoginResponse = await postJson(
+      "/api/auth/system-admin/sessions",
+      systemAdminCredentials
+    )
+    const adminLogin = await adminLoginResponse.json()
+
+    const approvalResponse = await postJson(
+      "/api/auth/gyms/requests/approvals",
+      {
+        requestId: request.request.id,
+      },
+      adminLogin.session.id
+    )
+
+    expect(approvalResponse.status).toBe(200)
+    await expect(approvalResponse.json()).resolves.toMatchObject({
+      request: {
+        id: request.request.id,
+        status: "approved",
+      },
+      gym: {
+        id: request.gym.id,
+        status: "active",
+      },
+      ownerAffiliation: {
+        userId: gymUserLogin.user.id,
+        role: "Owner",
+      },
+    })
   })
 
   it("resolves and logs out the current system-admin session from bearer authentication", async () => {

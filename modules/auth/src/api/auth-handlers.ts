@@ -50,10 +50,28 @@ export const buildAuthHttpHandlers = (
       Auth.use((auth) => auth.completeGymUserPasswordReset(payload))
     )
     .handle("requestGymCreation", ({ payload }) =>
-      Auth.use((auth) => auth.requestGymCreation(payload))
+      CurrentGymUserSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) =>
+            auth.requestGymCreation({
+              ...payload,
+              sessionId,
+            })
+          )
+        )
+      )
     )
     .handle("approveGymCreationRequest", ({ payload }) =>
-      Auth.use((auth) => auth.approveGymCreationRequest(payload))
+      CurrentSystemAdminSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) =>
+            auth.approveGymCreationRequest({
+              ...payload,
+              sessionId,
+            })
+          )
+        )
+      )
     )
     .handle("currentGymOwnerAccess", ({ payload }) =>
       Auth.use((auth) => auth.currentGymOwnerAccess(payload))

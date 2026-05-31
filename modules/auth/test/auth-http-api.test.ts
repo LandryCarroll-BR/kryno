@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest"
-import { HttpApi } from "effect/unstable/httpapi"
+import { HttpApi, OpenApi } from "effect/unstable/httpapi"
 import {
   AcceptGymStaffInvitationEndpoint,
   CreateGymStaffInvitationEndpoint,
@@ -240,5 +240,20 @@ describe("Auth HTTP API contracts", () => {
         systemAdmin: true,
       })
     }
+  })
+
+  it("keeps protected gym request payload contracts free of client-supplied session ids", () => {
+    const spec = OpenApi.fromApi(AuthHttpApi)
+
+    expect(
+      JSON.stringify(
+        spec.paths["/auth/gyms/requests"]?.post?.requestBody ?? {}
+      )
+    ).not.toContain("sessionId")
+    expect(
+      JSON.stringify(
+        spec.paths["/auth/gyms/requests/approvals"]?.post?.requestBody ?? {}
+      )
+    ).not.toContain("sessionId")
   })
 })

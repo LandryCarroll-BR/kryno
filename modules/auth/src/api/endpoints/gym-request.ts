@@ -1,3 +1,4 @@
+import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiSchema } from "effect/unstable/httpapi"
 
 import {
@@ -10,17 +11,28 @@ import {
   SystemAdminSessionInvalid,
 } from "../../domain/errors.ts"
 import {
-  ApproveGymCreationRequestInput,
   CurrentGymOwnerAccessInput,
   CurrentGymOwnerAccessSuccess,
+  GymCreationRequestId,
   GymCreationRequestApproved,
   GymCreationRequested,
   GymMemberJoined,
   GymMemberLeft,
   JoinGymAsMemberInput,
   LeaveGymAsMemberInput,
-  RequestGymCreationInput,
 } from "../../domain/gym.ts"
+
+export class RequestGymCreationPayload extends Schema.Class<RequestGymCreationPayload>(
+  "RequestGymCreationPayload"
+)({
+  name: Schema.String,
+}) {}
+
+export class ApproveGymCreationRequestPayload extends Schema.Class<ApproveGymCreationRequestPayload>(
+  "ApproveGymCreationRequestPayload"
+)({
+  requestId: GymCreationRequestId,
+}) {}
 
 export const GymCreationRequestedCreated = GymCreationRequested.pipe(
   HttpApiSchema.status(201)
@@ -56,7 +68,7 @@ export const RequestGymCreationEndpoint = HttpApiEndpoint.post(
   "requestGymCreation",
   "/gyms/requests",
   {
-    payload: RequestGymCreationInput,
+    payload: RequestGymCreationPayload,
     success: GymCreationRequestedCreated,
     error: [GymUserSessionInvalidUnauthorized, GymUserUnverifiedForbidden],
   }
@@ -66,7 +78,7 @@ export const ApproveGymCreationRequestEndpoint = HttpApiEndpoint.post(
   "approveGymCreationRequest",
   "/gyms/requests/approvals",
   {
-    payload: ApproveGymCreationRequestInput,
+    payload: ApproveGymCreationRequestPayload,
     success: GymCreationRequestApproved,
     error: [
       SystemAdminSessionInvalidUnauthorized,
