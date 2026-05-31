@@ -11,7 +11,7 @@ import {
 } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
 
-import type { GymUserLoginAction } from "../../../features/auth/login/gym-user-login-action"
+import type { GymUserLoginAction } from "../../../features/auth/gym-user-login/gym-user-login-action"
 
 export function GymUserLoginForm() {
   const actionData = useActionData<GymUserLoginAction>()

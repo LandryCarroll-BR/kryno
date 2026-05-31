@@ -1,5 +1,5 @@
-import { GymUserLoginForm } from "features/auth/login/gym-user-login-form"
-import { gymUserLoginAction } from "features/auth/login/gym-user-login-action"
+import { gymUserLoginAction } from "../../features/auth/gym-user-login/gym-user-login-action"
+import { GymUserLoginForm } from "../../features/auth/gym-user-login/gym-user-login-form"
 
 export const action = gymUserLoginAction
 
