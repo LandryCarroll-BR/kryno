@@ -40,6 +40,103 @@ describe("Kryno API client", () => {
     vi.unstubAllGlobals()
   })
 
+  it("sends gym-user signup requests to the configured API base URL", async () => {
+    const requests: Request[] = []
+    const bodies: unknown[] = []
+    fetchHandler = async (request: RequestInfo | URL, init?: RequestInit) => {
+      const nextRequest =
+        request instanceof Request ? request : new Request(request, init)
+      requests.push(nextRequest)
+      bodies.push(await nextRequest.clone().json())
+
+      return Response.json(
+        {
+          user: {
+            id: "gym-user-1",
+            email: "new@test.dev",
+            displayName: "New User",
+            emailVerified: false,
+          },
+        },
+        { status: 201 }
+      )
+    }
+    vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
+
+    const client = await getKrynoApiClient(
+      new Request("https://web.kryno.test/signup", {
+        headers: {
+          Cookie: "kryno_gym_user_session=web-session",
+        },
+      })
+    )
+    await client.signUpGymUser({
+      email: "new@test.dev",
+      password: "correct horse battery staple",
+      displayName: "New User",
+    })
+
+    expect(requests).toHaveLength(1)
+    expect(requests[0]?.method).toBe("POST")
+    expect(requests[0]?.url).toBe(
+      "https://api.kryno.test/api/auth/gym-users/signups"
+    )
+    expect(requests[0]?.headers.get("Authorization")).toBeNull()
+    expect(requests[0]?.headers.get("Cookie")).toBeNull()
+    expect(bodies).toEqual([
+      {
+        email: "new@test.dev",
+        password: "correct horse battery staple",
+        displayName: "New User",
+      },
+    ])
+  })
+
+  it("sends gym-user email verification requests to the configured API base URL", async () => {
+    const requests: Request[] = []
+    const bodies: unknown[] = []
+    fetchHandler = async (request: RequestInfo | URL, init?: RequestInit) => {
+      const nextRequest =
+        request instanceof Request ? request : new Request(request, init)
+      requests.push(nextRequest)
+      bodies.push(await nextRequest.clone().json())
+
+      return Response.json({
+        user: {
+          id: "gym-user-1",
+          email: "new@test.dev",
+          displayName: "New User",
+          emailVerified: true,
+        },
+      })
+    }
+    vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
+
+    const client = await getKrynoApiClient(
+      new Request("https://web.kryno.test/verify-email", {
+        headers: {
+          Cookie: "kryno_gym_user_session=web-session",
+        },
+      })
+    )
+    await client.verifyGymUserEmail({
+      token: "gym-user-email-verification-token-1",
+    })
+
+    expect(requests).toHaveLength(1)
+    expect(requests[0]?.method).toBe("POST")
+    expect(requests[0]?.url).toBe(
+      "https://api.kryno.test/api/auth/gym-users/email-verifications"
+    )
+    expect(requests[0]?.headers.get("Authorization")).toBeNull()
+    expect(requests[0]?.headers.get("Cookie")).toBeNull()
+    expect(bodies).toEqual([
+      {
+        token: "gym-user-email-verification-token-1",
+      },
+    ])
+  })
+
   it("returns the decoded gym-user login session without relying on set-cookie headers", async () => {
     const requests: Request[] = []
     const bodies: unknown[] = []

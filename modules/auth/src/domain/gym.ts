@@ -1,6 +1,6 @@
 import { Schema } from "effect"
 
-import { GymUserId, GymUserSessionId } from "./gym-user.ts"
+import { GymUserId, GymUserSessionId } from "./gym-user-identity.ts"
 import { SystemAdminSessionId } from "./system-admin.ts"
 
 export const GymId = Schema.String.pipe(Schema.brand("GymId"))

@@ -106,6 +106,31 @@ describe("gym-user signup action", () => {
     expect(result.fieldErrors?.email).toContain("already reserved")
   })
 
+  it("does not swallow unexpected API failures", async () => {
+    const unexpected = new Error("API server unavailable")
+    const client: KrynoApiClient = {
+      ...noopClient,
+      signUpGymUser: async () => {
+        throw unexpected
+      },
+    }
+    const action = createGymUserSignupAction(async () => client)
+
+    await expect(
+      action(
+        actionArgs(
+          actionRequest(
+            new URLSearchParams({
+              email: "new@test.dev",
+              password: "correct horse battery staple",
+              displayName: "New User",
+            })
+          )
+        )
+      )
+    ).rejects.toBe(unexpected)
+  })
+
   it("redirects successful signups to manual email verification", async () => {
     const calls: Array<Parameters<KrynoApiClient["signUpGymUser"]>[0]> = []
     const client: KrynoApiClient = {

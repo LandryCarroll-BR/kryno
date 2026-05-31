@@ -88,6 +88,29 @@ describe("manual email verification action", () => {
     expect(result.fieldErrors?.token).toContain("invalid or expired")
   })
 
+  it("does not swallow unexpected API failures", async () => {
+    const unexpected = new Error("API server unavailable")
+    const client: KrynoApiClient = {
+      ...noopClient,
+      verifyGymUserEmail: async () => {
+        throw unexpected
+      },
+    }
+    const action = createManualEmailVerificationAction(async () => client)
+
+    await expect(
+      action(
+        actionArgs(
+          actionRequest(
+            new URLSearchParams({
+              token: "gym-user-email-verification-token-1",
+            })
+          )
+        )
+      )
+    ).rejects.toBe(unexpected)
+  })
+
   it("redirects successful verification to gym-user login", async () => {
     const calls: Array<Parameters<KrynoApiClient["verifyGymUserEmail"]>[0]> = []
     const client: KrynoApiClient = {

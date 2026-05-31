@@ -1,14 +1,8 @@
 import { Schema } from "effect"
 
 import { GymAffiliationRecord } from "./gym.ts"
-
-export const GymUserId = Schema.String.pipe(Schema.brand("GymUserId"))
-export type GymUserId = typeof GymUserId.Type
-
-export const GymUserSessionId = Schema.String.pipe(
-  Schema.brand("GymUserSessionId")
-)
-export type GymUserSessionId = typeof GymUserSessionId.Type
+import { GymUserId, GymUserSessionId } from "./gym-user-identity.ts"
+export { GymUserId, GymUserSessionId } from "./gym-user-identity.ts"
 
 export class GymUserRegistrationRecord extends Schema.Class<GymUserRegistrationRecord>(
   "GymUserRegistrationRecord"

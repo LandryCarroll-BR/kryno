@@ -133,6 +133,30 @@ describe("gym-user login action", () => {
     expect(result.formError).toContain("verify your email")
   })
 
+  it("does not swallow unexpected API failures", async () => {
+    const unexpected = new Error("API server unavailable")
+    const client: KrynoApiClient = {
+      ...noopClient,
+      loginGymUser: async () => {
+        throw unexpected
+      },
+    }
+    const action = createGymUserLoginAction(async () => client)
+
+    await expect(
+      action(
+        actionArgs(
+          actionRequest(
+            new URLSearchParams({
+              email: "member@test.dev",
+              password: "correct horse battery staple",
+            })
+          )
+        )
+      )
+    ).rejects.toBe(unexpected)
+  })
+
   it("redirects successful logins to the app with a web-owned session cookie", async () => {
     const calls: Array<Parameters<KrynoApiClient["loginGymUser"]>[0]> = []
     const client: KrynoApiClient = {
