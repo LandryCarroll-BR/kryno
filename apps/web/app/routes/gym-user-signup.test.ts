@@ -35,6 +35,20 @@ const noopClient: KrynoApiClient = {
       active: true,
     },
   }),
+  currentGymUserSession: async () => ({
+    user: {
+      id: "gym-user-1",
+      email: "member@test.dev",
+      displayName: "Member Test",
+      emailVerified: true,
+    },
+    session: {
+      id: "gym-user-session-1",
+      userId: "gym-user-1",
+      active: true,
+    },
+    activeAffiliations: [],
+  }),
 }
 
 describe("gym-user signup action", () => {

@@ -35,6 +35,20 @@ const noopClient: KrynoApiClient = {
       active: true,
     },
   }),
+  currentGymUserSession: async () => ({
+    user: {
+      id: "gym-user-1",
+      email: "member@test.dev",
+      displayName: "Member Test",
+      emailVerified: true,
+    },
+    session: {
+      id: "gym-user-session-1",
+      userId: "gym-user-1",
+      active: true,
+    },
+    activeAffiliations: [],
+  }),
 }
 
 describe("manual email verification action", () => {
@@ -66,9 +80,7 @@ describe("manual email verification action", () => {
     const action = createManualEmailVerificationAction(async () => client)
 
     const result = (await action(
-      actionArgs(
-        actionRequest(new URLSearchParams({ token: "missing-token" }))
-      )
+      actionArgs(actionRequest(new URLSearchParams({ token: "missing-token" })))
     )) as ManualEmailVerificationActionData
 
     expect(result.status).toBe("error")
@@ -76,8 +88,7 @@ describe("manual email verification action", () => {
   })
 
   it("redirects successful verification to gym-user login", async () => {
-    const calls: Array<Parameters<KrynoApiClient["verifyGymUserEmail"]>[0]> =
-      []
+    const calls: Array<Parameters<KrynoApiClient["verifyGymUserEmail"]>[0]> = []
     const client: KrynoApiClient = {
       ...noopClient,
       verifyGymUserEmail: async (input) => {
@@ -96,9 +107,7 @@ describe("manual email verification action", () => {
       )
     )) as Response
 
-    expect(calls).toEqual([
-      { token: "gym-user-email-verification-token-1" },
-    ])
+    expect(calls).toEqual([{ token: "gym-user-email-verification-token-1" }])
     expect(response.status).toBe(302)
     expect(response.headers.get("Location")).toBe("/login")
   })

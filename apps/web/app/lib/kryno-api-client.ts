@@ -1,11 +1,16 @@
 import { KrynoHttpApi } from "@workspace/api/kryno-http-api"
 import {
+  CurrentGymUserSessionSuccess as AuthCurrentGymUserSessionSuccess,
   LoginGymUserInput as AuthLoginGymUserInput,
   SignUpGymUserInput as AuthSignUpGymUserInput,
   VerifyGymUserEmailInput as AuthVerifyGymUserEmailInput,
 } from "@workspace/auth/domain/gym-user"
 import { Effect } from "effect"
-import { FetchHttpClient } from "effect/unstable/http"
+import {
+  FetchHttpClient,
+  HttpClient,
+  HttpClientRequest,
+} from "effect/unstable/http"
 import { HttpApiClient } from "effect/unstable/httpapi"
 
 export interface GymUserSignupInput {
@@ -37,6 +42,12 @@ export interface LoginGymUserSession {
   }
 }
 
+export interface CurrentGymUserSession {
+  readonly user: LoginGymUserSession["user"]
+  readonly session: LoginGymUserSession["session"]
+  readonly activeAffiliations: readonly unknown[]
+}
+
 export interface KrynoApiClient {
   readonly signUpGymUser: (input: GymUserSignupInput) => Promise<unknown>
   readonly verifyGymUserEmail: (
@@ -45,17 +56,30 @@ export interface KrynoApiClient {
   readonly loginGymUser: (
     input: LoginGymUserInput
   ) => Promise<LoginGymUserSession>
+  readonly currentGymUserSession: (
+    sessionId: string
+  ) => Promise<CurrentGymUserSession>
 }
 
 const getKrynoApiBaseUrl = (request: Request) =>
   process.env.KRYNO_API_BASE_URL ?? new URL(request.url).origin
 
+const makeHttpApiClient = (request: Request, sessionId?: string) =>
+  HttpApiClient.make(KrynoHttpApi, {
+    baseUrl: getKrynoApiBaseUrl(request),
+    ...(sessionId === undefined
+      ? {}
+      : {
+          transformClient: HttpClient.mapRequest(
+            HttpClientRequest.bearerToken(sessionId)
+          ),
+        }),
+  }).pipe(Effect.provide(FetchHttpClient.layer), Effect.runPromise)
+
 export const getKrynoApiClient = async (
   request: Request
 ): Promise<KrynoApiClient> => {
-  const client = await HttpApiClient.make(KrynoHttpApi, {
-    baseUrl: getKrynoApiBaseUrl(request),
-  }).pipe(Effect.provide(FetchHttpClient.layer), Effect.runPromise)
+  const client = await makeHttpApiClient(request)
 
   return {
     signUpGymUser: (input) =>
@@ -77,6 +101,14 @@ export const getKrynoApiClient = async (
         .pipe(Effect.runPromise)
 
       return login
+    },
+    currentGymUserSession: async (sessionId) => {
+      const authenticatedClient = await makeHttpApiClient(request, sessionId)
+      const current = await authenticatedClient.auth
+        .currentGymUserSession()
+        .pipe(Effect.runPromise)
+
+      return current as AuthCurrentGymUserSessionSuccess
     },
   }
 }

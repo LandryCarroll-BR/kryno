@@ -19,6 +19,7 @@ import {
 import { Input } from "@workspace/ui/components/input"
 
 import type { Route } from "./+types/gym-user-login"
+import { serializeGymUserSessionCookie } from "../lib/gym-user-session-cookie"
 import { getKrynoApiClient, type KrynoApiClient } from "../lib/kryno-api-client"
 
 type FieldName = "email" | "password"
@@ -71,44 +72,24 @@ const loginFailureMessage = (error: unknown) =>
     ? failureMessages.unverified
     : failureMessages.invalidCredentials
 
-const sessionCookieName = "kryno_gym_user_session"
-
-const isLocalHttpDevelopment = (request: Request) => {
-  const url = new URL(request.url)
-
-  return (
-    url.protocol === "http:" &&
-    (url.hostname === "localhost" ||
-      url.hostname === "127.0.0.1" ||
-      url.hostname === "::1")
-  )
-}
-
-const serializeSessionCookie = (sessionId: string, request: Request) => {
-  const attributes = [
-    `${sessionCookieName}=${encodeURIComponent(sessionId)}`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-  ]
-
-  if (!isLocalHttpDevelopment(request)) {
-    attributes.push("Secure")
-  }
-
-  return attributes.join("; ")
-}
-
-const redirectToAppWithSessionCookie = (sessionId: string, request: Request) => {
+const redirectToAppWithSessionCookie = (
+  sessionId: string,
+  request: Request
+) => {
   const headers = new Headers()
-  headers.append("Set-Cookie", serializeSessionCookie(sessionId, request))
+  headers.append(
+    "Set-Cookie",
+    serializeGymUserSessionCookie(sessionId, request)
+  )
 
   return redirect("/app", { headers })
 }
 
 export const createGymUserLoginAction =
   (getClient: (request: Request) => Promise<KrynoApiClient>) =>
-  async ({ request }: Route.ActionArgs): Promise<Response | LoginActionData> => {
+  async ({
+    request,
+  }: Route.ActionArgs): Promise<Response | LoginActionData> => {
     const formData = await request.formData()
     const input = {
       email: readFormString(formData, "email").toLowerCase(),
