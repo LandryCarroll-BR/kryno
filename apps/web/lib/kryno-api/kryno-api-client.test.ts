@@ -10,7 +10,7 @@ import {
 } from "vitest"
 import { Effect } from "effect"
 
-import { getKrynoApiClient } from "./kryno-api-client"
+import { getKrynoApiClient } from "../../lib/kryno-api/kryno-api-client"
 
 describe("Kryno API client", () => {
   let fetchHandler: (

@@ -5,7 +5,7 @@ import { createGymUserLogoutAction } from "./gym-user-logout"
 import type {
   KrynoApiEffect,
   KrynoApiClientOptions,
-} from "../lib/kryno-api-client"
+} from "../../lib/kryno-api/kryno-api-client"
 
 type LogoutApiClient = {
   readonly auth: {

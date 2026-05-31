@@ -5,7 +5,7 @@ import { createAppLoader } from "./app"
 import type {
   KrynoApiEffect,
   KrynoApiClientOptions,
-} from "../lib/kryno-api-client"
+} from "../../lib/kryno-api/kryno-api-client"
 
 const loaderArgs = (request: Request) =>
   ({

@@ -5,7 +5,10 @@ import {
   createManualEmailVerificationAction,
   type ManualEmailVerificationActionData,
 } from "./manual-email-verification"
-import type { KrynoApiClient, KrynoApiEffect } from "../lib/kryno-api-client"
+import type {
+  KrynoApiClient,
+  KrynoApiEffect,
+} from "../../lib/kryno-api/kryno-api-client"
 
 type VerificationApiClient = {
   readonly auth: {

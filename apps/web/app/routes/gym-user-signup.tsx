@@ -24,7 +24,7 @@ import {
   getKrynoApiClient,
   type KrynoApiClient,
   type KrynoApiEffect,
-} from "../lib/kryno-api-client"
+} from "../../lib/kryno-api/kryno-api-client"
 
 type FieldName = "email" | "password" | "displayName"
 type SignUpGymUserRequest = Parameters<

@@ -5,7 +5,10 @@ import {
   createGymUserSignupAction,
   type SignupActionData,
 } from "./gym-user-signup"
-import type { KrynoApiClient, KrynoApiEffect } from "../lib/kryno-api-client"
+import type {
+  KrynoApiClient,
+  KrynoApiEffect,
+} from "../../lib/kryno-api/kryno-api-client"
 
 type SignupApiClient = {
   readonly auth: {

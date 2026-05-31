@@ -4,12 +4,12 @@ import { Effect } from "effect"
 import { Button } from "@workspace/ui/components/button"
 
 import type { Route } from "./+types/app"
-import { readGymUserSessionCookie } from "../lib/gym-user-session-cookie"
+import { readGymUserSessionCookie } from "../../lib/kryno-api/gym-user-session-cookie"
 import {
   getKrynoApiClient,
   type KrynoApiEffect,
   type KrynoApiClientGetter,
-} from "../lib/kryno-api-client"
+} from "../../lib/kryno-api/kryno-api-client"
 
 interface CurrentGymUserSession {
   readonly user: {

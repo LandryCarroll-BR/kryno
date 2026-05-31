@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { Effect } from "effect"
 
-import {
-  createGymUserLoginAction,
-  type LoginActionData,
-} from "./gym-user-login"
-import type { KrynoApiClient, KrynoApiEffect } from "../lib/kryno-api-client"
+import type {
+  KrynoApiClient,
+  KrynoApiEffect,
+} from "../../../lib/kryno-api/kryno-api-client"
+import { createGymUserLoginAction } from "./gym-user-login-action"
+import type { LoginActionData } from "./gym-user-login-view-model"
 
 type LoginGymUserRequest = Parameters<KrynoApiClient["auth"]["loginGymUser"]>[0]
 

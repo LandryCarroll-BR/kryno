@@ -5,12 +5,12 @@ import type { Route } from "./+types/gym-user-logout"
 import {
   readGymUserSessionCookie,
   serializeExpiredGymUserSessionCookie,
-} from "../lib/gym-user-session-cookie"
+} from "../../lib/kryno-api/gym-user-session-cookie"
 import {
   getKrynoApiClient,
   type KrynoApiEffect,
   type KrynoApiClientGetter,
-} from "../lib/kryno-api-client"
+} from "../../lib/kryno-api/kryno-api-client"
 
 const isExpectedLogoutFailure = (error: unknown) =>
   typeof error === "object" &&
