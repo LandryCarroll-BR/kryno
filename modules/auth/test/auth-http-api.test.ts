@@ -162,9 +162,15 @@ describe("Auth HTTP API contracts", () => {
     })
     expect(endpoints.get("currentGymUserSession")).toEqual({
       method: "GET",
-      path: "/auth/gym-users/sessions/:sessionId",
+      path: "/auth/gym-users/session",
       successes: [200],
       errors: [401, 403],
+    })
+    expect(endpoints.get("logoutGymUser")).toEqual({
+      method: "DELETE",
+      path: "/auth/gym-users/session",
+      successes: [204],
+      errors: [401],
     })
     expect(endpoints.get("createGymStaffInvitation")).toEqual({
       method: "POST",
@@ -172,6 +178,9 @@ describe("Auth HTTP API contracts", () => {
       successes: [201],
       errors: [401, 403],
     })
+    expect(
+      [...endpoints.values()].map((endpoint) => endpoint.path)
+    ).not.toContain("/auth/gym-users/sessions/:sessionId")
   })
 
   it("declares the intended session audience for protected endpoints", () => {

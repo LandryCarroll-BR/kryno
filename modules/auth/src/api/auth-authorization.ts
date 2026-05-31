@@ -1,4 +1,4 @@
-import { Effect, Layer, Redacted } from "effect"
+import { Context, Effect, Layer, Redacted } from "effect"
 import {
   HttpApiError,
   HttpApiMiddleware,
@@ -9,9 +9,15 @@ import { Auth } from "../auth.ts"
 import { GymUserSessionId } from "../domain/gym-user.ts"
 import { SystemAdminSessionId } from "../domain/system-admin.ts"
 
+export class CurrentGymUserSessionId extends Context.Service<
+  CurrentGymUserSessionId,
+  GymUserSessionId
+>()("@workspace/auth/CurrentGymUserSessionId") {}
+
 export class GymUserSessionRequired extends HttpApiMiddleware.Service<
   GymUserSessionRequired,
   {
+    provides: CurrentGymUserSessionId
     requires: Auth
   }
 >()("@workspace/auth/GymUserSessionRequired", {
@@ -47,14 +53,19 @@ export const GymUserSessionRequiredLive = Layer.succeed(
     bearer: (httpEffect, { credential }) =>
       Effect.gen(function* () {
         const sessionId = yield* bearerSessionId(credential)
+        const gymUserSessionId = GymUserSessionId.make(sessionId)
 
         yield* Auth.use((auth) =>
           auth.currentGymUserSession({
-            sessionId: GymUserSessionId.make(sessionId),
+            sessionId: gymUserSessionId,
           })
         ).pipe(Effect.mapError(() => new HttpApiError.Unauthorized({})))
 
-        return yield* httpEffect
+        return yield* Effect.provideService(
+          httpEffect,
+          CurrentGymUserSessionId,
+          gymUserSessionId
+        )
       }),
   }
 )

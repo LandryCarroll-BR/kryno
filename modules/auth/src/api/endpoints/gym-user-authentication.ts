@@ -8,7 +8,6 @@ import {
 import {
   CurrentGymUserSessionSuccess,
   GymUserLoginSuccess,
-  GymUserSessionId,
   LoginGymUserInput,
 } from "../../domain/gym-user.ts"
 
@@ -37,9 +36,8 @@ export const LoginGymUserEndpoint = HttpApiEndpoint.post(
 
 export const CurrentGymUserSessionEndpoint = HttpApiEndpoint.get(
   "currentGymUserSession",
-  "/gym-users/sessions/:sessionId",
+  "/gym-users/session",
   {
-    params: { sessionId: GymUserSessionId },
     success: CurrentGymUserSessionSuccess,
     error: [GymUserSessionInvalidUnauthorized, GymUserUnverifiedForbidden],
   }
@@ -47,9 +45,8 @@ export const CurrentGymUserSessionEndpoint = HttpApiEndpoint.get(
 
 export const LogoutGymUserEndpoint = HttpApiEndpoint.delete(
   "logoutGymUser",
-  "/gym-users/sessions/:sessionId",
+  "/gym-users/session",
   {
-    params: { sessionId: GymUserSessionId },
     error: GymUserSessionInvalidUnauthorized,
   }
 )

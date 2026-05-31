@@ -103,8 +103,17 @@ describe("Kryno HTTP API contract", () => {
     expect(endpoints.get("requestGymCreation")?.path).toBe(
       "/api/auth/gyms/requests"
     )
+    expect(endpoints.get("currentGymUserSession")?.path).toBe(
+      "/api/auth/gym-users/session"
+    )
+    expect(endpoints.get("logoutGymUser")?.path).toBe(
+      "/api/auth/gym-users/session"
+    )
     expect(endpoints.get("approveGymCreationRequest")?.path).toBe(
       "/api/auth/gyms/requests/approvals"
     )
+    expect(
+      [...endpoints.values()].map((endpoint) => endpoint.path)
+    ).not.toContain("/api/auth/gym-users/sessions/:sessionId")
   })
 })

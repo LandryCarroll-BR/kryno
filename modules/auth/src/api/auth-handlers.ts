@@ -1,5 +1,7 @@
+import { Effect } from "effect"
 import { HttpApiBuilder, HttpApiGroup } from "effect/unstable/httpapi"
 
+import { CurrentGymUserSessionId } from "./auth-authorization.ts"
 import { AuthHttpGroup } from "./auth-group.ts"
 import { Auth } from "../auth.ts"
 
@@ -24,11 +26,19 @@ export const buildAuthHttpHandlers = (
     .handle("loginGymUser", ({ payload }) =>
       Auth.use((auth) => auth.loginGymUser(payload))
     )
-    .handle("currentGymUserSession", ({ params }) =>
-      Auth.use((auth) => auth.currentGymUserSession(params))
+    .handle("currentGymUserSession", () =>
+      CurrentGymUserSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) => auth.currentGymUserSession({ sessionId }))
+        )
+      )
     )
-    .handle("logoutGymUser", ({ params }) =>
-      Auth.use((auth) => auth.logoutGymUser(params))
+    .handle("logoutGymUser", () =>
+      CurrentGymUserSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) => auth.logoutGymUser({ sessionId }))
+        )
+      )
     )
     .handle("requestGymUserPasswordReset", ({ payload }) =>
       Auth.use((auth) => auth.requestGymUserPasswordReset(payload))

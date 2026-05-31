@@ -16,6 +16,26 @@ const postJson = (path: string, body: unknown, bearer?: string) =>
     })
   )
 
+const get = (path: string, bearer?: string) =>
+  handler(
+    new Request(`https://kryno.test${path}`, {
+      method: "GET",
+      headers: {
+        ...(bearer === undefined ? {} : { authorization: `Bearer ${bearer}` }),
+      },
+    })
+  )
+
+const deleteRequest = (path: string, bearer?: string) =>
+  handler(
+    new Request(`https://kryno.test${path}`, {
+      method: "DELETE",
+      headers: {
+        ...(bearer === undefined ? {} : { authorization: `Bearer ${bearer}` }),
+      },
+    })
+  )
+
 describe("Kryno API app", () => {
   it("serves Auth routes through the composed /api contract", async () => {
     const response = await postJson("/api/auth/gym-users/email-reservations", {
@@ -91,6 +111,46 @@ describe("Kryno API app", () => {
 
     expect(response.status).toBe(401)
     expect(await response.text()).toBe("")
+  })
+
+  it("resolves and logs out the current gym-user session from bearer authentication", async () => {
+    await postJson("/api/auth/gym-users/signups", {
+      email: "bearer-current@example.com",
+      password: "correct horse battery staple",
+      displayName: "Bearer Current",
+    })
+    await postJson("/api/auth/gym-users/email-verifications", {
+      token: "gym-user-email-verification-token-2",
+    })
+    const loginResponse = await postJson("/api/auth/gym-users/sessions", {
+      email: "bearer-current@example.com",
+      password: "correct horse battery staple",
+    })
+    const login = await loginResponse.json()
+
+    const currentResponse = await get(
+      "/api/auth/gym-users/session",
+      login.session.id
+    )
+    expect(currentResponse.status).toBe(200)
+    await expect(currentResponse.json()).resolves.toMatchObject({
+      session: {
+        id: login.session.id,
+      },
+    })
+
+    const logoutResponse = await deleteRequest(
+      "/api/auth/gym-users/session",
+      login.session.id
+    )
+    expect(logoutResponse.status).toBe(204)
+
+    const afterLogoutResponse = await get(
+      "/api/auth/gym-users/session",
+      login.session.id
+    )
+    expect(afterLogoutResponse.status).toBe(401)
+    expect(await afterLogoutResponse.text()).toBe("")
   })
 
   it("keeps the product API contract under /api without a version prefix", () => {
