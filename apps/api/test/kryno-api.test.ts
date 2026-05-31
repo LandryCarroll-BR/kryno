@@ -222,6 +222,130 @@ describe("Kryno API app", () => {
     })
   })
 
+  it("uses bearer-derived gym-user sessions for owner, member, and staff affiliation routes", async () => {
+    await postJson("/api/auth/gym-users/signups", {
+      email: "bearer-affiliation-owner@example.com",
+      password: "correct horse battery staple",
+      displayName: "Bearer Affiliation Owner",
+    })
+    await postJson("/api/auth/gym-users/email-verifications", {
+      token: "gym-user-email-verification-token-4",
+    })
+    const ownerLoginResponse = await postJson("/api/auth/gym-users/sessions", {
+      email: "bearer-affiliation-owner@example.com",
+      password: "correct horse battery staple",
+    })
+    const ownerLogin = await ownerLoginResponse.json()
+
+    await postJson("/api/auth/gym-users/signups", {
+      email: "bearer-affiliation-member@example.com",
+      password: "correct horse battery staple",
+      displayName: "Bearer Affiliation Member",
+    })
+    await postJson("/api/auth/gym-users/email-verifications", {
+      token: "gym-user-email-verification-token-5",
+    })
+    const memberLoginResponse = await postJson("/api/auth/gym-users/sessions", {
+      email: "bearer-affiliation-member@example.com",
+      password: "correct horse battery staple",
+    })
+    const memberLogin = await memberLoginResponse.json()
+
+    await postJson("/api/auth/gym-users/signups", {
+      email: "bearer-affiliation-staff@example.com",
+      password: "correct horse battery staple",
+      displayName: "Bearer Affiliation Staff",
+    })
+    await postJson("/api/auth/gym-users/email-verifications", {
+      token: "gym-user-email-verification-token-6",
+    })
+    const staffLoginResponse = await postJson("/api/auth/gym-users/sessions", {
+      email: "bearer-affiliation-staff@example.com",
+      password: "correct horse battery staple",
+    })
+    const staffLogin = await staffLoginResponse.json()
+
+    const requestResponse = await postJson(
+      "/api/auth/gyms/requests",
+      { name: "Bearer Affiliation Gym" },
+      ownerLogin.session.id
+    )
+    const request = await requestResponse.json()
+    const adminLoginResponse = await postJson(
+      "/api/auth/system-admin/sessions",
+      systemAdminCredentials
+    )
+    const adminLogin = await adminLoginResponse.json()
+    const approvalResponse = await postJson(
+      "/api/auth/gyms/requests/approvals",
+      { requestId: request.request.id },
+      adminLogin.session.id
+    )
+    const approval = await approvalResponse.json()
+
+    const ownerAccessResponse = await postJson(
+      "/api/auth/gyms/owner-access",
+      { gymId: approval.gym.id },
+      ownerLogin.session.id
+    )
+    expect(ownerAccessResponse.status).toBe(200)
+    await expect(ownerAccessResponse.json()).resolves.toMatchObject({
+      affiliation: {
+        role: "Owner",
+        userId: ownerLogin.user.id,
+      },
+    })
+
+    const joinResponse = await postJson(
+      "/api/auth/gyms/member-affiliations",
+      { gymId: approval.gym.id },
+      memberLogin.session.id
+    )
+    expect(joinResponse.status).toBe(200)
+    await expect(joinResponse.json()).resolves.toMatchObject({
+      affiliation: {
+        role: "Member",
+        userId: memberLogin.user.id,
+      },
+    })
+
+    const leaveResponse = await postJson(
+      "/api/auth/gyms/member-affiliations/leaves",
+      { gymId: approval.gym.id },
+      memberLogin.session.id
+    )
+    expect(leaveResponse.status).toBe(200)
+    await expect(leaveResponse.json()).resolves.toMatchObject({
+      affiliation: {
+        status: "left",
+        userId: memberLogin.user.id,
+      },
+    })
+
+    const invitationResponse = await postJson(
+      "/api/auth/gyms/staff-invitations",
+      {
+        gymId: approval.gym.id,
+        email: "bearer-affiliation-staff@example.com",
+      },
+      ownerLogin.session.id
+    )
+    expect(invitationResponse.status).toBe(201)
+
+    const acceptanceResponse = await postJson(
+      "/api/auth/gyms/staff-invitations/acceptances",
+      { token: "gym-staff-invitation-token-1" },
+      staffLogin.session.id
+    )
+    expect(acceptanceResponse.status).toBe(200)
+    await expect(acceptanceResponse.json()).resolves.toMatchObject({
+      affiliation: {
+        role: "Staff",
+        userId: staffLogin.user.id,
+      },
+    })
+  })
+
   it("resolves and logs out the current system-admin session from bearer authentication", async () => {
     const loginResponse = await postJson(
       "/api/auth/system-admin/sessions",

@@ -11,15 +11,13 @@ import {
   SystemAdminSessionInvalid,
 } from "../../domain/errors.ts"
 import {
-  CurrentGymOwnerAccessInput,
   CurrentGymOwnerAccessSuccess,
   GymCreationRequestId,
   GymCreationRequestApproved,
   GymCreationRequested,
+  GymId,
   GymMemberJoined,
   GymMemberLeft,
-  JoinGymAsMemberInput,
-  LeaveGymAsMemberInput,
 } from "../../domain/gym.ts"
 
 export class RequestGymCreationPayload extends Schema.Class<RequestGymCreationPayload>(
@@ -32,6 +30,24 @@ export class ApproveGymCreationRequestPayload extends Schema.Class<ApproveGymCre
   "ApproveGymCreationRequestPayload"
 )({
   requestId: GymCreationRequestId,
+}) {}
+
+export class CurrentGymOwnerAccessPayload extends Schema.Class<CurrentGymOwnerAccessPayload>(
+  "CurrentGymOwnerAccessPayload"
+)({
+  gymId: GymId,
+}) {}
+
+export class JoinGymAsMemberPayload extends Schema.Class<JoinGymAsMemberPayload>(
+  "JoinGymAsMemberPayload"
+)({
+  gymId: GymId,
+}) {}
+
+export class LeaveGymAsMemberPayload extends Schema.Class<LeaveGymAsMemberPayload>(
+  "LeaveGymAsMemberPayload"
+)({
+  gymId: GymId,
 }) {}
 
 export const GymCreationRequestedCreated = GymCreationRequested.pipe(
@@ -91,7 +107,7 @@ export const CurrentGymOwnerAccessEndpoint = HttpApiEndpoint.post(
   "currentGymOwnerAccess",
   "/gyms/owner-access",
   {
-    payload: CurrentGymOwnerAccessInput,
+    payload: CurrentGymOwnerAccessPayload,
     success: CurrentGymOwnerAccessSuccess,
     error: [
       GymUserSessionInvalidUnauthorized,
@@ -106,7 +122,7 @@ export const JoinGymAsMemberEndpoint = HttpApiEndpoint.post(
   "joinGymAsMember",
   "/gyms/member-affiliations",
   {
-    payload: JoinGymAsMemberInput,
+    payload: JoinGymAsMemberPayload,
     success: GymMemberJoined,
     error: [
       GymUserSessionInvalidUnauthorized,
@@ -121,7 +137,7 @@ export const LeaveGymAsMemberEndpoint = HttpApiEndpoint.post(
   "leaveGymAsMember",
   "/gyms/member-affiliations/leaves",
   {
-    payload: LeaveGymAsMemberInput,
+    payload: LeaveGymAsMemberPayload,
     success: GymMemberLeft,
     error: [
       GymUserSessionInvalidUnauthorized,

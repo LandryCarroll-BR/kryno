@@ -1,3 +1,4 @@
+import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiSchema } from "effect/unstable/httpapi"
 
 import {
@@ -9,11 +10,23 @@ import {
   GymUserUnverified,
 } from "../../domain/errors.ts"
 import {
-  AcceptGymStaffInvitationInput,
-  CreateGymStaffInvitationInput,
+  GymId,
   GymStaffInvitationAccepted,
   GymStaffInvitationCreated,
 } from "../../domain/gym.ts"
+
+export class CreateGymStaffInvitationPayload extends Schema.Class<CreateGymStaffInvitationPayload>(
+  "CreateGymStaffInvitationPayload"
+)({
+  gymId: GymId,
+  email: Schema.String,
+}) {}
+
+export class AcceptGymStaffInvitationPayload extends Schema.Class<AcceptGymStaffInvitationPayload>(
+  "AcceptGymStaffInvitationPayload"
+)({
+  token: Schema.String,
+}) {}
 
 export const GymStaffInvitationCreatedCreated =
   GymStaffInvitationCreated.pipe(HttpApiSchema.status(201))
@@ -45,7 +58,7 @@ export const CreateGymStaffInvitationEndpoint = HttpApiEndpoint.post(
   "createGymStaffInvitation",
   "/gyms/staff-invitations",
   {
-    payload: CreateGymStaffInvitationInput,
+    payload: CreateGymStaffInvitationPayload,
     success: GymStaffInvitationCreatedCreated,
     error: [
       GymUserSessionInvalidUnauthorized,
@@ -61,7 +74,7 @@ export const AcceptGymStaffInvitationEndpoint = HttpApiEndpoint.post(
   "acceptGymStaffInvitation",
   "/gyms/staff-invitations/acceptances",
   {
-    payload: AcceptGymStaffInvitationInput,
+    payload: AcceptGymStaffInvitationPayload,
     success: GymStaffInvitationAccepted,
     error: [
       GymUserSessionInvalidUnauthorized,

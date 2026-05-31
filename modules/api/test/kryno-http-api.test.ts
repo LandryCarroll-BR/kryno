@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest"
-import { HttpApi } from "effect/unstable/httpapi"
+import { HttpApi, OpenApi } from "effect/unstable/httpapi"
 import {
   GymUserSessionRequired,
   SystemAdminSessionRequired,
@@ -124,5 +124,25 @@ describe("Kryno HTTP API contract", () => {
     expect(
       [...endpoints.values()].map((endpoint) => endpoint.path)
     ).not.toContain("/api/auth/system-admin/sessions/:sessionId")
+  })
+
+  it("keeps protected Auth payload contracts free of client-supplied session ids", () => {
+    const spec = OpenApi.fromApi(KrynoHttpApi)
+
+    const protectedPayloadPaths = [
+      "/api/auth/gyms/requests",
+      "/api/auth/gyms/requests/approvals",
+      "/api/auth/gyms/owner-access",
+      "/api/auth/gyms/member-affiliations",
+      "/api/auth/gyms/member-affiliations/leaves",
+      "/api/auth/gyms/staff-invitations",
+      "/api/auth/gyms/staff-invitations/acceptances",
+    ] as const
+
+    for (const path of protectedPayloadPaths) {
+      expect(
+        JSON.stringify(spec.paths[path]?.post?.requestBody ?? {})
+      ).not.toContain("sessionId")
+    }
   })
 })

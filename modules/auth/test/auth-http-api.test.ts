@@ -245,15 +245,20 @@ describe("Auth HTTP API contracts", () => {
   it("keeps protected gym request payload contracts free of client-supplied session ids", () => {
     const spec = OpenApi.fromApi(AuthHttpApi)
 
-    expect(
-      JSON.stringify(
-        spec.paths["/auth/gyms/requests"]?.post?.requestBody ?? {}
-      )
-    ).not.toContain("sessionId")
-    expect(
-      JSON.stringify(
-        spec.paths["/auth/gyms/requests/approvals"]?.post?.requestBody ?? {}
-      )
-    ).not.toContain("sessionId")
+    const protectedPayloadPaths = [
+      "/auth/gyms/requests",
+      "/auth/gyms/requests/approvals",
+      "/auth/gyms/owner-access",
+      "/auth/gyms/member-affiliations",
+      "/auth/gyms/member-affiliations/leaves",
+      "/auth/gyms/staff-invitations",
+      "/auth/gyms/staff-invitations/acceptances",
+    ] as const
+
+    for (const path of protectedPayloadPaths) {
+      expect(
+        JSON.stringify(spec.paths[path]?.post?.requestBody ?? {})
+      ).not.toContain("sessionId")
+    }
   })
 })

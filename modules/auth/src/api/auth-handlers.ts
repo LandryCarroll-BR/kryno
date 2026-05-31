@@ -74,19 +74,64 @@ export const buildAuthHttpHandlers = (
       )
     )
     .handle("currentGymOwnerAccess", ({ payload }) =>
-      Auth.use((auth) => auth.currentGymOwnerAccess(payload))
+      CurrentGymUserSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) =>
+            auth.currentGymOwnerAccess({
+              ...payload,
+              sessionId,
+            })
+          )
+        )
+      )
     )
     .handle("joinGymAsMember", ({ payload }) =>
-      Auth.use((auth) => auth.joinGymAsMember(payload))
+      CurrentGymUserSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) =>
+            auth.joinGymAsMember({
+              ...payload,
+              sessionId,
+            })
+          )
+        )
+      )
     )
     .handle("leaveGymAsMember", ({ payload }) =>
-      Auth.use((auth) => auth.leaveGymAsMember(payload))
+      CurrentGymUserSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) =>
+            auth.leaveGymAsMember({
+              ...payload,
+              sessionId,
+            })
+          )
+        )
+      )
     )
     .handle("createGymStaffInvitation", ({ payload }) =>
-      Auth.use((auth) => auth.createGymStaffInvitation(payload))
+      CurrentGymUserSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) =>
+            auth.createGymStaffInvitation({
+              ...payload,
+              sessionId,
+            })
+          )
+        )
+      )
     )
     .handle("acceptGymStaffInvitation", ({ payload }) =>
-      Auth.use((auth) => auth.acceptGymStaffInvitation(payload))
+      CurrentGymUserSessionId.pipe(
+        Effect.flatMap((sessionId) =>
+          Auth.use((auth) =>
+            auth.acceptGymStaffInvitation({
+              ...payload,
+              sessionId,
+            })
+          )
+        )
+      )
     )
     .handle("bootstrapFirstSystemAdmin", ({ payload }) =>
       Auth.use((auth) => auth.bootstrapFirstSystemAdmin(payload))
