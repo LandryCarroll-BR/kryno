@@ -314,6 +314,57 @@ describe("Kryno API client", () => {
     expect(current.user.email).toBe("member@test.dev")
   })
 
+  it("requests gym creation with bearer auth from the web session", async () => {
+    const requests: Request[] = []
+    const bodies: unknown[] = []
+    fetchHandler = async (request: RequestInfo | URL, init?: RequestInit) => {
+      const nextRequest =
+        request instanceof Request ? request : new Request(request, init)
+      requests.push(nextRequest)
+      bodies.push(await nextRequest.clone().json())
+
+      return Response.json(
+        {
+          request: {
+            id: "gym-creation-request-1",
+            gymId: "gym-1",
+            requesterUserId: "gym-user-1",
+            status: "pending",
+          },
+          gym: {
+            id: "gym-1",
+            name: "Boulder Yard",
+            status: "pending",
+          },
+        },
+        { status: 201 }
+      )
+    }
+    vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
+
+    const client = await getKrynoApiClient({
+      sessionId: "gym-user-session-1",
+    })
+    await Effect.runPromise(
+      client.auth.requestGymCreation({
+        payload: {
+          name: "Boulder Yard",
+        },
+      })
+    )
+
+    expect(requests).toHaveLength(1)
+    expect(requests[0]?.method).toBe("POST")
+    expect(requests[0]?.url).toBe(
+      "https://api.kryno.test/api/auth/gyms/requests"
+    )
+    expect(requests[0]?.headers.get("Authorization")).toBe(
+      "Bearer gym-user-session-1"
+    )
+    expect(requests[0]?.headers.get("Cookie")).toBeNull()
+    expect(bodies).toEqual([{ name: "Boulder Yard" }])
+  })
+
   it("logs out the current gym-user session with bearer auth instead of forwarded cookies", async () => {
     const requests: Request[] = []
     fetchHandler = async (request: RequestInfo | URL, init?: RequestInit) => {

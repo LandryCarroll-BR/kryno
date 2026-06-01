@@ -12,6 +12,10 @@ import {
   type KrynoApiEffect,
   type KrynoApiClientGetter,
 } from "../../lib/kryno-api/kryno-api-client"
+import { GymCreationRequestForm } from "../../features/auth/gym-creation-request/gym-creation-request-form"
+import { GymCreationRequestViewModel } from "../../features/auth/gym-creation-request/gym-creation-request-view-model"
+
+export const GymCreationRequestFormViewModel = GymCreationRequestViewModel
 
 interface CurrentGymUserSession {
   readonly user: {
@@ -151,9 +155,11 @@ export const AppDashboardViewModel = {
 export function AppDashboard({
   session,
   message,
+  gymCreationRequestFieldError,
 }: {
   readonly session: CurrentGymUserSession
   readonly message?: DashboardMessage
+  readonly gymCreationRequestFieldError?: string
 }) {
   const { user, activeAffiliations } = session
 
@@ -225,19 +231,14 @@ export function AppDashboard({
               <div className="rounded-lg border border-dashed border-border p-6">
                 <h3 className="font-semibold">No active gym affiliations</h3>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Request a new gym or join one when those forms are available.
+                  Request a new gym or join one when ready.
                 </p>
               </div>
             )}
           </section>
 
           <section className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-lg border border-border p-4">
-              <h2 className="font-semibold">Request gym</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Gym creation requests will attach here.
-              </p>
-            </div>
+            <GymCreationRequestForm fieldError={gymCreationRequestFieldError} />
             <div className="rounded-lg border border-border p-4">
               <h2 className="font-semibold">Join gym</h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -264,6 +265,17 @@ export default function App() {
     searchParams.get("status"),
     searchParams.get("error")
   )
+  const gymCreationRequestFieldError =
+    GymCreationRequestFormViewModel.fieldError(
+      searchParams.get("form"),
+      searchParams.get("error")
+    )
 
-  return <AppDashboard session={session} message={message} />
+  return (
+    <AppDashboard
+      session={session}
+      message={message}
+      gymCreationRequestFieldError={gymCreationRequestFieldError}
+    />
+  )
 }

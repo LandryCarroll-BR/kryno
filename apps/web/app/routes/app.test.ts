@@ -3,7 +3,12 @@ import { Effect } from "effect"
 import React from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 
-import { AppDashboard, AppDashboardViewModel, createAppLoader } from "./app"
+import {
+  AppDashboard,
+  AppDashboardViewModel,
+  createAppLoader,
+  GymCreationRequestFormViewModel,
+} from "./app"
 import type {
   KrynoApiEffect,
   KrynoApiClientOptions,
@@ -194,6 +199,27 @@ describe("app loader", () => {
     )
 
     expect(html).toContain("No active gym affiliations")
-    expect(html).toContain("Request a new gym or join one when those forms are available.")
+    expect(html).toContain("Request a new gym or join one when ready.")
+  })
+
+  it("renders a functional gym creation request form", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(AppDashboard, {
+        session: authenticatedSession,
+      })
+    )
+
+    expect(html).toContain('action="/app/gym-creation-request"')
+    expect(html).toContain('name="name"')
+    expect(html).toContain("Request gym creation")
+  })
+
+  it("maps gym creation request validation errors to form messages", () => {
+    expect(
+      GymCreationRequestFormViewModel.fieldError(
+        "gym-creation-request",
+        "invalid-name"
+      )
+    ).toBe("Enter a gym name.")
   })
 })
