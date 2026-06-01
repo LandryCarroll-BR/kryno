@@ -112,7 +112,22 @@ export const redirectToAppWithSessionCookie = (
     serializeGymUserSessionCookie(sessionId, request)
   )
 
-  return redirect("/app", { headers })
+  return redirect(getSafeLoginRedirectTarget(request), { headers })
+}
+
+const getSafeLoginRedirectTarget = (request: Request) => {
+  const redirectTo = new URL(request.url).searchParams.get("redirectTo")?.trim()
+
+  if (
+    redirectTo === undefined ||
+    redirectTo.length === 0 ||
+    !redirectTo.startsWith("/") ||
+    redirectTo.startsWith("//")
+  ) {
+    return "/app"
+  }
+
+  return redirectTo
 }
 
 export const gymUserLoginAction: GymUserLoginAction = createGymUserLoginAction({

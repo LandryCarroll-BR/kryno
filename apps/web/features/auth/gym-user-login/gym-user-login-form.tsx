@@ -1,5 +1,11 @@
 import { RiArrowRightLine } from "@remixicon/react"
-import { Form, Link, useActionData, useNavigation } from "react-router"
+import {
+  Form,
+  Link,
+  useActionData,
+  useNavigation,
+  useSearchParams,
+} from "react-router"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import {
@@ -12,16 +18,27 @@ import {
 import { Input } from "@workspace/ui/components/input"
 
 import type { GymUserLoginAction } from "../../../features/auth/gym-user-login/gym-user-login-action"
+import { LoginActionViewModel } from "../../../features/auth/gym-user-login/gym-user-login-view-model"
 
 export function GymUserLoginForm() {
   const actionData = useActionData<GymUserLoginAction>()
   const navigation = useNavigation()
+  const [searchParams] = useSearchParams()
   const isSubmitting = navigation.state === "submitting"
+  const statusMessage = LoginActionViewModel.statusMessage(
+    searchParams.get("status")
+  )
 
   return (
     <Form method="post" className="space-y-6">
       <FieldSet>
         <FieldGroup>
+          {statusMessage && (
+            <Alert>
+              <AlertDescription>{statusMessage.message}</AlertDescription>
+            </Alert>
+          )}
+
           {actionData?.formError && (
             <Alert variant="destructive">
               <AlertDescription>{actionData.formError}</AlertDescription>

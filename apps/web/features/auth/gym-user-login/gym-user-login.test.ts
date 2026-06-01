@@ -8,7 +8,10 @@ import {
   type GymUserLoginActionDependencies,
   type GymUserLoginInput,
 } from "./gym-user-login-action"
-import type { LoginActionData } from "./gym-user-login-view-model"
+import {
+  LoginActionViewModel,
+  type LoginActionData,
+} from "./gym-user-login-view-model"
 
 const actionRequest = (body: URLSearchParams) =>
   new Request("https://kryno.test/login", {
@@ -275,6 +278,38 @@ describe("gym-user login action", () => {
     ])
   })
 
+  it("redirects successful logins to a safe same-app return target", () => {
+    const response = redirectToAppWithSessionCookie(
+      "gym-user-session-1",
+      new Request(
+        "https://kryno.test/login?redirectTo=%2Fapp%2Fstaff-invitations%2Faccept%3Ftoken%3Dstaff-token-1"
+      )
+    )
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get("Location")).toBe(
+      "/app/staff-invitations/accept?token=staff-token-1"
+    )
+  })
+
+  it.each([
+    "",
+    "https://evil.test/app",
+    "//evil.test/app",
+    "app",
+    "javascript:alert(1)",
+  ])("falls back to the app for unsafe return target %s", (redirectTo) => {
+    const response = redirectToAppWithSessionCookie(
+      "gym-user-session-1",
+      new Request(
+        `https://kryno.test/login?redirectTo=${encodeURIComponent(redirectTo)}`
+      )
+    )
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get("Location")).toBe("/app")
+  })
+
   it("does not mark the session cookie secure for local HTTP development", () => {
     const response = redirectToAppWithSessionCookie(
       "gym-user-session-1",
@@ -284,5 +319,14 @@ describe("gym-user login action", () => {
     expect(response.headers.getSetCookie()).toEqual([
       "kryno_gym_user_session=gym-user-session-1; Path=/; HttpOnly; SameSite=Lax",
     ])
+  })
+
+  it("maps password reset completion query status to a login message", () => {
+    expect(
+      LoginActionViewModel.statusMessage("password-reset-complete")
+    ).toEqual({
+      variant: "success",
+      message: "Your password has been reset. Sign in with your new password.",
+    })
   })
 })

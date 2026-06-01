@@ -84,7 +84,7 @@ describe("app loader", () => {
 
     expect(calls).toBe(0)
     expect(response.status).toBe(302)
-    expect(response.headers.get("Location")).toBe("/login")
+    expect(response.headers.get("Location")).toBe("/login?redirectTo=%2Fapp")
   })
 
   it("redirects visitors with an invalid session cookie to login", async () => {
@@ -110,6 +110,6 @@ describe("app loader", () => {
     )) as Response
 
     expect(response.status).toBe(302)
-    expect(response.headers.get("Location")).toBe("/login")
+    expect(response.headers.get("Location")).toBe("/login?redirectTo=%2Fapp")
   })
 })

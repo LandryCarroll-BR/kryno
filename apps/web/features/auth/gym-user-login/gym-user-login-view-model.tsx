@@ -6,6 +6,11 @@ export interface LoginActionData {
   readonly fieldErrors?: Partial<Record<FieldName, string>>
 }
 
+export interface LoginStatusMessage {
+  readonly variant: "success"
+  readonly message: string
+}
+
 export const LoginActionViewModel = {
   validate: (input: Record<FieldName, string>) => {
     const fieldErrors: Partial<Record<FieldName, string>> = {}
@@ -34,6 +39,16 @@ export const LoginActionViewModel = {
     formError,
     fieldErrors,
   }),
+  statusMessage: (status: string | null): LoginStatusMessage | undefined => {
+    if (status === "password-reset-complete") {
+      return {
+        variant: "success",
+        message: "Your password has been reset. Sign in with your new password.",
+      }
+    }
+
+    return undefined
+  },
   failureMessages: {
     invalidInput: "Check the highlighted fields and try again.",
     invalidCredentials: "That email and password combination did not work.",

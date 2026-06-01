@@ -32,6 +32,13 @@ const isExpectedSessionFailure = (error: unknown) =>
   "_tag" in error &&
   (error._tag === "GymUserSessionInvalid" || error._tag === "GymUserUnverified")
 
+const redirectToLoginWithAppReturnTarget = (request: Request) => {
+  const url = new URL(request.url)
+  const redirectTo = `${url.pathname}${url.search}`
+
+  return redirect(`/login?redirectTo=${encodeURIComponent(redirectTo)}`)
+}
+
 export const createAppLoader =
   (
     getClient: KrynoApiClientGetter<{
@@ -44,7 +51,7 @@ export const createAppLoader =
     const sessionId = readGymUserSessionCookie(request)
 
     if (sessionId === undefined) {
-      return redirect("/login")
+      return redirectToLoginWithAppReturnTarget(request)
     }
 
     const client = await getClient({ sessionId })
@@ -53,7 +60,7 @@ export const createAppLoader =
       return await Effect.runPromise(client.auth.currentGymUserSession())
     } catch (error) {
       if (isExpectedSessionFailure(error)) {
-        return redirect("/login")
+        return redirectToLoginWithAppReturnTarget(request)
       }
 
       throw error
