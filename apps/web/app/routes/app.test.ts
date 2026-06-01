@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest"
 import { Effect } from "effect"
+import React from "react"
+import { renderToStaticMarkup } from "react-dom/server"
 
-import { createAppLoader } from "./app"
+import { AppDashboard, AppDashboardViewModel, createAppLoader } from "./app"
 import type {
   KrynoApiEffect,
   KrynoApiClientOptions,
@@ -27,6 +29,24 @@ const authenticatedSession = {
     active: true,
   },
   activeAffiliations: [],
+}
+
+const authenticatedSessionWithAffiliations = {
+  ...authenticatedSession,
+  activeAffiliations: [
+    {
+      gymId: "gym-1",
+      userId: "gym-user-1",
+      role: "Owner",
+      status: "active",
+    },
+    {
+      gymId: "gym-2",
+      userId: "gym-user-1",
+      role: "Member",
+      status: "active",
+    },
+  ],
 }
 
 type CurrentSessionApiClient = {
@@ -111,5 +131,69 @@ describe("app loader", () => {
 
     expect(response.status).toBe(302)
     expect(response.headers.get("Location")).toBe("/login?redirectTo=%2Fapp")
+  })
+
+  it("redirects visitors with an unverified session to login", async () => {
+    const client: CurrentSessionApiClient = {
+      auth: {
+        currentGymUserSession: () =>
+          Effect.fail({
+            _tag: "GymUserUnverified",
+            userId: "gym-user-1",
+          }),
+      },
+    }
+    const loader = createAppLoader(async () => client)
+
+    const response = (await loader(
+      loaderArgs(
+        new Request("https://kryno.test/app", {
+          headers: {
+            Cookie: "kryno_gym_user_session=unverified-session",
+          },
+        })
+      )
+    )) as Response
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get("Location")).toBe("/login?redirectTo=%2Fapp")
+  })
+
+  it("maps known app query params to dashboard messages", () => {
+    expect(AppDashboardViewModel.message("pending-approval", null)).toEqual({
+      variant: "success",
+      message: "Your gym creation request is pending approval.",
+    })
+    expect(AppDashboardViewModel.message(null, "unverified")).toEqual({
+      variant: "error",
+      message: "Please verify your email before using that action.",
+    })
+    expect(AppDashboardViewModel.message("unknown", "unknown")).toBeUndefined()
+  })
+
+  it("renders the signed-in user and active affiliations", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(AppDashboard, {
+        session: authenticatedSessionWithAffiliations,
+      })
+    )
+
+    expect(html).toContain("Member Test")
+    expect(html).toContain("member@test.dev")
+    expect(html).toContain("gym-1")
+    expect(html).toContain("Owner")
+    expect(html).toContain("gym-2")
+    expect(html).toContain("Member")
+  })
+
+  it("renders an empty affiliations state", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(AppDashboard, {
+        session: authenticatedSession,
+      })
+    )
+
+    expect(html).toContain("No active gym affiliations")
+    expect(html).toContain("Request a new gym or join one when those forms are available.")
   })
 })
