@@ -81,6 +81,9 @@ export function GymUserLoginForm() {
         <Link to="/signup" className={buttonVariants()}>
           Create account
         </Link>
+        <Link to="/password-reset" className={buttonVariants()}>
+          Forgot password
+        </Link>
       </div>
     </Form>
   )

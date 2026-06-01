@@ -39,13 +39,13 @@ const authenticatedSessionWithAffiliations = {
       userId: "gym-user-1",
       role: "Owner",
       status: "active",
-    },
+    } as const,
     {
       gymId: "gym-2",
       userId: "gym-user-1",
       role: "Member",
       status: "active",
-    },
+    } as const,
   ],
 }
 

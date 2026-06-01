@@ -134,6 +134,44 @@ describe("Kryno API client", () => {
     ])
   })
 
+  it("sends gym-user password reset requests to the configured API base URL", async () => {
+    const requests: Request[] = []
+    const bodies: unknown[] = []
+    fetchHandler = async (request: RequestInfo | URL, init?: RequestInit) => {
+      const nextRequest =
+        request instanceof Request ? request : new Request(request, init)
+      requests.push(nextRequest)
+      bodies.push(await nextRequest.clone().json())
+
+      return Response.json({
+        email: "member@test.dev",
+      })
+    }
+    vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
+
+    const client = await getKrynoApiClient()
+    await Effect.runPromise(
+      client.auth.requestGymUserPasswordReset({
+        payload: {
+          email: "member@test.dev",
+        },
+      })
+    )
+
+    expect(requests).toHaveLength(1)
+    expect(requests[0]?.method).toBe("POST")
+    expect(requests[0]?.url).toBe(
+      "https://api.kryno.test/api/auth/gym-users/password-resets"
+    )
+    expect(requests[0]?.headers.get("Authorization")).toBeNull()
+    expect(requests[0]?.headers.get("Cookie")).toBeNull()
+    expect(bodies).toEqual([
+      {
+        email: "member@test.dev",
+      },
+    ])
+  })
+
   it("returns the decoded gym-user login session without relying on set-cookie headers", async () => {
     const requests: Request[] = []
     const bodies: unknown[] = []
