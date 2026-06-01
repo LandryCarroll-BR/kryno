@@ -172,6 +172,51 @@ describe("Kryno API client", () => {
     ])
   })
 
+  it("sends gym-user password reset completion requests to the configured API base URL", async () => {
+    const requests: Request[] = []
+    const bodies: unknown[] = []
+    fetchHandler = async (request: RequestInfo | URL, init?: RequestInit) => {
+      const nextRequest =
+        request instanceof Request ? request : new Request(request, init)
+      requests.push(nextRequest)
+      bodies.push(await nextRequest.clone().json())
+
+      return Response.json({
+        user: {
+          id: "gym-user-1",
+          email: "member@test.dev",
+          displayName: "Member Test",
+          emailVerified: true,
+        },
+      })
+    }
+    vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
+
+    const client = await getKrynoApiClient()
+    await Effect.runPromise(
+      client.auth.completeGymUserPasswordReset({
+        payload: {
+          token: "gym-user-password-reset-token-1",
+          newPassword: "correct horse battery staple",
+        },
+      })
+    )
+
+    expect(requests).toHaveLength(1)
+    expect(requests[0]?.method).toBe("POST")
+    expect(requests[0]?.url).toBe(
+      "https://api.kryno.test/api/auth/gym-users/password-resets/completions"
+    )
+    expect(requests[0]?.headers.get("Authorization")).toBeNull()
+    expect(requests[0]?.headers.get("Cookie")).toBeNull()
+    expect(bodies).toEqual([
+      {
+        token: "gym-user-password-reset-token-1",
+        newPassword: "correct horse battery staple",
+      },
+    ])
+  })
+
   it("returns the decoded gym-user login session without relying on set-cookie headers", async () => {
     const requests: Request[] = []
     const bodies: unknown[] = []
