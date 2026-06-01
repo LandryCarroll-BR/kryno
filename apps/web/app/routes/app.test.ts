@@ -8,6 +8,7 @@ import {
   AppDashboardViewModel,
   createAppLoader,
   GymCreationRequestFormViewModel,
+  JoinGymAsMemberFormViewModel,
 } from "./app"
 import type {
   KrynoApiEffect,
@@ -214,6 +215,18 @@ describe("app loader", () => {
     expect(html).toContain("Request gym creation")
   })
 
+  it("renders a functional join gym form", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(AppDashboard, {
+        session: authenticatedSession,
+      })
+    )
+
+    expect(html).toContain('action="/app/join-gym"')
+    expect(html).toContain('name="gymId"')
+    expect(html).toContain("Join gym")
+  })
+
   it("maps gym creation request validation errors to form messages", () => {
     expect(
       GymCreationRequestFormViewModel.fieldError(
@@ -221,5 +234,11 @@ describe("app loader", () => {
         "invalid-name"
       )
     ).toBe("Enter a gym name.")
+  })
+
+  it("maps join gym validation errors to form messages", () => {
+    expect(
+      JoinGymAsMemberFormViewModel.fieldError("join-gym", "invalid-gym-id")
+    ).toBe("Enter a gym ID.")
   })
 })

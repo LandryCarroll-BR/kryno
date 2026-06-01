@@ -14,8 +14,11 @@ import {
 } from "../../lib/kryno-api/kryno-api-client"
 import { GymCreationRequestForm } from "../../features/auth/gym-creation-request/gym-creation-request-form"
 import { GymCreationRequestViewModel } from "../../features/auth/gym-creation-request/gym-creation-request-view-model"
+import { JoinGymAsMemberForm } from "../../features/auth/join-gym-as-member/join-gym-as-member-form"
+import { JoinGymAsMemberViewModel } from "../../features/auth/join-gym-as-member/join-gym-as-member-view-model"
 
 export const GymCreationRequestFormViewModel = GymCreationRequestViewModel
+export const JoinGymAsMemberFormViewModel = JoinGymAsMemberViewModel
 
 interface CurrentGymUserSession {
   readonly user: {
@@ -156,10 +159,12 @@ export function AppDashboard({
   session,
   message,
   gymCreationRequestFieldError,
+  joinGymAsMemberFieldError,
 }: {
   readonly session: CurrentGymUserSession
   readonly message?: DashboardMessage
   readonly gymCreationRequestFieldError?: string
+  readonly joinGymAsMemberFieldError?: string
 }) {
   const { user, activeAffiliations } = session
 
@@ -239,12 +244,7 @@ export function AppDashboard({
 
           <section className="grid gap-3 md:grid-cols-3">
             <GymCreationRequestForm fieldError={gymCreationRequestFieldError} />
-            <div className="rounded-lg border border-border p-4">
-              <h2 className="font-semibold">Join gym</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Manual gym ID joining will attach here.
-              </p>
-            </div>
+            <JoinGymAsMemberForm fieldError={joinGymAsMemberFieldError} />
             <div className="rounded-lg border border-border p-4">
               <h2 className="font-semibold">Staff access</h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -270,12 +270,17 @@ export default function App() {
       searchParams.get("form"),
       searchParams.get("error")
     )
+  const joinGymAsMemberFieldError = JoinGymAsMemberFormViewModel.fieldError(
+    searchParams.get("form"),
+    searchParams.get("error")
+  )
 
   return (
     <AppDashboard
       session={session}
       message={message}
       gymCreationRequestFieldError={gymCreationRequestFieldError}
+      joinGymAsMemberFieldError={joinGymAsMemberFieldError}
     />
   )
 }
