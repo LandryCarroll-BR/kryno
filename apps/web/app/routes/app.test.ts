@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server"
 import {
   AppDashboard,
   AppDashboardViewModel,
+  CreateStaffInvitationFormViewModel,
   createAppLoader,
   GymCreationRequestFormViewModel,
   JoinGymAsMemberFormViewModel,
@@ -175,6 +176,10 @@ describe("app loader", () => {
       variant: "error",
       message: "Please verify your email before using that action.",
     })
+    expect(AppDashboardViewModel.message(null, "owner-access-denied")).toEqual({
+      variant: "error",
+      message: "Only active gym owners can invite staff.",
+    })
     expect(AppDashboardViewModel.message("unknown", "unknown")).toBeUndefined()
   })
 
@@ -228,6 +233,19 @@ describe("app loader", () => {
     expect(html).toContain("Join gym")
   })
 
+  it("renders a functional staff invitation form", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(AppDashboard, {
+        session: authenticatedSession,
+      })
+    )
+
+    expect(html).toContain('action="/app/create-staff-invitation"')
+    expect(html).toContain('name="gymId"')
+    expect(html).toContain('name="email"')
+    expect(html).toContain("Invite staff")
+  })
+
   it("renders a functional leave gym form", () => {
     const html = renderToStaticMarkup(
       React.createElement(AppDashboard, {
@@ -253,6 +271,21 @@ describe("app loader", () => {
     expect(
       JoinGymAsMemberFormViewModel.fieldError("join-gym", "invalid-gym-id")
     ).toBe("Enter a gym ID.")
+  })
+
+  it("maps staff invitation validation errors to form messages", () => {
+    expect(
+      CreateStaffInvitationFormViewModel.fieldError(
+        "create-staff-invitation",
+        "invalid-gym-id"
+      )
+    ).toBe("Enter a gym ID.")
+    expect(
+      CreateStaffInvitationFormViewModel.fieldError(
+        "create-staff-invitation",
+        "invalid-email"
+      )
+    ).toBe("Enter a valid email address.")
   })
 
   it("maps leave gym validation errors to form messages", () => {

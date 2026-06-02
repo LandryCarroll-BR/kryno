@@ -12,6 +12,8 @@ import {
   type KrynoApiEffect,
   type KrynoApiClientGetter,
 } from "../../lib/kryno-api/kryno-api-client"
+import { CreateStaffInvitationForm } from "../../features/auth/create-staff-invitation/create-staff-invitation-form"
+import { CreateStaffInvitationViewModel } from "../../features/auth/create-staff-invitation/create-staff-invitation-view-model"
 import { GymCreationRequestForm } from "../../features/auth/gym-creation-request/gym-creation-request-form"
 import { GymCreationRequestViewModel } from "../../features/auth/gym-creation-request/gym-creation-request-view-model"
 import { JoinGymAsMemberForm } from "../../features/auth/join-gym-as-member/join-gym-as-member-form"
@@ -20,6 +22,8 @@ import { LeaveGymAsMemberForm } from "../../features/auth/leave-gym-as-member/le
 import { LeaveGymAsMemberViewModel } from "../../features/auth/leave-gym-as-member/leave-gym-as-member-view-model"
 
 export const GymCreationRequestFormViewModel = GymCreationRequestViewModel
+export const CreateStaffInvitationFormViewModel =
+  CreateStaffInvitationViewModel
 export const JoinGymAsMemberFormViewModel = JoinGymAsMemberViewModel
 export const LeaveGymAsMemberFormViewModel = LeaveGymAsMemberViewModel
 
@@ -154,6 +158,20 @@ export const AppDashboardViewModel = {
       }
     }
 
+    if (error === "owner-access-denied") {
+      return {
+        variant: "error",
+        message: "Only active gym owners can invite staff.",
+      }
+    }
+
+    if (error === "self-assignment") {
+      return {
+        variant: "error",
+        message: "You cannot invite yourself as staff.",
+      }
+    }
+
     return undefined
   },
 }
@@ -162,12 +180,14 @@ export function AppDashboard({
   session,
   message,
   gymCreationRequestFieldError,
+  createStaffInvitationFieldError,
   joinGymAsMemberFieldError,
   leaveGymAsMemberFieldError,
 }: {
   readonly session: CurrentGymUserSession
   readonly message?: DashboardMessage
   readonly gymCreationRequestFieldError?: string
+  readonly createStaffInvitationFieldError?: string
   readonly joinGymAsMemberFieldError?: string
   readonly leaveGymAsMemberFieldError?: string
 }) {
@@ -247,8 +267,11 @@ export function AppDashboard({
             )}
           </section>
 
-          <section className="grid gap-3 md:grid-cols-3">
+          <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <GymCreationRequestForm fieldError={gymCreationRequestFieldError} />
+            <CreateStaffInvitationForm
+              fieldError={createStaffInvitationFieldError}
+            />
             <JoinGymAsMemberForm fieldError={joinGymAsMemberFieldError} />
             <LeaveGymAsMemberForm fieldError={leaveGymAsMemberFieldError} />
           </section>
@@ -270,6 +293,11 @@ export default function App() {
       searchParams.get("form"),
       searchParams.get("error")
     )
+  const createStaffInvitationFieldError =
+    CreateStaffInvitationFormViewModel.fieldError(
+      searchParams.get("form"),
+      searchParams.get("error")
+    )
   const joinGymAsMemberFieldError = JoinGymAsMemberFormViewModel.fieldError(
     searchParams.get("form"),
     searchParams.get("error")
@@ -284,6 +312,7 @@ export default function App() {
       session={session}
       message={message}
       gymCreationRequestFieldError={gymCreationRequestFieldError}
+      createStaffInvitationFieldError={createStaffInvitationFieldError}
       joinGymAsMemberFieldError={joinGymAsMemberFieldError}
       leaveGymAsMemberFieldError={leaveGymAsMemberFieldError}
     />

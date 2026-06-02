@@ -4,6 +4,10 @@ export default [
   index("routes/home.tsx"),
   route("app", "routes/app.tsx"),
   route("app/gym-creation-request", "routes/app.gym-creation-request.tsx"),
+  route(
+    "app/create-staff-invitation",
+    "routes/app.create-staff-invitation.tsx"
+  ),
   route("app/join-gym", "routes/app.join-gym.tsx"),
   route("app/leave-gym", "routes/app.leave-gym.tsx"),
   route("login", "routes/gym-user-login.tsx"),
