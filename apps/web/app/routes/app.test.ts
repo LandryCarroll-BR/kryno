@@ -9,6 +9,7 @@ import {
   createAppLoader,
   GymCreationRequestFormViewModel,
   JoinGymAsMemberFormViewModel,
+  LeaveGymAsMemberFormViewModel,
 } from "./app"
 import type {
   KrynoApiEffect,
@@ -227,6 +228,18 @@ describe("app loader", () => {
     expect(html).toContain("Join gym")
   })
 
+  it("renders a functional leave gym form", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(AppDashboard, {
+        session: authenticatedSession,
+      })
+    )
+
+    expect(html).toContain('action="/app/leave-gym"')
+    expect(html).toContain('name="gymId"')
+    expect(html).toContain("Leave gym")
+  })
+
   it("maps gym creation request validation errors to form messages", () => {
     expect(
       GymCreationRequestFormViewModel.fieldError(
@@ -239,6 +252,12 @@ describe("app loader", () => {
   it("maps join gym validation errors to form messages", () => {
     expect(
       JoinGymAsMemberFormViewModel.fieldError("join-gym", "invalid-gym-id")
+    ).toBe("Enter a gym ID.")
+  })
+
+  it("maps leave gym validation errors to form messages", () => {
+    expect(
+      LeaveGymAsMemberFormViewModel.fieldError("leave-gym", "invalid-gym-id")
     ).toBe("Enter a gym ID.")
   })
 })

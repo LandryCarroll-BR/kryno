@@ -16,9 +16,12 @@ import { GymCreationRequestForm } from "../../features/auth/gym-creation-request
 import { GymCreationRequestViewModel } from "../../features/auth/gym-creation-request/gym-creation-request-view-model"
 import { JoinGymAsMemberForm } from "../../features/auth/join-gym-as-member/join-gym-as-member-form"
 import { JoinGymAsMemberViewModel } from "../../features/auth/join-gym-as-member/join-gym-as-member-view-model"
+import { LeaveGymAsMemberForm } from "../../features/auth/leave-gym-as-member/leave-gym-as-member-form"
+import { LeaveGymAsMemberViewModel } from "../../features/auth/leave-gym-as-member/leave-gym-as-member-view-model"
 
 export const GymCreationRequestFormViewModel = GymCreationRequestViewModel
 export const JoinGymAsMemberFormViewModel = JoinGymAsMemberViewModel
+export const LeaveGymAsMemberFormViewModel = LeaveGymAsMemberViewModel
 
 interface CurrentGymUserSession {
   readonly user: {
@@ -160,11 +163,13 @@ export function AppDashboard({
   message,
   gymCreationRequestFieldError,
   joinGymAsMemberFieldError,
+  leaveGymAsMemberFieldError,
 }: {
   readonly session: CurrentGymUserSession
   readonly message?: DashboardMessage
   readonly gymCreationRequestFieldError?: string
   readonly joinGymAsMemberFieldError?: string
+  readonly leaveGymAsMemberFieldError?: string
 }) {
   const { user, activeAffiliations } = session
 
@@ -245,12 +250,7 @@ export function AppDashboard({
           <section className="grid gap-3 md:grid-cols-3">
             <GymCreationRequestForm fieldError={gymCreationRequestFieldError} />
             <JoinGymAsMemberForm fieldError={joinGymAsMemberFieldError} />
-            <div className="rounded-lg border border-border p-4">
-              <h2 className="font-semibold">Staff access</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Staff invitations will attach here.
-              </p>
-            </div>
+            <LeaveGymAsMemberForm fieldError={leaveGymAsMemberFieldError} />
           </section>
         </div>
       </section>
@@ -274,6 +274,10 @@ export default function App() {
     searchParams.get("form"),
     searchParams.get("error")
   )
+  const leaveGymAsMemberFieldError = LeaveGymAsMemberFormViewModel.fieldError(
+    searchParams.get("form"),
+    searchParams.get("error")
+  )
 
   return (
     <AppDashboard
@@ -281,6 +285,7 @@ export default function App() {
       message={message}
       gymCreationRequestFieldError={gymCreationRequestFieldError}
       joinGymAsMemberFieldError={joinGymAsMemberFieldError}
+      leaveGymAsMemberFieldError={leaveGymAsMemberFieldError}
     />
   )
 }
