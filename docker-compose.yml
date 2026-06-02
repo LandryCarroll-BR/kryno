@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: kryno-postgres
+    environment:
+      POSTGRES_DB: kryno
+      POSTGRES_USER: kryno
+      POSTGRES_PASSWORD: kryno
+    ports:
+      - "5432:5432"
+    volumes:
+      - kryno-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kryno -d kryno"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  kryno-postgres-data:

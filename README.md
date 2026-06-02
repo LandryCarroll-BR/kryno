@@ -19,3 +19,27 @@ To use the components in your app, import them from the `ui` package.
 ```tsx
 import { Button } from "@workspace/ui/components/button";
 ```
+
+## Local Postgres
+
+Kryno's local persistence loop uses Docker Compose with non-secret development credentials. Copy `.env.example` into your local environment when you need database-backed development.
+
+```bash
+pnpm db:up
+```
+
+The local database runs on `localhost:5432` with `DATABASE_URL=postgres://kryno:kryno@localhost:5432/kryno`.
+
+Use the reset command when you want to discard local database state and recreate the `kryno` database:
+
+```bash
+pnpm db:reset
+```
+
+Drizzle Studio is available as optional inspection tooling:
+
+```bash
+pnpm db:studio
+```
+
+Migrations are explicit. Run migration commands deliberately when the database composition module defines them; the application should not run migrations on app startup. The placeholder `pnpm db:migrate` command documents that boundary until generated migrations exist.
