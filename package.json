@@ -5,8 +5,8 @@
   "scripts": {
     "build": "turbo build",
     "db:down": "docker compose down",
-    "db:generate": "pnpm --filter @workspace/database db:generate",
-    "db:migrate": "pnpm --filter @workspace/database db:migrate",
+    "db:generate": "pnpm --filter @workspace/database run db:generate",
+    "db:migrate": "pnpm --filter @workspace/database run db:migrate",
     "db:reset": "docker compose exec -T postgres sh -c 'dropdb --if-exists --username \"$POSTGRES_USER\" kryno && createdb --username \"$POSTGRES_USER\" kryno'",
     "db:studio": "pnpm --filter @workspace/database exec drizzle-kit studio --config drizzle.config.ts",
     "db:up": "docker compose up -d postgres",

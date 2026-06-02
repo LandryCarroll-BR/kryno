@@ -161,7 +161,7 @@ Auth persistence will also include business/security improvements that are justi
 - Add tests for token/session reuse rejection where applicable.
 - Use Effect `TestClock` for time-dependent auth behavior because current interactors already use Effect Clock.
 - Add database-backed adapter/integration tests for auth repository implementations.
-- Automated database tests should run behind a separate integration command rather than the default fast `pnpm test`.
+- Automated database tests should run behind a separate integration command rather than the default fast `pnpm run test`.
 - Docker Compose should support manual local end-to-end testing.
 - Testcontainers or an equivalent isolated Postgres fixture is preferred for automated database integration tests if the dependency/runtime setup is acceptable.
 - Database integration tests should verify repository contract behavior, transactions for multi-write flows, normalized email lookup, constraints, and token/session hash lookup behavior.

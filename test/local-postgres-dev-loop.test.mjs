@@ -30,9 +30,9 @@ describe("local Postgres development loop", () => {
     assert.match(packageJson.scripts["db:studio"], /drizzle-kit studio/)
 
     assert.match(readme, /Local Postgres/i)
-    assert.match(readme, /pnpm db:up/)
-    assert.match(readme, /pnpm db:reset/)
-    assert.match(readme, /pnpm db:studio/)
+    assert.match(readme, /pnpm run db:up/)
+    assert.match(readme, /pnpm run db:reset/)
+    assert.match(readme, /pnpm run db:studio/)
     assert.match(readme, /Migrations are explicit/i)
     assert.doesNotMatch(readme, /automatically.*startup/i)
   })

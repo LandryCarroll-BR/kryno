@@ -8,7 +8,7 @@ Add a separate database integration test command and fixture path so database-ba
 
 ## Acceptance criteria
 
-- [ ] Default `pnpm test` remains fast and does not require Postgres.
+- [ ] Default `pnpm run test` remains fast and does not require Postgres.
 - [ ] A separate integration test command runs database-backed tests.
 - [ ] The integration setup uses Testcontainers or an equivalent isolated Postgres fixture if acceptable for the repo runtime.
 - [ ] Database integration tests cover repository contract behavior, transactions, normalized email lookup, constraints, and token/session hash lookup.

@@ -25,7 +25,7 @@ import { Button } from "@workspace/ui/components/button";
 Kryno's local persistence loop uses Docker Compose with non-secret development credentials. Copy `.env.example` into your local environment when you need database-backed development.
 
 ```bash
-pnpm db:up
+pnpm run db:up
 ```
 
 The local database runs on `localhost:5432` with `DATABASE_URL=postgres://kryno:kryno@localhost:5432/kryno`.
@@ -33,20 +33,20 @@ The local database runs on `localhost:5432` with `DATABASE_URL=postgres://kryno:
 Use the reset command when you want to discard local database state and recreate the `kryno` database:
 
 ```bash
-pnpm db:reset
+pnpm run db:reset
 ```
 
 Drizzle Studio is available as optional inspection tooling:
 
 ```bash
-pnpm db:studio
+pnpm run db:studio
 ```
 
 Migrations are explicit and owned by the database composition module. Generate reviewed migration SQL from the merged Kryno schema, then run migrations deliberately:
 
 ```bash
-pnpm db:generate
-pnpm db:migrate
+pnpm run db:generate
+pnpm run db:migrate
 ```
 
 The application should not run migrations on app startup.
