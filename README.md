@@ -42,4 +42,11 @@ Drizzle Studio is available as optional inspection tooling:
 pnpm db:studio
 ```
 
-Migrations are explicit. Run migration commands deliberately when the database composition module defines them; the application should not run migrations on app startup. The placeholder `pnpm db:migrate` command documents that boundary until generated migrations exist.
+Migrations are explicit and owned by the database composition module. Generate reviewed migration SQL from the merged Kryno schema, then run migrations deliberately:
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+```
+
+The application should not run migrations on app startup.
