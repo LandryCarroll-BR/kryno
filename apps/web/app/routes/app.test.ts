@@ -180,6 +180,12 @@ describe("app loader", () => {
       variant: "error",
       message: "Only active gym owners can invite staff.",
     })
+    expect(
+      AppDashboardViewModel.message("staff-invitation-accepted", null)
+    ).toEqual({
+      variant: "success",
+      message: "You accepted the staff invitation.",
+    })
     expect(AppDashboardViewModel.message("unknown", "unknown")).toBeUndefined()
   })
 

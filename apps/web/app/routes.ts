@@ -8,6 +8,10 @@ export default [
     "app/create-staff-invitation",
     "routes/app.create-staff-invitation.tsx"
   ),
+  route(
+    "app/staff-invitations/accept",
+    "routes/app.staff-invitations.accept.tsx"
+  ),
   route("app/join-gym", "routes/app.join-gym.tsx"),
   route("app/leave-gym", "routes/app.leave-gym.tsx"),
   route("login", "routes/gym-user-login.tsx"),

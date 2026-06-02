@@ -130,6 +130,13 @@ export const AppDashboardViewModel = {
       }
     }
 
+    if (status === "staff-invitation-accepted") {
+      return {
+        variant: "success",
+        message: "You accepted the staff invitation.",
+      }
+    }
+
     if (error === "session-invalid") {
       return {
         variant: "error",

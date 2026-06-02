@@ -19,6 +19,10 @@ type CreateGymStaffInvitationApiPayload = Parameters<
   KrynoApiClient["auth"]["createGymStaffInvitation"]
 >[0]["payload"]
 
+type AcceptGymStaffInvitationApiPayload = Parameters<
+  KrynoApiClient["auth"]["acceptGymStaffInvitation"]
+>[0]["payload"]
+
 describe("Kryno API client", () => {
   let fetchHandler: (
     request: RequestInfo | URL,
@@ -424,6 +428,63 @@ describe("Kryno API client", () => {
     )
     expect(requests[0]?.headers.get("Cookie")).toBeNull()
     expect(bodies).toEqual([{ gymId: "gym-1", email: "staff@test.dev" }])
+  })
+
+  it("accepts staff invitations with bearer auth from the web session", async () => {
+    const requests: Request[] = []
+    const bodies: unknown[] = []
+    fetchHandler = async (request: RequestInfo | URL, init?: RequestInit) => {
+      const nextRequest =
+        request instanceof Request ? request : new Request(request, init)
+      requests.push(nextRequest)
+      bodies.push(await nextRequest.clone().json())
+
+      return Response.json({
+        gym: {
+          id: "gym-1",
+          name: "Boulder Yard",
+          status: "active",
+        },
+        invitation: {
+          id: "gym-staff-invitation-1",
+          gymId: "gym-1",
+          invitedEmail: "staff@test.dev",
+          invitedByUserId: "gym-user-owner",
+          token: "gym-staff-invitation-token-1",
+          status: "accepted",
+        },
+        affiliation: {
+          gymId: "gym-1",
+          userId: "gym-user-1",
+          role: "Staff",
+          status: "active",
+        },
+      })
+    }
+    vi.stubEnv("KRYNO_API_BASE_URL", "https://api.kryno.test")
+
+    const client = await getKrynoApiClient({
+      sessionId: "gym-user-session-1",
+    })
+    await Effect.runPromise(
+      client.auth.acceptGymStaffInvitation({
+        payload: {
+          token:
+            "gym-staff-invitation-token-1" as AcceptGymStaffInvitationApiPayload["token"],
+        },
+      })
+    )
+
+    expect(requests).toHaveLength(1)
+    expect(requests[0]?.method).toBe("POST")
+    expect(requests[0]?.url).toBe(
+      "https://api.kryno.test/api/auth/gyms/staff-invitations/acceptances"
+    )
+    expect(requests[0]?.headers.get("Authorization")).toBe(
+      "Bearer gym-user-session-1"
+    )
+    expect(requests[0]?.headers.get("Cookie")).toBeNull()
+    expect(bodies).toEqual([{ token: "gym-staff-invitation-token-1" }])
   })
 
   it("logs out the current gym-user session with bearer auth instead of forwarded cookies", async () => {
