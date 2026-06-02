@@ -1,7 +1,10 @@
 <!-- effect-solutions:start -->
+
 ## Effect Best Practices
 
 **IMPORTANT:** Always consult effect-solutions before writing Effect code.
+
+**IMPORTANT:** Always run pnpm commands with pnpm "run". Without "run" commands will fail.
 
 1. Run `effect-solutions list` to see available guides
 2. Run `effect-solutions show <topic>...` for relevant patterns (supports multiple topics)
@@ -10,6 +13,7 @@
 Topics: quick-start, project-setup, tsconfig, basics, services-and-layers, data-modeling, error-handling, config, testing, cli.
 
 Never guess at Effect patterns - check the guide first.
+
 <!-- effect-solutions:end -->
 
 ## Local Effect Source
