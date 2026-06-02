@@ -8,14 +8,20 @@ Add production-ready auth primitives for secure password hashing, cryptographica
 
 ## Acceptance criteria
 
-- [ ] Production password hashing uses Argon2id or bcrypt through the existing service-port pattern.
-- [ ] Production ID and token generation uses cryptographically secure randomness.
+- [x] Production password hashing uses Argon2id or bcrypt through the existing service-port pattern.
+- [x] Production ID and token generation uses cryptographically secure randomness.
 - [ ] Token and session digests use HMAC-SHA-256 with a required live auth secret.
 - [ ] Raw bearer tokens are kept separate from internal session row IDs.
-- [ ] Email normalization is available through a small identity helper/primitive and supports case-insensitive uniqueness and lookup.
-- [ ] Existing deterministic/sequential test adapters remain available.
-- [ ] Tests assert secure primitive behavior by shape and behavior rather than exact production token strings.
-- [ ] Existing web/API cookie handling uses secure and HTTP-only settings where appropriate for the current runtime.
+- [x] Email normalization is available through a small identity helper/primitive and supports case-insensitive uniqueness and lookup.
+- [x] Existing deterministic/sequential test adapters remain available.
+- [x] Tests assert secure primitive behavior by shape and behavior rather than exact production token strings.
+- [x] Existing web/API cookie handling uses secure and HTTP-only settings where appropriate for the current runtime.
+
+## Progress note
+
+- Added secure service adapters for Argon2id password hashing, crypto-backed IDs, crypto-backed bearer tokens, and an HMAC-SHA-256 token digester backed by required `AUTH_SECRET` config.
+- Added normalized email identity helper and wired gym-user/system-admin/staff-invitation application flows and memory lookup keys to use normalized identity.
+- Left the issue open because database-backed token/session digest storage and separating raw bearer tokens from internal session row IDs still need to be completed in the persistence slice.
 
 ## Blocked by
 

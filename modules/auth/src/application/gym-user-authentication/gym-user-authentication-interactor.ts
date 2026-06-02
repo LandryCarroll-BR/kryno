@@ -4,6 +4,7 @@ import {
   GymUserInvalidCredentials,
   GymUserSessionInvalid,
 } from "../../domain/errors.ts"
+import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import {
   CurrentGymUserSessionSuccess,
   GymUserLoginSuccess,
@@ -34,13 +35,14 @@ export const GymUserAuthenticationInteractor = Layer.effect(
     const login = Effect.fn("GymUserAuthentication.login")(
       (command: LoginGymUserInput) =>
         Effect.gen(function* () {
-          const maybeUser = yield* repository.findByEmail(command.email)
+          const email = normalizeEmailIdentity(command.email)
+          const maybeUser = yield* repository.findByEmail(email)
           const maybeCredential = Option.isSome(maybeUser)
             ? yield* repository.findCredentialByUserId(maybeUser.value.id)
             : Option.none()
 
           const { user, credential } = yield* requireGymUserCredential(
-            command.email,
+            email,
             maybeUser,
             maybeCredential
           )
@@ -52,7 +54,7 @@ export const GymUserAuthenticationInteractor = Layer.effect(
 
           if (!passwordMatches) {
             return yield* new GymUserInvalidCredentials({
-              email: command.email,
+              email,
             })
           }
 

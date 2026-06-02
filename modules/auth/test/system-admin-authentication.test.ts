@@ -77,6 +77,24 @@ describe("Auth system admin authentication", () => {
     }).pipe(Effect.provide(AuthTestLayer))
   )
 
+  it.effect("logs in with normalized system-admin email identity", () =>
+    Effect.gen(function* () {
+      const auth = yield* Auth
+
+      yield* auth.bootstrapFirstSystemAdmin({
+        email: " Admin@Example.COM ",
+        password: "correct horse battery staple",
+      })
+
+      const login = yield* auth.loginSystemAdmin({
+        email: "admin@example.com",
+        password: "correct horse battery staple",
+      })
+
+      expect(login.admin.email).toBe("admin@example.com")
+    }).pipe(Effect.provide(AuthTestLayer))
+  )
+
   it.effect("denies unknown admin sessions", () =>
     Effect.gen(function* () {
       const auth = yield* Auth

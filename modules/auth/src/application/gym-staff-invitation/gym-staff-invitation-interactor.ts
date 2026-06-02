@@ -8,6 +8,7 @@ import {
   type AcceptGymStaffInvitationInput,
   type CreateGymStaffInvitationInput,
 } from "../../domain/gym.ts"
+import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import {
   GymStaffInvitationInvalid,
   GymStaffSelfAssignmentDenied,
@@ -57,6 +58,7 @@ export const GymStaffInvitationInteractor = Layer.effect(
     const create = Effect.fn("GymStaffInvitation.create")(
       (command: CreateGymStaffInvitationInput) =>
         Effect.gen(function* () {
+          const invitedEmail = normalizeEmailIdentity(command.email)
           const owner = yield* requireCurrentVerifiedGymUser(command.sessionId)
           const gym = yield* requireActiveGym(
             command.gymId,
@@ -70,7 +72,7 @@ export const GymStaffInvitationInteractor = Layer.effect(
           )
 
           const maybeInvitedUser = yield* gymUserRepository.findByEmail(
-            command.email
+            invitedEmail
           )
 
           if (
@@ -86,7 +88,7 @@ export const GymStaffInvitationInteractor = Layer.effect(
           const invitation = new GymStaffInvitationRecord({
             id: yield* ids.nextGymStaffInvitationId,
             gymId: command.gymId,
-            invitedEmail: command.email,
+            invitedEmail,
             invitedByUserId: owner.id,
             token: yield* tokens.nextGymStaffInvitationToken,
             status: "pending",
@@ -114,7 +116,8 @@ export const GymStaffInvitationInteractor = Layer.effect(
           if (
             Option.isNone(maybeInvitation) ||
             maybeInvitation.value.status !== "pending" ||
-            maybeInvitation.value.invitedEmail !== user.email
+            normalizeEmailIdentity(maybeInvitation.value.invitedEmail) !==
+              normalizeEmailIdentity(user.email)
           ) {
             return yield* new GymStaffInvitationInvalid({
               token: command.token,

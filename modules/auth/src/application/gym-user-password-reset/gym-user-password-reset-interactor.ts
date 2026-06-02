@@ -7,6 +7,7 @@ import {
   GymUserPasswordResetTokenInvalid,
   GymUserPasswordResetUnknownEmail,
 } from "../../domain/errors.ts"
+import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import {
   GymUserCredentialRecord,
   GymUserPasswordResetCompleted,
@@ -34,11 +35,12 @@ export const GymUserPasswordResetInteractor = Layer.effect(
     const request = Effect.fn("GymUserPasswordReset.request")(
       (command: RequestGymUserPasswordResetInput) =>
         Effect.gen(function* () {
-          const maybeUser = yield* repository.findByEmail(command.email)
+          const email = normalizeEmailIdentity(command.email)
+          const maybeUser = yield* repository.findByEmail(email)
 
           if (Option.isNone(maybeUser)) {
             return yield* new GymUserPasswordResetUnknownEmail({
-              email: command.email,
+              email,
             })
           }
 

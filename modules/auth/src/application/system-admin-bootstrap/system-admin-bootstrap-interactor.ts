@@ -1,5 +1,6 @@
 import { Effect, Layer, Option } from "effect"
 
+import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import { FirstSystemAdminAlreadyExists } from "../../domain/errors.ts"
 import {
   FirstSystemAdminAlreadyBootstrapped,
@@ -24,13 +25,14 @@ export const SystemAdminBootstrapInteractor = Layer.effect(
       "SystemAdminBootstrap.bootstrapFirstAdmin"
     )((command: BootstrapFirstSystemAdminInput) =>
       Effect.gen(function* () {
+        const email = normalizeEmailIdentity(command.email)
         const existing = yield* repository.findFirstAdmin
 
         if (Option.isSome(existing)) {
-          if (existing.value.email !== command.email) {
+          if (normalizeEmailIdentity(existing.value.email) !== email) {
             return yield* new FirstSystemAdminAlreadyExists({
               existingAdminId: existing.value.id,
-              requestedEmail: command.email,
+              requestedEmail: email,
             })
           }
 
@@ -41,7 +43,7 @@ export const SystemAdminBootstrapInteractor = Layer.effect(
 
         const admin = new SystemAdminRecord({
           id: yield* ids.nextSystemAdminId,
-          email: command.email,
+          email,
         })
         const credential = new SystemAdminCredentialRecord({
           adminId: admin.id,

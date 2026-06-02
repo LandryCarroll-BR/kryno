@@ -4,6 +4,7 @@ import {
   SystemAdminInvalidCredentials,
   SystemAdminSessionInvalid,
 } from "../../domain/errors.ts"
+import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import {
   CurrentSystemAdminSessionSuccess,
   SystemAdminLoginSuccess,
@@ -31,13 +32,14 @@ export const SystemAdminAuthenticationInteractor = Layer.effect(
     const login = Effect.fn("SystemAdminAuthentication.login")(
       (command: LoginSystemAdminInput) =>
         Effect.gen(function* () {
-          const maybeAdmin = yield* repository.findAdminByEmail(command.email)
+          const email = normalizeEmailIdentity(command.email)
+          const maybeAdmin = yield* repository.findAdminByEmail(email)
           const maybeCredential = Option.isSome(maybeAdmin)
             ? yield* repository.findCredentialByAdminId(maybeAdmin.value.id)
             : Option.none()
 
           const { admin, credential } = yield* requireSystemAdminCredential(
-            command.email,
+            email,
             maybeAdmin,
             maybeCredential
           )
@@ -49,7 +51,7 @@ export const SystemAdminAuthenticationInteractor = Layer.effect(
 
           if (!passwordMatches) {
             return yield* new SystemAdminInvalidCredentials({
-              email: command.email,
+              email,
             })
           }
 

@@ -1,5 +1,6 @@
 import { Effect, Layer, Option } from "effect"
 
+import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import { GymUserSessionRecord } from "../../domain/gym-user.ts"
 import type {
   GymUserCredentialRecord,
@@ -29,7 +30,9 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
       findById: (userId: GymUserRegistrationRecord["id"]) =>
         Effect.sync(() => Option.fromNullishOr(recordsById.get(userId))),
       findByEmail: (email: string) =>
-        Effect.sync(() => Option.fromNullishOr(recordsByEmail.get(email))),
+        Effect.sync(() =>
+          Option.fromNullishOr(recordsByEmail.get(normalizeEmailIdentity(email)))
+        ),
       findCredentialByUserId: (userId: GymUserRegistrationRecord["id"]) =>
         Effect.sync(() =>
           Option.fromNullishOr(credentialsByUserId.get(userId))
@@ -39,7 +42,7 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
       save: (record: GymUserRegistrationRecord) =>
         Effect.sync(() => {
           recordsById.set(record.id, record)
-          recordsByEmail.set(record.email, record)
+          recordsByEmail.set(normalizeEmailIdentity(record.email), record)
         }),
       saveCredential: (credential: GymUserCredentialRecord) =>
         Effect.sync(() => {

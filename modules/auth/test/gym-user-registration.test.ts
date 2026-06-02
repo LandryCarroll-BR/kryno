@@ -139,6 +139,33 @@ describe("GymUserRegistration.reserveEmail", () => {
     }).pipe(Effect.provide(AuthApplicationTestLayer))
   )
 
+  it.effect("normalizes gym-side signup email identity for lookup and duplicates", () =>
+    Effect.gen(function* () {
+      const registration = yield* GymUserRegistration
+      const repository = yield* GymUserRegistrationRepository
+
+      const signup = yield* registration.signUp({
+        email: " Alex.Member@Example.COM ",
+        password: "correct horse battery staple",
+        displayName: "Alex",
+      })
+
+      expect(signup.user.email).toBe("alex.member@example.com")
+      const stored = yield* repository.findByEmail("ALEX.MEMBER@example.com")
+      expect(stored._tag).toBe("Some")
+
+      const duplicate = yield* Effect.exit(
+        registration.signUp({
+          email: "alex.member@EXAMPLE.com",
+          password: "different password",
+          displayName: "Alex Again",
+        })
+      )
+
+      expectFailureTag(duplicate, "GymUserEmailAlreadyReserved")
+    }).pipe(Effect.provide(AuthApplicationTestLayer))
+  )
+
   it.effect(
     "allows the same email once in the admin namespace and once in the gym-side namespace",
     () =>

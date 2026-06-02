@@ -1,5 +1,6 @@
 import { Effect, Layer, Option } from "effect"
 
+import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import {
   SystemAdminRecord,
   SystemAdminSessionRecord,
@@ -18,7 +19,8 @@ export const SystemAdminBootstrapRepositoryMemoryAdapter = Layer.sync(
       findFirstAdmin: Effect.sync(() => Option.fromNullishOr(firstAdmin)),
       findAdminByEmail: (email: string) =>
         Effect.sync(() =>
-          firstAdmin?.email === email
+          firstAdmin !== undefined &&
+          normalizeEmailIdentity(firstAdmin.email) === normalizeEmailIdentity(email)
             ? Option.some(firstAdmin)
             : Option.none()
         ),

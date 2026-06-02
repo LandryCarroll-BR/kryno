@@ -5,6 +5,7 @@ import {
   GymUserEmailVerificationInvalid,
   GymUserNotFound,
 } from "../../domain/errors.ts"
+import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import {
   GymUserCredentialRecord,
   GymUserEmailVerificationSuccess,
@@ -35,13 +36,14 @@ export const GymUserRegistrationInteractor = Layer.effect(
     const signUp = Effect.fn("GymUserRegistration.signUp")(
       (command: SignUpGymUserInput) =>
         Effect.gen(function* () {
-          const existing = yield* repository.findByEmail(command.email)
+          const email = normalizeEmailIdentity(command.email)
+          const existing = yield* repository.findByEmail(email)
 
-          yield* ensureGymUserEmailCanBeReserved(command.email, existing)
+          yield* ensureGymUserEmailCanBeReserved(email, existing)
 
           const user = new GymUserRegistrationRecord({
             id: yield* ids.nextGymUserId,
-            email: command.email,
+            email,
             displayName: command.displayName,
             emailVerified: false,
           })
@@ -72,13 +74,14 @@ export const GymUserRegistrationInteractor = Layer.effect(
     const reserveEmail = Effect.fn("GymUserRegistration.reserveEmail")(
       (command: ReserveGymUserEmailInput) =>
         Effect.gen(function* () {
-          const existing = yield* repository.findByEmail(command.email)
+          const email = normalizeEmailIdentity(command.email)
+          const existing = yield* repository.findByEmail(email)
 
-          yield* ensureGymUserEmailCanBeReserved(command.email, existing)
+          yield* ensureGymUserEmailCanBeReserved(email, existing)
 
           const record = new GymUserRegistrationRecord({
             id: yield* ids.nextGymUserId,
-            email: command.email,
+            email,
             displayName: command.displayName,
             emailVerified: false,
           })

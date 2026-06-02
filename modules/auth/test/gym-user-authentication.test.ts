@@ -85,6 +85,28 @@ describe("Auth gym user authentication", () => {
     }).pipe(Effect.provide(AuthTestLayer))
   )
 
+  it.effect("logs in with normalized gym-side email identity", () =>
+    Effect.gen(function* () {
+      const auth = yield* Auth
+
+      yield* auth.signUpGymUser({
+        email: "alex@example.com",
+        password: "correct horse battery staple",
+        displayName: "Alex",
+      })
+      yield* auth.verifyGymUserEmail({
+        token: "gym-user-email-verification-token-1",
+      })
+
+      const login = yield* auth.loginGymUser({
+        email: " ALEX@EXAMPLE.COM ",
+        password: "correct horse battery staple",
+      })
+
+      expect(login.user.email).toBe("alex@example.com")
+    }).pipe(Effect.provide(AuthTestLayer))
+  )
+
   it.effect("denies authenticated access for unverified gym-side users", () =>
     Effect.gen(function* () {
       const auth = yield* Auth
