@@ -27,6 +27,7 @@ export class SystemAdminSessionRecord extends Schema.Class<SystemAdminSessionRec
 )({
   id: SystemAdminSessionId,
   adminId: SystemAdminId,
+  tokenDigest: Schema.String,
   active: Schema.Boolean,
 }) {}
 
@@ -82,6 +83,7 @@ export class SystemAdminLoginSuccess extends Schema.Class<SystemAdminLoginSucces
   "SystemAdminLoginSuccess"
 )({
   admin: SystemAdminRecord,
+  sessionToken: SystemAdminSessionId,
   session: SystemAdminSessionRecord,
 }) {}
 

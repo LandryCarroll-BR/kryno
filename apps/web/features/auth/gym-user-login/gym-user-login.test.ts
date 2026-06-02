@@ -32,9 +32,11 @@ const loginSuccess = {
     displayName: "Member Test",
     emailVerified: true,
   },
+  sessionToken: "gym-user-session-token-1",
   session: {
     id: "gym-user-session-1",
     userId: "gym-user-1",
+    tokenDigest: "digest:gym-user-session-token-1",
     active: true,
   },
 }
@@ -173,7 +175,7 @@ describe("gym-user login action", () => {
     ])
     expect(redirectCalls).toEqual([
       {
-        sessionId: "gym-user-session-1",
+        sessionId: "gym-user-session-token-1",
         request,
       },
     ])

@@ -47,6 +47,7 @@ const mockSystemAdmin = new SystemAdminRecord({
 const mockSystemAdminSession = new SystemAdminSessionRecord({
   id: SystemAdminSessionId.make("system-admin-session-mock"),
   adminId: mockSystemAdmin.id,
+  tokenDigest: "digest:system-admin-session-token-mock",
   active: true,
 })
 
@@ -60,6 +61,7 @@ const mockGymUser = new GymUserRegistrationRecord({
 const mockGymUserSession = new GymUserSessionRecord({
   id: GymUserSessionId.make("gym-user-session-mock"),
   userId: mockGymUser.id,
+  tokenDigest: "digest:gym-user-session-token-mock",
   active: true,
 })
 
@@ -124,6 +126,7 @@ export const AuthMock = Layer.succeed(Auth, {
           displayName: mockGymUser.displayName,
           emailVerified: true,
         }),
+        sessionToken: GymUserSessionId.make("gym-user-session-token-mock"),
         session: mockGymUserSession,
       })
     ),
@@ -268,6 +271,9 @@ export const AuthMock = Layer.succeed(Auth, {
           id: mockSystemAdmin.id,
           email: input.email,
         }),
+        sessionToken: SystemAdminSessionId.make(
+          "system-admin-session-token-mock"
+        ),
         session: mockSystemAdminSession,
       })
     ),

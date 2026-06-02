@@ -24,6 +24,7 @@ import { GymRepository } from "../../ports/repositories/gym-repository.ts"
 import { GymUserRegistrationRepository } from "../../ports/repositories/gym-user-registration-repository.ts"
 import { SystemAdminBootstrapRepository } from "../../ports/repositories/system-admin-bootstrap-repository.ts"
 import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
+import { AuthTokenDigester } from "../../ports/services/auth-token-digester.ts"
 import { requireVerifiedGymUser } from "../gym-user-authentication/gym-user-authentication-policy.ts"
 import { requireActiveSystemAdminSession } from "../system-admin-authentication/system-admin-authentication-policy.ts"
 import { GymRequest } from "./gym-request-input-boundary.ts"
@@ -41,12 +42,15 @@ export const GymRequestInteractor = Layer.effect(
     const gymUserRepository = yield* GymUserRegistrationRepository
     const systemAdminRepository = yield* SystemAdminBootstrapRepository
     const ids = yield* AuthIdGenerator
+    const tokenDigester = yield* AuthTokenDigester
 
     const requireCurrentVerifiedGymUser = (
       sessionId: RequestGymCreationInput["sessionId"]
     ) =>
       Effect.gen(function* () {
-        const maybeSession = yield* gymUserRepository.findSessionById(sessionId)
+        const maybeSession = yield* gymUserRepository.findSessionByTokenDigest(
+          yield* tokenDigester.digestToken(sessionId)
+        )
 
         if (Option.isNone(maybeSession) || !maybeSession.value.active) {
           return yield* new GymUserSessionInvalid({ sessionId })
@@ -93,7 +97,9 @@ export const GymRequestInteractor = Layer.effect(
       Effect.gen(function* () {
         yield* requireActiveSystemAdminSession(
           command.sessionId,
-          yield* systemAdminRepository.findSessionById(command.sessionId)
+          yield* systemAdminRepository.findSessionByTokenDigest(
+            yield* tokenDigester.digestToken(command.sessionId)
+          )
         )
 
         const request = yield* requirePendingGymCreationRequest(

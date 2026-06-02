@@ -157,7 +157,7 @@ describe("Kryno API app", () => {
       {
         name: "Wrong Audience Gym",
       },
-      login.session.id
+      login.sessionToken
     )
 
     expect(response.status).toBe(401)
@@ -184,7 +184,7 @@ describe("Kryno API app", () => {
       {
         requestId: "missing-request",
       },
-      login.session.id
+      login.sessionToken
     )
 
     expect(response.status).toBe(401)
@@ -208,14 +208,14 @@ describe("Kryno API app", () => {
 
     const cookieOnlyResponse = await getWithCookie(
       "/api/auth/gym-users/session",
-      `kryno_gym_user_session=${login.session.id}`
+      `kryno_gym_user_session=${login.sessionToken}`
     )
     expect(cookieOnlyResponse.status).toBe(401)
     expect(await cookieOnlyResponse.text()).toBe("")
 
     const currentResponse = await get(
       "/api/auth/gym-users/session",
-      login.session.id
+      login.sessionToken
     )
     expect(currentResponse.status).toBe(200)
     await expect(currentResponse.json()).resolves.toMatchObject({
@@ -226,13 +226,13 @@ describe("Kryno API app", () => {
 
     const logoutResponse = await deleteRequest(
       "/api/auth/gym-users/session",
-      login.session.id
+      login.sessionToken
     )
     expect(logoutResponse.status).toBe(204)
 
     const afterLogoutResponse = await get(
       "/api/auth/gym-users/session",
-      login.session.id
+      login.sessionToken
     )
     expect(afterLogoutResponse.status).toBe(401)
     expect(await afterLogoutResponse.text()).toBe("")
@@ -258,7 +258,7 @@ describe("Kryno API app", () => {
       {
         name: "Bearer Boulder House",
       },
-      gymUserLogin.session.id
+      gymUserLogin.sessionToken
     )
 
     expect(requestResponse.status).toBe(201)
@@ -285,7 +285,7 @@ describe("Kryno API app", () => {
       {
         requestId: request.request.id,
       },
-      adminLogin.session.id
+      adminLogin.sessionToken
     )
 
     expect(approvalResponse.status).toBe(200)
@@ -351,7 +351,7 @@ describe("Kryno API app", () => {
     const requestResponse = await postJson(
       "/api/auth/gyms/requests",
       { name: "Bearer Affiliation Gym" },
-      ownerLogin.session.id
+      ownerLogin.sessionToken
     )
     const request = await requestResponse.json()
     const adminLoginResponse = await postJson(
@@ -362,14 +362,14 @@ describe("Kryno API app", () => {
     const approvalResponse = await postJson(
       "/api/auth/gyms/requests/approvals",
       { requestId: request.request.id },
-      adminLogin.session.id
+      adminLogin.sessionToken
     )
     const approval = await approvalResponse.json()
 
     const ownerAccessResponse = await postJson(
       "/api/auth/gyms/owner-access",
       { gymId: approval.gym.id },
-      ownerLogin.session.id
+      ownerLogin.sessionToken
     )
     expect(ownerAccessResponse.status).toBe(200)
     await expect(ownerAccessResponse.json()).resolves.toMatchObject({
@@ -382,7 +382,7 @@ describe("Kryno API app", () => {
     const joinResponse = await postJson(
       "/api/auth/gyms/member-affiliations",
       { gymId: approval.gym.id },
-      memberLogin.session.id
+      memberLogin.sessionToken
     )
     expect(joinResponse.status).toBe(200)
     await expect(joinResponse.json()).resolves.toMatchObject({
@@ -395,7 +395,7 @@ describe("Kryno API app", () => {
     const leaveResponse = await postJson(
       "/api/auth/gyms/member-affiliations/leaves",
       { gymId: approval.gym.id },
-      memberLogin.session.id
+      memberLogin.sessionToken
     )
     expect(leaveResponse.status).toBe(200)
     await expect(leaveResponse.json()).resolves.toMatchObject({
@@ -411,14 +411,14 @@ describe("Kryno API app", () => {
         gymId: approval.gym.id,
         email: "bearer-affiliation-staff@example.com",
       },
-      ownerLogin.session.id
+      ownerLogin.sessionToken
     )
     expect(invitationResponse.status).toBe(201)
 
     const acceptanceResponse = await postJson(
       "/api/auth/gyms/staff-invitations/acceptances",
       { token: "gym-staff-invitation-token-1" },
-      staffLogin.session.id
+      staffLogin.sessionToken
     )
     expect(acceptanceResponse.status).toBe(200)
     await expect(acceptanceResponse.json()).resolves.toMatchObject({
@@ -438,14 +438,14 @@ describe("Kryno API app", () => {
 
     const cookieOnlyResponse = await getWithCookie(
       "/api/auth/system-admin/session",
-      `kryno_system_admin_session=${login.session.id}`
+      `kryno_system_admin_session=${login.sessionToken}`
     )
     expect(cookieOnlyResponse.status).toBe(401)
     expect(await cookieOnlyResponse.text()).toBe("")
 
     const currentResponse = await get(
       "/api/auth/system-admin/session",
-      login.session.id
+      login.sessionToken
     )
     expect(currentResponse.status).toBe(200)
     await expect(currentResponse.json()).resolves.toMatchObject({
@@ -456,13 +456,13 @@ describe("Kryno API app", () => {
 
     const logoutResponse = await deleteRequest(
       "/api/auth/system-admin/session",
-      login.session.id
+      login.sessionToken
     )
     expect(logoutResponse.status).toBe(204)
 
     const afterLogoutResponse = await get(
       "/api/auth/system-admin/session",
-      login.session.id
+      login.sessionToken
     )
     expect(afterLogoutResponse.status).toBe(401)
     expect(await afterLogoutResponse.text()).toBe("")

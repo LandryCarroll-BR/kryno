@@ -11,6 +11,8 @@ export const AuthTokenGeneratorCryptoAdapter = Layer.succeed(
   {
     nextGymUserEmailVerificationToken: Effect.sync(token),
     nextGymUserPasswordResetToken: Effect.sync(token),
+    nextGymUserSessionToken: Effect.sync(token),
     nextGymStaffInvitationToken: Effect.sync(token),
+    nextSystemAdminSessionToken: Effect.sync(token),
   }
 )

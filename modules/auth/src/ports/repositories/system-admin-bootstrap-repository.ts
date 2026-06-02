@@ -18,8 +18,8 @@ export class SystemAdminBootstrapRepository extends Context.Service<
     readonly findCredentialByAdminId: (
       adminId: SystemAdminRecord["id"]
     ) => Effect.Effect<Option.Option<SystemAdminCredentialRecord>>
-    readonly findSessionById: (
-      sessionId: SystemAdminSessionId
+    readonly findSessionByTokenDigest: (
+      tokenDigest: string
     ) => Effect.Effect<Option.Option<SystemAdminSessionRecord>>
     readonly saveFirstAdmin: (
       admin: SystemAdminRecord,

@@ -39,22 +39,25 @@ describe("Auth gym user authentication", () => {
         password: "correct horse battery staple",
       })
 
+      expect(login.sessionToken).toBe("gym-user-session-token-1")
       expect(login.session.id).toBe("gym-user-session-1")
+      expect(login.sessionToken).not.toBe(login.session.id)
+      expect(login.session.tokenDigest).toBe(`digest:${login.sessionToken}`)
       expect(login.session.userId).toBe(signup.user.id)
       expect(login.user.email).toBe("alex@example.com")
       expect(login.user.emailVerified).toBe(true)
 
       const current = yield* auth.currentGymUserSession({
-        sessionId: login.session.id,
+        sessionId: login.sessionToken,
       })
 
       expect(current.user.id).toBe(login.user.id)
       expect(current.session.id).toBe(login.session.id)
 
-      yield* auth.logoutGymUser({ sessionId: login.session.id })
+      yield* auth.logoutGymUser({ sessionId: login.sessionToken })
 
       const afterLogout = yield* Effect.exit(
-        auth.currentGymUserSession({ sessionId: login.session.id })
+        auth.currentGymUserSession({ sessionId: login.sessionToken })
       )
 
       expectFailureTag(afterLogout, "GymUserSessionInvalid")

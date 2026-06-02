@@ -8,6 +8,7 @@ import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import {
   CurrentSystemAdminSessionSuccess,
   SystemAdminLoginSuccess,
+  SystemAdminSessionId,
   SystemAdminSessionRecord,
   type CurrentSystemAdminSessionInput,
   type LoginSystemAdminInput,
@@ -15,6 +16,8 @@ import {
 } from "../../domain/system-admin.ts"
 import { SystemAdminBootstrapRepository } from "../../ports/repositories/system-admin-bootstrap-repository.ts"
 import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
+import { AuthTokenDigester } from "../../ports/services/auth-token-digester.ts"
+import { AuthTokenGenerator } from "../../ports/services/auth-token-generator.ts"
 import { PasswordHasher } from "../../ports/services/password-hasher.ts"
 import { SystemAdminAuthentication } from "./system-admin-authentication-input-boundary.ts"
 import {
@@ -26,6 +29,8 @@ export const SystemAdminAuthenticationInteractor = Layer.effect(
   SystemAdminAuthentication,
   Effect.gen(function* () {
     const ids = yield* AuthIdGenerator
+    const tokens = yield* AuthTokenGenerator
+    const tokenDigester = yield* AuthTokenDigester
     const passwordHasher = yield* PasswordHasher
     const repository = yield* SystemAdminBootstrapRepository
 
@@ -55,15 +60,19 @@ export const SystemAdminAuthenticationInteractor = Layer.effect(
             })
           }
 
+          const sessionToken = SystemAdminSessionId.make(
+            yield* tokens.nextSystemAdminSessionToken
+          )
           const session = new SystemAdminSessionRecord({
             id: yield* ids.nextSystemAdminSessionId,
             adminId: admin.id,
+            tokenDigest: yield* tokenDigester.digestToken(sessionToken),
             active: true,
           })
 
           yield* repository.saveSession(session)
 
-          return new SystemAdminLoginSuccess({ admin, session })
+          return new SystemAdminLoginSuccess({ admin, sessionToken, session })
         })
     )
 
@@ -71,9 +80,10 @@ export const SystemAdminAuthenticationInteractor = Layer.effect(
       "SystemAdminAuthentication.currentSession"
     )((command: CurrentSystemAdminSessionInput) =>
       Effect.gen(function* () {
+        const tokenDigest = yield* tokenDigester.digestToken(command.sessionId)
         const session = yield* requireActiveSystemAdminSession(
           command.sessionId,
-          yield* repository.findSessionById(command.sessionId)
+          yield* repository.findSessionByTokenDigest(tokenDigest)
         )
         const admin = yield* repository.findFirstAdmin
 
@@ -93,12 +103,15 @@ export const SystemAdminAuthenticationInteractor = Layer.effect(
     const logout = Effect.fn("SystemAdminAuthentication.logout")(
       (command: LogoutSystemAdminInput) =>
         Effect.gen(function* () {
-          yield* requireActiveSystemAdminSession(
+          const tokenDigest = yield* tokenDigester.digestToken(
+            command.sessionId
+          )
+          const session = yield* requireActiveSystemAdminSession(
             command.sessionId,
-            yield* repository.findSessionById(command.sessionId)
+            yield* repository.findSessionByTokenDigest(tokenDigest)
           )
 
-          yield* repository.invalidateSession(command.sessionId)
+          yield* repository.invalidateSession(session.id)
         })
     )
 

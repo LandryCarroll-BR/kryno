@@ -14,6 +14,7 @@ export const SystemAdminBootstrapRepositoryMemoryAdapter = Layer.sync(
     let firstAdmin: SystemAdminRecord | undefined
     let firstAdminCredential: SystemAdminCredentialRecord | undefined
     const sessionsById = new Map<string, SystemAdminSessionRecord>()
+    const sessionIdsByTokenDigest = new Map<string, string>()
 
     return {
       findFirstAdmin: Effect.sync(() => Option.fromNullishOr(firstAdmin)),
@@ -30,10 +31,13 @@ export const SystemAdminBootstrapRepositoryMemoryAdapter = Layer.sync(
             ? Option.some(firstAdminCredential)
             : Option.none()
         ),
-      findSessionById: (sessionId: SystemAdminSessionRecord["id"]) =>
-        Effect.sync(() =>
-          Option.fromNullishOr(sessionsById.get(sessionId))
-        ),
+      findSessionByTokenDigest: (tokenDigest: string) =>
+        Effect.sync(() => {
+          const sessionId = sessionIdsByTokenDigest.get(tokenDigest)
+          return Option.fromNullishOr(
+            sessionId === undefined ? undefined : sessionsById.get(sessionId)
+          )
+        }),
       saveFirstAdmin: (
         admin: SystemAdminRecord,
         credential: SystemAdminCredentialRecord
@@ -48,6 +52,7 @@ export const SystemAdminBootstrapRepositoryMemoryAdapter = Layer.sync(
       saveSession: (session: SystemAdminSessionRecord) =>
         Effect.sync(() => {
           sessionsById.set(session.id, session)
+          sessionIdsByTokenDigest.set(session.tokenDigest, session.id)
         }),
       invalidateSession: (sessionId: SystemAdminSessionRecord["id"]) =>
         Effect.sync(() => {
@@ -58,6 +63,7 @@ export const SystemAdminBootstrapRepositoryMemoryAdapter = Layer.sync(
               new SystemAdminSessionRecord({
                 id: session.id,
                 adminId: session.adminId,
+                tokenDigest: session.tokenDigest,
                 active: false,
               })
             )

@@ -6,6 +6,8 @@ export class AuthTokenGenerator extends Context.Service<
   {
     readonly nextGymUserEmailVerificationToken: Effect.Effect<string>
     readonly nextGymUserPasswordResetToken: Effect.Effect<string>
+    readonly nextGymUserSessionToken: Effect.Effect<string>
     readonly nextGymStaffInvitationToken: Effect.Effect<string>
+    readonly nextSystemAdminSessionToken: Effect.Effect<string>
   }
 >()("@kryno/auth/AuthTokenGenerator") {}

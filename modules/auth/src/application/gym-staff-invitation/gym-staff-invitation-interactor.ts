@@ -19,6 +19,7 @@ import { GymStaffInvitationRepository } from "../../ports/repositories/gym-staff
 import { GymUserRegistrationRepository } from "../../ports/repositories/gym-user-registration-repository.ts"
 import { AuthEmailDelivery } from "../../ports/services/auth-email-delivery.ts"
 import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
+import { AuthTokenDigester } from "../../ports/services/auth-token-digester.ts"
 import { AuthTokenGenerator } from "../../ports/services/auth-token-generator.ts"
 import { requireVerifiedGymUser } from "../gym-user-authentication/gym-user-authentication-policy.ts"
 import { requireActiveGym, requireActiveOwnerAffiliation } from "../gym-request/gym-request-policy.ts"
@@ -32,13 +33,16 @@ export const GymStaffInvitationInteractor = Layer.effect(
     const gymUserRepository = yield* GymUserRegistrationRepository
     const invitationRepository = yield* GymStaffInvitationRepository
     const ids = yield* AuthIdGenerator
+    const tokenDigester = yield* AuthTokenDigester
     const tokens = yield* AuthTokenGenerator
 
     const requireCurrentVerifiedGymUser = (
       sessionId: CreateGymStaffInvitationInput["sessionId"]
     ) =>
       Effect.gen(function* () {
-        const maybeSession = yield* gymUserRepository.findSessionById(sessionId)
+        const maybeSession = yield* gymUserRepository.findSessionByTokenDigest(
+          yield* tokenDigester.digestToken(sessionId)
+        )
 
         if (Option.isNone(maybeSession) || !maybeSession.value.active) {
           return yield* new GymUserSessionInvalid({ sessionId })

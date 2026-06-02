@@ -23,8 +23,8 @@ export class GymUserRegistrationRepository extends Context.Service<
     readonly findCredentialByUserId: (
       userId: GymUserId
     ) => Effect.Effect<Option.Option<GymUserCredentialRecord>>
-    readonly findSessionById: (
-      sessionId: GymUserSessionId
+    readonly findSessionByTokenDigest: (
+      tokenDigest: string
     ) => Effect.Effect<Option.Option<GymUserSessionRecord>>
     readonly save: (record: GymUserRegistrationRecord) => Effect.Effect<void>
     readonly saveCredential: (

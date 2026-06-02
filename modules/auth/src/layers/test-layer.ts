@@ -6,6 +6,7 @@ import { GymUserRegistrationRepositoryMemoryAdapter } from "../adapters/reposito
 import { SystemAdminBootstrapRepositoryMemoryAdapter } from "../adapters/repositories/system-admin-bootstrap-repository-memory.ts"
 import { AuthEmailDeliveryMemoryAdapter } from "../adapters/services/auth-email-delivery-memory.ts"
 import { AuthIdGeneratorSequentialAdapter } from "../adapters/services/auth-id-generator-sequential.ts"
+import { AuthTokenDigesterDeterministicAdapter } from "../adapters/services/auth-token-digester-deterministic.ts"
 import { AuthTokenGeneratorSequentialAdapter } from "../adapters/services/auth-token-generator-sequential.ts"
 import { PasswordHasherDeterministicAdapter } from "../adapters/services/password-hasher-deterministic.ts"
 import { GymRequestInteractor } from "../application/gym-request/gym-request-interactor.ts"
@@ -33,6 +34,7 @@ export const AuthApplicationTestLayer = Layer.mergeAll(
   Layer.provideMerge(AuthEmailDeliveryMemoryAdapter),
   Layer.provideMerge(AuthIdGeneratorSequentialAdapter),
   Layer.provideMerge(AuthTokenGeneratorSequentialAdapter),
+  Layer.provideMerge(AuthTokenDigesterDeterministicAdapter),
   Layer.provideMerge(PasswordHasherDeterministicAdapter)
 )
 

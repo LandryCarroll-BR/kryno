@@ -8,6 +8,7 @@ import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import {
   CurrentGymUserSessionSuccess,
   GymUserLoginSuccess,
+  GymUserSessionId,
   GymUserSessionRecord,
   type CurrentGymUserSessionInput,
   type LoginGymUserInput,
@@ -16,6 +17,8 @@ import {
 import { GymRepository } from "../../ports/repositories/gym-repository.ts"
 import { GymUserRegistrationRepository } from "../../ports/repositories/gym-user-registration-repository.ts"
 import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
+import { AuthTokenDigester } from "../../ports/services/auth-token-digester.ts"
+import { AuthTokenGenerator } from "../../ports/services/auth-token-generator.ts"
 import { PasswordHasher } from "../../ports/services/password-hasher.ts"
 import { GymUserAuthentication } from "./gym-user-authentication-input-boundary.ts"
 import {
@@ -28,6 +31,8 @@ export const GymUserAuthenticationInteractor = Layer.effect(
   GymUserAuthentication,
   Effect.gen(function* () {
     const ids = yield* AuthIdGenerator
+    const tokens = yield* AuthTokenGenerator
+    const tokenDigester = yield* AuthTokenDigester
     const passwordHasher = yield* PasswordHasher
     const gymRepository = yield* GymRepository
     const repository = yield* GymUserRegistrationRepository
@@ -60,24 +65,31 @@ export const GymUserAuthenticationInteractor = Layer.effect(
 
           yield* requireVerifiedGymUser(user)
 
+          const sessionToken = GymUserSessionId.make(
+            yield* tokens.nextGymUserSessionToken
+          )
           const session = new GymUserSessionRecord({
             id: yield* ids.nextGymUserSessionId,
             userId: user.id,
+            tokenDigest: yield* tokenDigester.digestToken(sessionToken),
             active: true,
           })
 
           yield* repository.saveSession(session)
 
-          return new GymUserLoginSuccess({ user, session })
+          return new GymUserLoginSuccess({ user, sessionToken, session })
         })
     )
 
     const currentSession = Effect.fn("GymUserAuthentication.currentSession")(
       (command: CurrentGymUserSessionInput) =>
         Effect.gen(function* () {
+          const tokenDigest = yield* tokenDigester.digestToken(
+            command.sessionId
+          )
           const session = yield* requireActiveGymUserSession(
             command.sessionId,
-            yield* repository.findSessionById(command.sessionId)
+            yield* repository.findSessionByTokenDigest(tokenDigest)
           )
           const maybeUser = yield* repository.findById(session.userId)
 
@@ -110,12 +122,15 @@ export const GymUserAuthenticationInteractor = Layer.effect(
     const logout = Effect.fn("GymUserAuthentication.logout")(
       (command: LogoutGymUserInput) =>
         Effect.gen(function* () {
-          yield* requireActiveGymUserSession(
+          const tokenDigest = yield* tokenDigester.digestToken(
+            command.sessionId
+          )
+          const session = yield* requireActiveGymUserSession(
             command.sessionId,
-            yield* repository.findSessionById(command.sessionId)
+            yield* repository.findSessionByTokenDigest(tokenDigest)
           )
 
-          yield* repository.invalidateSession(command.sessionId)
+          yield* repository.invalidateSession(session.id)
         })
     )
 

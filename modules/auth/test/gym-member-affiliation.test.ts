@@ -66,16 +66,16 @@ describe("Auth gym member affiliation", () => {
       })
 
       const request = yield* auth.requestGymCreation({
-        sessionId: ownerLogin.session.id,
+        sessionId: ownerLogin.sessionToken,
         name: "Boulder House",
       })
       const approval = yield* auth.approveGymCreationRequest({
-        sessionId: adminLogin.session.id,
+        sessionId: adminLogin.sessionToken,
         requestId: request.request.id,
       })
 
       const join = yield* auth.joinGymAsMember({
-        sessionId: memberLogin.session.id,
+        sessionId: memberLogin.sessionToken,
         gymId: approval.gym.id,
       })
 
@@ -84,7 +84,7 @@ describe("Auth gym member affiliation", () => {
       expect(join.affiliation.userId).toBe(memberLogin.user.id)
 
       const current = yield* auth.currentGymUserSession({
-        sessionId: memberLogin.session.id,
+        sessionId: memberLogin.sessionToken,
       })
 
       expect(current.activeAffiliations).toHaveLength(1)
@@ -92,20 +92,20 @@ describe("Auth gym member affiliation", () => {
       expect(current.activeAffiliations[0]?.role).toBe("Member")
 
       const leave = yield* auth.leaveGymAsMember({
-        sessionId: memberLogin.session.id,
+        sessionId: memberLogin.sessionToken,
         gymId: approval.gym.id,
       })
 
       expect(leave.affiliation.status).toBe("left")
 
       const afterLeave = yield* auth.currentGymUserSession({
-        sessionId: memberLogin.session.id,
+        sessionId: memberLogin.sessionToken,
       })
 
       expect(afterLeave.activeAffiliations).toHaveLength(0)
 
       const rejoin = yield* auth.joinGymAsMember({
-        sessionId: memberLogin.session.id,
+        sessionId: memberLogin.sessionToken,
         gymId: approval.gym.id,
       })
 
@@ -149,13 +149,13 @@ describe("Auth gym member affiliation", () => {
 
       const pendingJoin = yield* Effect.exit(
         auth.joinGymAsMember({
-          sessionId: memberLogin.session.id,
+          sessionId: memberLogin.sessionToken,
           gymId: GymId.make("pending-gym"),
         })
       )
       const suspendedJoin = yield* Effect.exit(
         auth.joinGymAsMember({
-          sessionId: memberLogin.session.id,
+          sessionId: memberLogin.sessionToken,
           gymId: GymId.make("suspended-gym"),
         })
       )
@@ -192,7 +192,7 @@ describe("Auth gym member affiliation", () => {
 
       const leave = yield* Effect.exit(
         auth.leaveGymAsMember({
-          sessionId: memberLogin.session.id,
+          sessionId: memberLogin.sessionToken,
           gymId: gym.id,
         })
       )
@@ -226,7 +226,7 @@ describe("Auth gym member affiliation", () => {
       })
       yield* gyms.saveGym(gym)
       yield* auth.joinGymAsMember({
-        sessionId: memberLogin.session.id,
+        sessionId: memberLogin.sessionToken,
         gymId: gym.id,
       })
       yield* gyms.saveGym(
@@ -238,7 +238,7 @@ describe("Auth gym member affiliation", () => {
       )
 
       const current = yield* auth.currentGymUserSession({
-        sessionId: memberLogin.session.id,
+        sessionId: memberLogin.sessionToken,
       })
 
       expect(current.activeAffiliations).toHaveLength(0)

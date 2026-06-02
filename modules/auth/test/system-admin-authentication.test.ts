@@ -36,21 +36,24 @@ describe("Auth system admin authentication", () => {
         password: "correct horse battery staple",
       })
 
+      expect(login.sessionToken).toBe("system-admin-session-token-1")
       expect(login.session.id).toBe("system-admin-session-1")
+      expect(login.sessionToken).not.toBe(login.session.id)
+      expect(login.session.tokenDigest).toBe(`digest:${login.sessionToken}`)
       expect(login.session.adminId).toBe(login.admin.id)
       expect(login.admin.email).toBe("admin@example.com")
 
       const current = yield* auth.currentSystemAdminSession({
-        sessionId: login.session.id,
+        sessionId: login.sessionToken,
       })
 
       expect(current.admin.id).toBe(login.admin.id)
       expect(current.session.id).toBe(login.session.id)
 
-      yield* auth.logoutSystemAdmin({ sessionId: login.session.id })
+      yield* auth.logoutSystemAdmin({ sessionId: login.sessionToken })
 
       const afterLogout = yield* Effect.exit(
-        auth.currentSystemAdminSession({ sessionId: login.session.id })
+        auth.currentSystemAdminSession({ sessionId: login.sessionToken })
       )
 
       expectFailureTag(afterLogout, "SystemAdminSessionInvalid")

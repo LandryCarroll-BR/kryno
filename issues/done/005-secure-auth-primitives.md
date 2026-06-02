@@ -10,8 +10,8 @@ Add production-ready auth primitives for secure password hashing, cryptographica
 
 - [x] Production password hashing uses Argon2id or bcrypt through the existing service-port pattern.
 - [x] Production ID and token generation uses cryptographically secure randomness.
-- [ ] Token and session digests use HMAC-SHA-256 with a required live auth secret.
-- [ ] Raw bearer tokens are kept separate from internal session row IDs.
+- [x] Token and session digests use HMAC-SHA-256 with a required live auth secret.
+- [x] Raw bearer tokens are kept separate from internal session row IDs.
 - [x] Email normalization is available through a small identity helper/primitive and supports case-insensitive uniqueness and lookup.
 - [x] Existing deterministic/sequential test adapters remain available.
 - [x] Tests assert secure primitive behavior by shape and behavior rather than exact production token strings.
@@ -21,7 +21,7 @@ Add production-ready auth primitives for secure password hashing, cryptographica
 
 - Added secure service adapters for Argon2id password hashing, crypto-backed IDs, crypto-backed bearer tokens, and an HMAC-SHA-256 token digester backed by required `AUTH_SECRET` config.
 - Added normalized email identity helper and wired gym-user/system-admin/staff-invitation application flows and memory lookup keys to use normalized identity.
-- Left the issue open because database-backed token/session digest storage and separating raw bearer tokens from internal session row IDs still need to be completed in the persistence slice.
+- Completed the session-token slice by issuing raw bearer session tokens separately from internal session row IDs, storing only token digests on session records, and resolving protected flows through digest lookup.
 
 ## Blocked by
 

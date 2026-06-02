@@ -245,9 +245,11 @@ describe("Kryno API client", () => {
             displayName: "Member Test",
             emailVerified: true,
           },
+          sessionToken: "gym-user-session-token-1",
           session: {
             id: "gym-user-session-1",
             userId: "gym-user-1",
+            tokenDigest: "digest:gym-user-session-token-1",
             active: true,
           },
         },
@@ -281,6 +283,7 @@ describe("Kryno API client", () => {
         password: "correct horse battery staple",
       },
     ])
+    expect(login.sessionToken).toBe("gym-user-session-token-1")
     expect(login.session.id).toBe("gym-user-session-1")
     expect(login.user.email).toBe("member@test.dev")
   })
@@ -302,6 +305,7 @@ describe("Kryno API client", () => {
         session: {
           id: "gym-user-session-1",
           userId: "gym-user-1",
+          tokenDigest: "digest:gym-user-session-token-1",
           active: true,
         },
         activeAffiliations: [],

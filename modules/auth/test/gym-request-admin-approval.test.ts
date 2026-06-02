@@ -62,7 +62,7 @@ describe("Auth gym request admin approval", () => {
       })
 
       const request = yield* auth.requestGymCreation({
-        sessionId: gymUserLogin.session.id,
+        sessionId: gymUserLogin.sessionToken,
         name: "Boulder House",
       })
 
@@ -71,7 +71,7 @@ describe("Auth gym request admin approval", () => {
       expect(request.request.requesterUserId).toBe(gymUserLogin.user.id)
 
       const approval = yield* auth.approveGymCreationRequest({
-        sessionId: adminLogin.session.id,
+        sessionId: adminLogin.sessionToken,
         requestId: request.request.id,
       })
 
@@ -81,7 +81,7 @@ describe("Auth gym request admin approval", () => {
       expect(approval.ownerAffiliation.userId).toBe(gymUserLogin.user.id)
 
       const ownerAccess = yield* auth.currentGymOwnerAccess({
-        sessionId: gymUserLogin.session.id,
+        sessionId: gymUserLogin.sessionToken,
         gymId: approval.gym.id,
       })
 
@@ -104,6 +104,7 @@ describe("Auth gym request admin approval", () => {
       const unverifiedSession = new GymUserSessionRecord({
         id: GymUserSessionId.make("unverified-session"),
         userId: unverifiedUser.id,
+        tokenDigest: "digest:unverified-session-token",
         active: true,
       })
 
@@ -112,7 +113,7 @@ describe("Auth gym request admin approval", () => {
 
       const request = yield* Effect.exit(
         auth.requestGymCreation({
-          sessionId: unverifiedSession.id,
+          sessionId: GymUserSessionId.make("unverified-session-token"),
           name: "Unverified Boulder House",
         })
       )
@@ -139,7 +140,7 @@ describe("Auth gym request admin approval", () => {
       })
 
       const request = yield* auth.requestGymCreation({
-        sessionId: gymUserLogin.session.id,
+        sessionId: gymUserLogin.sessionToken,
         name: "Boulder House",
       })
 
@@ -173,7 +174,7 @@ describe("Auth gym request admin approval", () => {
 
       const access = yield* Effect.exit(
         auth.currentGymOwnerAccess({
-          sessionId: gymUserLogin.session.id,
+          sessionId: gymUserLogin.sessionToken,
           gymId: GymId.make("missing-gym"),
         })
       )

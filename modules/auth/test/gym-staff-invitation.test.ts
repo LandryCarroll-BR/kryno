@@ -67,16 +67,16 @@ describe("Auth gym Staff invitation", () => {
       })
 
       const request = yield* auth.requestGymCreation({
-        sessionId: ownerLogin.session.id,
+        sessionId: ownerLogin.sessionToken,
         name: "Boulder House",
       })
       const approval = yield* auth.approveGymCreationRequest({
-        sessionId: adminLogin.session.id,
+        sessionId: adminLogin.sessionToken,
         requestId: request.request.id,
       })
 
       const invitation = yield* auth.createGymStaffInvitation({
-        sessionId: ownerLogin.session.id,
+        sessionId: ownerLogin.sessionToken,
         gymId: approval.gym.id,
         email: "staff@example.com",
       })
@@ -95,7 +95,7 @@ describe("Auth gym Staff invitation", () => {
       ])
 
       const acceptance = yield* auth.acceptGymStaffInvitation({
-        sessionId: staffLogin.session.id,
+        sessionId: staffLogin.sessionToken,
         token: "gym-staff-invitation-token-1",
       })
 
@@ -104,7 +104,7 @@ describe("Auth gym Staff invitation", () => {
       expect(acceptance.affiliation.userId).toBe(staffLogin.user.id)
 
       const current = yield* auth.currentGymUserSession({
-        sessionId: staffLogin.session.id,
+        sessionId: staffLogin.sessionToken,
       })
       expect(current.activeAffiliations[0]?.role).toBe("Staff")
     }).pipe(Effect.provide(GymStaffInvitationTestLayer))
@@ -138,7 +138,7 @@ describe("Auth gym Staff invitation", () => {
 
       const invitation = yield* Effect.exit(
         auth.createGymStaffInvitation({
-          sessionId: memberLogin.session.id,
+          sessionId: memberLogin.sessionToken,
           gymId: GymId.make("active-gym"),
           email: "staff@example.com",
         })
@@ -173,17 +173,17 @@ describe("Auth gym Staff invitation", () => {
         password: "correct horse battery staple",
       })
       const request = yield* auth.requestGymCreation({
-        sessionId: ownerLogin.session.id,
+        sessionId: ownerLogin.sessionToken,
         name: "Boulder House",
       })
       const approval = yield* auth.approveGymCreationRequest({
-        sessionId: adminLogin.session.id,
+        sessionId: adminLogin.sessionToken,
         requestId: request.request.id,
       })
 
       const invitation = yield* Effect.exit(
         auth.createGymStaffInvitation({
-          sessionId: ownerLogin.session.id,
+          sessionId: ownerLogin.sessionToken,
           gymId: approval.gym.id,
           email: "owner@example.com",
         })
@@ -238,28 +238,28 @@ describe("Auth gym Staff invitation", () => {
         password: "correct horse battery staple",
       })
       const request = yield* auth.requestGymCreation({
-        sessionId: ownerLogin.session.id,
+        sessionId: ownerLogin.sessionToken,
         name: "Boulder House",
       })
       const approval = yield* auth.approveGymCreationRequest({
-        sessionId: adminLogin.session.id,
+        sessionId: adminLogin.sessionToken,
         requestId: request.request.id,
       })
       yield* auth.createGymStaffInvitation({
-        sessionId: ownerLogin.session.id,
+        sessionId: ownerLogin.sessionToken,
         gymId: approval.gym.id,
         email: "staff@example.com",
       })
 
       const missing = yield* Effect.exit(
         auth.acceptGymStaffInvitation({
-          sessionId: otherLogin.session.id,
+          sessionId: otherLogin.sessionToken,
           token: "missing-token",
         })
       )
       const wrongUser = yield* Effect.exit(
         auth.acceptGymStaffInvitation({
-          sessionId: otherLogin.session.id,
+          sessionId: otherLogin.sessionToken,
           token: "gym-staff-invitation-token-1",
         })
       )
@@ -307,15 +307,15 @@ describe("Auth gym Staff invitation", () => {
         password: "correct horse battery staple",
       })
       const request = yield* auth.requestGymCreation({
-        sessionId: ownerLogin.session.id,
+        sessionId: ownerLogin.sessionToken,
         name: "Boulder House",
       })
       const approval = yield* auth.approveGymCreationRequest({
-        sessionId: adminLogin.session.id,
+        sessionId: adminLogin.sessionToken,
         requestId: request.request.id,
       })
       yield* auth.createGymStaffInvitation({
-        sessionId: ownerLogin.session.id,
+        sessionId: ownerLogin.sessionToken,
         gymId: approval.gym.id,
         email: "staff@example.com",
       })
@@ -329,14 +329,14 @@ describe("Auth gym Staff invitation", () => {
 
       const createForSuspended = yield* Effect.exit(
         auth.createGymStaffInvitation({
-          sessionId: ownerLogin.session.id,
+          sessionId: ownerLogin.sessionToken,
           gymId: approval.gym.id,
           email: "another-staff@example.com",
         })
       )
       const acceptForSuspended = yield* Effect.exit(
         auth.acceptGymStaffInvitation({
-          sessionId: staffLogin.session.id,
+          sessionId: staffLogin.sessionToken,
           token: "gym-staff-invitation-token-1",
         })
       )

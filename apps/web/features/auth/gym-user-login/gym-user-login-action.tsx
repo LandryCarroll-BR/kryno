@@ -16,6 +16,7 @@ export interface GymUserLoginInput {
 }
 
 export interface GymUserLoginSuccess {
+  readonly sessionToken: string
   readonly session: {
     readonly id: string
   }
@@ -72,7 +73,7 @@ export const createGymUserLoginAction =
     return await loginEffect.pipe(
       Effect.andThen((response) => {
         return Effect.succeed(
-          redirectToAppWithSessionCookie(response.session.id, request)
+          redirectToAppWithSessionCookie(response.sessionToken, request)
         )
       }),
       Effect.catchTags({
