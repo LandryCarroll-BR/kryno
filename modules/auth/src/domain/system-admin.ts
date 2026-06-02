@@ -28,6 +28,7 @@ export class SystemAdminSessionRecord extends Schema.Class<SystemAdminSessionRec
   id: SystemAdminSessionId,
   adminId: SystemAdminId,
   tokenDigest: Schema.String,
+  expiresAtMillis: Schema.Number,
   active: Schema.Boolean,
 }) {}
 

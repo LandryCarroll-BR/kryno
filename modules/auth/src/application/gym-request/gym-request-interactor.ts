@@ -1,4 +1,4 @@
-import { Effect, Layer, Option } from "effect"
+import { Clock, Effect, Layer, Option } from "effect"
 
 import {
   GymAffiliationRecord,
@@ -25,6 +25,7 @@ import { GymUserRegistrationRepository } from "../../ports/repositories/gym-user
 import { SystemAdminBootstrapRepository } from "../../ports/repositories/system-admin-bootstrap-repository.ts"
 import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
 import { AuthTokenDigester } from "../../ports/services/auth-token-digester.ts"
+import { isExpired } from "../../domain/auth-expiration.ts"
 import { requireVerifiedGymUser } from "../gym-user-authentication/gym-user-authentication-policy.ts"
 import { requireActiveSystemAdminSession } from "../system-admin-authentication/system-admin-authentication-policy.ts"
 import { GymRequest } from "./gym-request-input-boundary.ts"
@@ -51,8 +52,13 @@ export const GymRequestInteractor = Layer.effect(
         const maybeSession = yield* gymUserRepository.findSessionByTokenDigest(
           yield* tokenDigester.digestToken(sessionId)
         )
+        const now = yield* Clock.currentTimeMillis
 
-        if (Option.isNone(maybeSession) || !maybeSession.value.active) {
+        if (
+          Option.isNone(maybeSession) ||
+          !maybeSession.value.active ||
+          isExpired(now, maybeSession.value.expiresAtMillis)
+        ) {
           return yield* new GymUserSessionInvalid({ sessionId })
         }
 

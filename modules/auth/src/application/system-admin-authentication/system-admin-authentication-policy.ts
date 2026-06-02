@@ -1,4 +1,4 @@
-import { Effect, Option } from "effect"
+import { Clock, Effect, Option } from "effect"
 
 import {
   SystemAdminInvalidCredentials,
@@ -10,6 +10,7 @@ import type {
   SystemAdminSessionId,
   SystemAdminSessionRecord,
 } from "../../domain/system-admin.ts"
+import { isExpired } from "../../domain/auth-expiration.ts"
 
 export const requireSystemAdminCredential = (
   email: string,
@@ -24,6 +25,12 @@ export const requireActiveSystemAdminSession = (
   sessionId: SystemAdminSessionId,
   session: Option.Option<SystemAdminSessionRecord>
 ) =>
-  Option.isSome(session) && session.value.active
-    ? Effect.succeed(session.value)
-    : Effect.fail(new SystemAdminSessionInvalid({ sessionId }))
+  Effect.gen(function* () {
+    const now = yield* Clock.currentTimeMillis
+
+    return Option.isSome(session) &&
+      session.value.active &&
+      !isExpired(now, session.value.expiresAtMillis)
+      ? session.value
+      : yield* new SystemAdminSessionInvalid({ sessionId })
+  })

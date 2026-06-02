@@ -20,9 +20,12 @@ import { GymUserRegistrationRepository } from "../../ports/repositories/gym-user
 import { AuthEmailDelivery } from "../../ports/services/auth-email-delivery.ts"
 import { AuthTokenGenerator } from "../../ports/services/auth-token-generator.ts"
 import { PasswordHasher } from "../../ports/services/password-hasher.ts"
+import {
+  expiresAtMillis,
+  isExpired,
+  passwordResetTokenTtlMillis,
+} from "../../domain/auth-expiration.ts"
 import { GymUserPasswordReset } from "./gym-user-password-reset-input-boundary.ts"
-
-const passwordResetTokenTtlMillis = 60 * 60 * 1000
 
 export const GymUserPasswordResetInteractor = Layer.effect(
   GymUserPasswordReset,
@@ -51,7 +54,10 @@ export const GymUserPasswordResetInteractor = Layer.effect(
             new GymUserPasswordResetTokenRecord({
               token,
               userId: maybeUser.value.id,
-              expiresAtMillis: now + passwordResetTokenTtlMillis,
+              expiresAtMillis: expiresAtMillis(
+                now,
+                passwordResetTokenTtlMillis
+              ),
               used: false,
             })
           )
@@ -87,7 +93,7 @@ export const GymUserPasswordResetInteractor = Layer.effect(
 
           const now = yield* Clock.currentTimeMillis
 
-          if (now >= maybeToken.value.expiresAtMillis) {
+          if (isExpired(now, maybeToken.value.expiresAtMillis)) {
             return yield* new GymUserPasswordResetTokenExpired({
               token: command.token,
             })

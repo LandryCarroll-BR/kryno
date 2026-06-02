@@ -48,6 +48,7 @@ const mockSystemAdminSession = new SystemAdminSessionRecord({
   id: SystemAdminSessionId.make("system-admin-session-mock"),
   adminId: mockSystemAdmin.id,
   tokenDigest: "digest:system-admin-session-token-mock",
+  expiresAtMillis: Number.MAX_SAFE_INTEGER,
   active: true,
 })
 
@@ -62,6 +63,7 @@ const mockGymUserSession = new GymUserSessionRecord({
   id: GymUserSessionId.make("gym-user-session-mock"),
   userId: mockGymUser.id,
   tokenDigest: "digest:gym-user-session-token-mock",
+  expiresAtMillis: Number.MAX_SAFE_INTEGER,
   active: true,
 })
 
@@ -219,6 +221,7 @@ export const AuthMock = Layer.succeed(Auth, {
       invitedEmail: input.email,
       invitedByUserId: mockGymUser.id,
       token: "gym-staff-invitation-token-mock",
+      expiresAtMillis: Number.MAX_SAFE_INTEGER,
       status: "pending",
     })
     return Effect.succeed(
@@ -235,6 +238,7 @@ export const AuthMock = Layer.succeed(Auth, {
       invitedEmail: mockGymUser.email,
       invitedByUserId: mockOwnerAffiliation.userId,
       token: "gym-staff-invitation-token-mock",
+      expiresAtMillis: Number.MAX_SAFE_INTEGER,
       status: "accepted",
     })
     const affiliation = new GymAffiliationRecord({

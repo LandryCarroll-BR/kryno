@@ -8,14 +8,14 @@ Define the auth module's Postgres schema contribution and expose it through an i
 
 ## Acceptance criteria
 
-- [ ] Auth table definitions live with the auth module and are not exported through the main auth facade.
-- [ ] A schema-only subpath exports auth schema contributions for the product database composition module.
-- [ ] Auth tables use a module-specific Postgres schema named `auth`.
-- [ ] Timestamps are stored as `timestamptz`.
-- [ ] Database constraints mirror core auth invariants, including normalized email uniqueness, unique token/session digests, one credential per account, one affiliation per gym/user, valid status/role values, and module-internal foreign keys.
-- [ ] The system admin schema permits multiple system admins even if bootstrap still creates only the first admin.
-- [ ] Cross-module foreign keys are avoided unless ownership is clearly stable.
-- [ ] The schema is reviewed for ownership boundaries and future migration cost before downstream repository work proceeds.
+- [x] Auth table definitions live with the auth module and are not exported through the main auth facade.
+- [x] A schema-only subpath exports auth schema contributions for the product database composition module.
+- [x] Auth tables use a module-specific Postgres schema named `auth`.
+- [x] Timestamps are stored as `timestamptz`.
+- [x] Database constraints mirror core auth invariants, including normalized email uniqueness, unique token/session digests, one credential per account, one affiliation per gym/user, valid status/role values, and module-internal foreign keys.
+- [x] The system admin schema permits multiple system admins even if bootstrap still creates only the first admin.
+- [x] Cross-module foreign keys are avoided unless ownership is clearly stable.
+- [x] The schema is reviewed for ownership boundaries and future migration cost before downstream repository work proceeds.
 
 ## Blocked by
 

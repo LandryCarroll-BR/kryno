@@ -87,6 +87,7 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
                 id: session.id,
                 userId: session.userId,
                 tokenDigest: session.tokenDigest,
+                expiresAtMillis: session.expiresAtMillis,
                 active: false,
               })
             )

@@ -1,4 +1,4 @@
-import { Effect, Layer, Option } from "effect"
+import { Clock, Effect, Layer, Option } from "effect"
 
 import {
   GymAffiliationRecord,
@@ -21,8 +21,16 @@ import { AuthEmailDelivery } from "../../ports/services/auth-email-delivery.ts"
 import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
 import { AuthTokenDigester } from "../../ports/services/auth-token-digester.ts"
 import { AuthTokenGenerator } from "../../ports/services/auth-token-generator.ts"
+import {
+  expiresAtMillis,
+  gymStaffInvitationTtlMillis,
+  isExpired,
+} from "../../domain/auth-expiration.ts"
 import { requireVerifiedGymUser } from "../gym-user-authentication/gym-user-authentication-policy.ts"
-import { requireActiveGym, requireActiveOwnerAffiliation } from "../gym-request/gym-request-policy.ts"
+import {
+  requireActiveGym,
+  requireActiveOwnerAffiliation,
+} from "../gym-request/gym-request-policy.ts"
 import { GymStaffInvitation } from "./gym-staff-invitation-input-boundary.ts"
 
 export const GymStaffInvitationInteractor = Layer.effect(
@@ -43,8 +51,13 @@ export const GymStaffInvitationInteractor = Layer.effect(
         const maybeSession = yield* gymUserRepository.findSessionByTokenDigest(
           yield* tokenDigester.digestToken(sessionId)
         )
+        const now = yield* Clock.currentTimeMillis
 
-        if (Option.isNone(maybeSession) || !maybeSession.value.active) {
+        if (
+          Option.isNone(maybeSession) ||
+          !maybeSession.value.active ||
+          isExpired(now, maybeSession.value.expiresAtMillis)
+        ) {
           return yield* new GymUserSessionInvalid({ sessionId })
         }
 
@@ -75,9 +88,9 @@ export const GymStaffInvitationInteractor = Layer.effect(
             yield* gymRepository.findAffiliation(command.gymId, owner.id)
           )
 
-          const maybeInvitedUser = yield* gymUserRepository.findByEmail(
-            invitedEmail
-          )
+          const now = yield* Clock.currentTimeMillis
+          const maybeInvitedUser =
+            yield* gymUserRepository.findByEmail(invitedEmail)
 
           if (
             Option.isSome(maybeInvitedUser) &&
@@ -95,6 +108,7 @@ export const GymStaffInvitationInteractor = Layer.effect(
             invitedEmail,
             invitedByUserId: owner.id,
             token: yield* tokens.nextGymStaffInvitationToken,
+            expiresAtMillis: expiresAtMillis(now, gymStaffInvitationTtlMillis),
             status: "pending",
           })
 
@@ -116,10 +130,12 @@ export const GymStaffInvitationInteractor = Layer.effect(
           const maybeInvitation = yield* invitationRepository.findByToken(
             command.token
           )
+          const now = yield* Clock.currentTimeMillis
 
           if (
             Option.isNone(maybeInvitation) ||
             maybeInvitation.value.status !== "pending" ||
+            isExpired(now, maybeInvitation.value.expiresAtMillis) ||
             normalizeEmailIdentity(maybeInvitation.value.invitedEmail) !==
               normalizeEmailIdentity(user.email)
           ) {
@@ -153,6 +169,7 @@ export const GymStaffInvitationInteractor = Layer.effect(
             invitedEmail: invitation.invitedEmail,
             invitedByUserId: invitation.invitedByUserId,
             token: invitation.token,
+            expiresAtMillis: invitation.expiresAtMillis,
             status: "accepted",
           })
 

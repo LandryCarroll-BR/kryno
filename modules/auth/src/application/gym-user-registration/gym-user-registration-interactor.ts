@@ -1,4 +1,4 @@
-import { Effect, Layer } from "effect"
+import { Clock, Effect, Layer } from "effect"
 import { Option } from "effect"
 
 import {
@@ -21,6 +21,11 @@ import { AuthEmailDelivery } from "../../ports/services/auth-email-delivery.ts"
 import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
 import { AuthTokenGenerator } from "../../ports/services/auth-token-generator.ts"
 import { PasswordHasher } from "../../ports/services/password-hasher.ts"
+import {
+  emailVerificationTokenTtlMillis,
+  expiresAtMillis,
+  isExpired,
+} from "../../domain/auth-expiration.ts"
 import { GymUserRegistration } from "./gym-user-registration-input-boundary.ts"
 import { ensureGymUserEmailCanBeReserved } from "./gym-user-registration-policy.ts"
 
@@ -51,6 +56,7 @@ export const GymUserRegistrationInteractor = Layer.effect(
             userId: user.id,
             passwordHash: yield* passwordHasher.hashPassword(command.password),
           })
+          const now = yield* Clock.currentTimeMillis
           const token = yield* tokens.nextGymUserEmailVerificationToken
 
           yield* repository.save(user)
@@ -59,6 +65,10 @@ export const GymUserRegistrationInteractor = Layer.effect(
             new GymUserEmailVerificationTokenRecord({
               token,
               userId: user.id,
+              expiresAtMillis: expiresAtMillis(
+                now,
+                emailVerificationTokenTtlMillis
+              ),
               used: false,
             })
           )
@@ -98,8 +108,13 @@ export const GymUserRegistrationInteractor = Layer.effect(
           const maybeToken = yield* repository.findEmailVerificationToken(
             command.token
           )
+          const now = yield* Clock.currentTimeMillis
 
-          if (Option.isNone(maybeToken) || maybeToken.value.used) {
+          if (
+            Option.isNone(maybeToken) ||
+            maybeToken.value.used ||
+            isExpired(now, maybeToken.value.expiresAtMillis)
+          ) {
             return yield* new GymUserEmailVerificationInvalid({
               token: command.token,
             })
@@ -125,6 +140,7 @@ export const GymUserRegistrationInteractor = Layer.effect(
             new GymUserEmailVerificationTokenRecord({
               token: maybeToken.value.token,
               userId: maybeToken.value.userId,
+              expiresAtMillis: maybeToken.value.expiresAtMillis,
               used: true,
             })
           )

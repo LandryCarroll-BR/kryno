@@ -8,13 +8,13 @@ Create the generic `@workspace/drizzle` package that provides Kryno's shared Dri
 
 ## Acceptance criteria
 
-- [ ] `@workspace/drizzle` exists in the packages workspace and is consumable by modules/apps.
-- [ ] The package exposes a shared `DrizzleDatabase` service rather than requiring modules to construct clients directly.
-- [ ] Live database configuration uses Effect Config and redacted secret handling for `DATABASE_URL`.
-- [ ] Optional pool settings, including max connections and connection timeout, are typed and configurable.
-- [ ] Drizzle's Effect-native Postgres integration and recommended Postgres date/time parser setup are wired in the shared construction path.
-- [ ] A generic typed `PersistenceError` includes operation context for logs/traces.
-- [ ] Generic transaction support is exposed for repository adapters and module-specific unit-of-work layers.
+- [x] `@workspace/drizzle` exists in the packages workspace and is consumable by modules/apps.
+- [x] The package exposes a shared `DrizzleDatabase` service rather than requiring modules to construct clients directly.
+- [x] Live database configuration uses Effect Config and redacted secret handling for `DATABASE_URL`.
+- [x] Optional pool settings, including max connections and connection timeout, are typed and configurable.
+- [x] Drizzle's Effect-native Postgres integration and recommended Postgres date/time parser setup are wired in the shared construction path.
+- [x] A generic typed `PersistenceError` includes operation context for logs/traces.
+- [x] Generic transaction support is exposed for repository adapters and module-specific unit-of-work layers.
 
 ## Blocked by
 

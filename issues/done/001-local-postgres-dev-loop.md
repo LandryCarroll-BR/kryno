@@ -8,10 +8,10 @@ Create the local Postgres development loop described in the PRD: Docker Compose 
 
 ## Acceptance criteria
 
-- [ ] Docker Compose starts a local Postgres instance suitable for Kryno development.
-- [ ] `.env.example` documents `DATABASE_URL` and relevant pool settings without committing secrets.
-- [ ] Local scripts or package commands support starting Postgres, resetting local database state, and optionally opening Drizzle Studio.
-- [ ] Documentation explains the local database workflow and makes clear that migrations are explicit, not run automatically on app startup.
+- [x] Docker Compose starts a local Postgres instance suitable for Kryno development.
+- [x] `.env.example` documents `DATABASE_URL` and relevant pool settings without committing secrets.
+- [x] Local scripts or package commands support starting Postgres, resetting local database state, and optionally opening Drizzle Studio.
+- [x] Documentation explains the local database workflow and makes clear that migrations are explicit, not run automatically on app startup.
 
 ## Blocked by
 

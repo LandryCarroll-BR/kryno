@@ -47,6 +47,7 @@ export class GymUserSessionRecord extends Schema.Class<GymUserSessionRecord>(
   id: GymUserSessionId,
   userId: GymUserId,
   tokenDigest: Schema.String,
+  expiresAtMillis: Schema.Number,
   active: Schema.Boolean,
 }) {}
 
@@ -55,6 +56,7 @@ export class GymUserEmailVerificationTokenRecord extends Schema.Class<GymUserEma
 )({
   token: Schema.String,
   userId: GymUserId,
+  expiresAtMillis: Schema.Number,
   used: Schema.Boolean,
 }) {}
 

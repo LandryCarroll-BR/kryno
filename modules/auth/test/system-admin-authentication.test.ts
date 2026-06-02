@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Cause, Effect, Exit } from "effect"
+import { TestClock } from "effect/testing"
 
 import { Auth } from "@workspace/auth"
 import { SystemAdminSessionId } from "../src/domain/system-admin"
@@ -117,6 +118,48 @@ describe("Auth system admin authentication", () => {
       )
 
       expectFailureTag(logout, "SystemAdminSessionInvalid")
+    }).pipe(Effect.provide(AuthTestLayer))
+  )
+
+  it.effect("expires admin sessions before gym-side sessions", () =>
+    Effect.gen(function* () {
+      const auth = yield* Auth
+
+      yield* auth.bootstrapFirstSystemAdmin({
+        email: "admin@example.com",
+        password: "correct horse battery staple",
+      })
+      const adminLogin = yield* auth.loginSystemAdmin({
+        email: "admin@example.com",
+        password: "correct horse battery staple",
+      })
+
+      yield* auth.signUpGymUser({
+        email: "alex@example.com",
+        password: "correct horse battery staple",
+        displayName: "Alex",
+      })
+      yield* auth.verifyGymUserEmail({
+        token: "gym-user-email-verification-token-1",
+      })
+      const gymUserLogin = yield* auth.loginGymUser({
+        email: "alex@example.com",
+        password: "correct horse battery staple",
+      })
+
+      yield* TestClock.adjust("12 hours")
+
+      const adminSession = yield* Effect.exit(
+        auth.currentSystemAdminSession({
+          sessionId: adminLogin.sessionToken,
+        })
+      )
+      const gymUserSession = yield* auth.currentGymUserSession({
+        sessionId: gymUserLogin.sessionToken,
+      })
+
+      expectFailureTag(adminSession, "SystemAdminSessionInvalid")
+      expect(gymUserSession.user.email).toBe("alex@example.com")
     }).pipe(Effect.provide(AuthTestLayer))
   )
 })

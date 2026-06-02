@@ -69,6 +69,7 @@ export class GymStaffInvitationRecord extends Schema.Class<GymStaffInvitationRec
   invitedEmail: Schema.String,
   invitedByUserId: GymUserId,
   token: Schema.String,
+  expiresAtMillis: Schema.Number,
   status: GymStaffInvitationStatus,
 }) {}
 

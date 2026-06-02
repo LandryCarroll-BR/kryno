@@ -8,11 +8,11 @@ Create the product database composition module under `modules/` that assembles m
 
 ## Acceptance criteria
 
-- [ ] A database composition module exists under `modules/` with a thin facade and explicit composition responsibilities.
-- [ ] Drizzle config points at the merged Kryno schema and central generated migrations.
-- [ ] Migration generation and migration execution are available through explicit commands.
-- [ ] The module composes the shared `DrizzleDatabase` service from `@workspace/drizzle`.
-- [ ] Migrations are not run automatically during application startup.
+- [x] A database composition module exists under `modules/` with a thin facade and explicit composition responsibilities.
+- [x] Drizzle config points at the merged Kryno schema and central generated migrations.
+- [x] Migration generation and migration execution are available through explicit commands.
+- [x] The module composes the shared `DrizzleDatabase` service from `@workspace/drizzle`.
+- [x] Migrations are not run automatically during application startup.
 
 ## Blocked by
 

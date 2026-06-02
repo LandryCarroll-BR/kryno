@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Cause, Effect, Exit, Layer } from "effect"
+import { TestClock } from "effect/testing"
 
 import { Auth } from "@workspace/auth"
 import { GymRecord, GymId } from "../src/domain/gym"
@@ -266,6 +267,69 @@ describe("Auth gym Staff invitation", () => {
 
       expectFailureTag(missing, "GymStaffInvitationInvalid")
       expectFailureTag(wrongUser, "GymStaffInvitationInvalid")
+    }).pipe(Effect.provide(GymStaffInvitationTestLayer))
+  )
+
+  it.effect("denies expired Staff invitations", () =>
+    Effect.gen(function* () {
+      const auth = yield* Auth
+
+      yield* auth.signUpGymUser({
+        email: "owner@example.com",
+        password: "correct horse battery staple",
+        displayName: "Owner",
+      })
+      yield* auth.verifyGymUserEmail({
+        token: "gym-user-email-verification-token-1",
+      })
+      const ownerLogin = yield* auth.loginGymUser({
+        email: "owner@example.com",
+        password: "correct horse battery staple",
+      })
+      yield* auth.signUpGymUser({
+        email: "staff@example.com",
+        password: "correct horse battery staple",
+        displayName: "Staff",
+      })
+      yield* auth.verifyGymUserEmail({
+        token: "gym-user-email-verification-token-2",
+      })
+      const staffLogin = yield* auth.loginGymUser({
+        email: "staff@example.com",
+        password: "correct horse battery staple",
+      })
+      yield* auth.bootstrapFirstSystemAdmin({
+        email: "admin@example.com",
+        password: "correct horse battery staple",
+      })
+      const adminLogin = yield* auth.loginSystemAdmin({
+        email: "admin@example.com",
+        password: "correct horse battery staple",
+      })
+      const request = yield* auth.requestGymCreation({
+        sessionId: ownerLogin.sessionToken,
+        name: "Boulder House",
+      })
+      const approval = yield* auth.approveGymCreationRequest({
+        sessionId: adminLogin.sessionToken,
+        requestId: request.request.id,
+      })
+      yield* auth.createGymStaffInvitation({
+        sessionId: ownerLogin.sessionToken,
+        gymId: approval.gym.id,
+        email: "staff@example.com",
+      })
+
+      yield* TestClock.adjust("7 days")
+
+      const acceptance = yield* Effect.exit(
+        auth.acceptGymStaffInvitation({
+          sessionId: staffLogin.sessionToken,
+          token: "gym-staff-invitation-token-1",
+        })
+      )
+
+      expectFailureTag(acceptance, "GymStaffInvitationInvalid")
     }).pipe(Effect.provide(GymStaffInvitationTestLayer))
   )
 

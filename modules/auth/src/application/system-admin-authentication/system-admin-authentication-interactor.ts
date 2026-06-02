@@ -1,4 +1,4 @@
-import { Effect, Layer, Option } from "effect"
+import { Clock, Effect, Layer, Option } from "effect"
 
 import {
   SystemAdminInvalidCredentials,
@@ -19,6 +19,10 @@ import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
 import { AuthTokenDigester } from "../../ports/services/auth-token-digester.ts"
 import { AuthTokenGenerator } from "../../ports/services/auth-token-generator.ts"
 import { PasswordHasher } from "../../ports/services/password-hasher.ts"
+import {
+  expiresAtMillis,
+  systemAdminSessionTtlMillis,
+} from "../../domain/auth-expiration.ts"
 import { SystemAdminAuthentication } from "./system-admin-authentication-input-boundary.ts"
 import {
   requireActiveSystemAdminSession,
@@ -60,6 +64,7 @@ export const SystemAdminAuthenticationInteractor = Layer.effect(
             })
           }
 
+          const now = yield* Clock.currentTimeMillis
           const sessionToken = SystemAdminSessionId.make(
             yield* tokens.nextSystemAdminSessionToken
           )
@@ -67,6 +72,7 @@ export const SystemAdminAuthenticationInteractor = Layer.effect(
             id: yield* ids.nextSystemAdminSessionId,
             adminId: admin.id,
             tokenDigest: yield* tokenDigester.digestToken(sessionToken),
+            expiresAtMillis: expiresAtMillis(now, systemAdminSessionTtlMillis),
             active: true,
           })
 

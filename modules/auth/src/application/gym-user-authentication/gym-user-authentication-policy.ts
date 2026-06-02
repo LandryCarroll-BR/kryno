@@ -1,4 +1,4 @@
-import { Effect, Option } from "effect"
+import { Clock, Effect, Option } from "effect"
 
 import {
   GymUserInvalidCredentials,
@@ -11,6 +11,7 @@ import type {
   GymUserSessionId,
   GymUserSessionRecord,
 } from "../../domain/gym-user.ts"
+import { isExpired } from "../../domain/auth-expiration.ts"
 
 export const requireGymUserCredential = (
   email: string,
@@ -30,6 +31,12 @@ export const requireActiveGymUserSession = (
   sessionId: GymUserSessionId,
   session: Option.Option<GymUserSessionRecord>
 ) =>
-  Option.isSome(session) && session.value.active
-    ? Effect.succeed(session.value)
-    : Effect.fail(new GymUserSessionInvalid({ sessionId }))
+  Effect.gen(function* () {
+    const now = yield* Clock.currentTimeMillis
+
+    return Option.isSome(session) &&
+      session.value.active &&
+      !isExpired(now, session.value.expiresAtMillis)
+      ? session.value
+      : yield* new GymUserSessionInvalid({ sessionId })
+  })

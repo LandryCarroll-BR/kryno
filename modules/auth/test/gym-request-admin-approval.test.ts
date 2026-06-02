@@ -105,6 +105,7 @@ describe("Auth gym request admin approval", () => {
         id: GymUserSessionId.make("unverified-session"),
         userId: unverifiedUser.id,
         tokenDigest: "digest:unverified-session-token",
+        expiresAtMillis: Number.MAX_SAFE_INTEGER,
         active: true,
       })
 

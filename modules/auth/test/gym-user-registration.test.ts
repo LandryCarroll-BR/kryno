@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Cause, Effect, Exit } from "effect"
+import { TestClock } from "effect/testing"
 
 import { Auth } from "@workspace/auth"
 import { GymUserRegistration } from "../src/application/gym-user-registration/gym-user-registration-input-boundary"
@@ -115,6 +116,27 @@ describe("GymUserRegistration.reserveEmail", () => {
 
       expectFailureTag(replay, "GymUserEmailVerificationInvalid")
     }).pipe(Effect.provide(AuthApplicationTestLayer))
+  )
+
+  it.effect("rejects expired email verification tokens", () =>
+    Effect.gen(function* () {
+      const auth = yield* Auth
+
+      yield* auth.signUpGymUser({
+        email: "alex@example.com",
+        password: "correct horse battery staple",
+        displayName: "Alex",
+      })
+      yield* TestClock.adjust("24 hours")
+
+      const verification = yield* Effect.exit(
+        auth.verifyGymUserEmail({
+          token: "gym-user-email-verification-token-1",
+        })
+      )
+
+      expectFailureTag(verification, "GymUserEmailVerificationInvalid")
+    }).pipe(Effect.provide(AuthTestLayer))
   )
 
   it.effect("rejects duplicate gym-side signup emails", () =>

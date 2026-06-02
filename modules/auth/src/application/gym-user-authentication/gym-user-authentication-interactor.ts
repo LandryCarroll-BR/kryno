@@ -1,4 +1,4 @@
-import { Effect, Layer, Option } from "effect"
+import { Clock, Effect, Layer, Option } from "effect"
 
 import {
   GymUserInvalidCredentials,
@@ -20,6 +20,10 @@ import { AuthIdGenerator } from "../../ports/services/auth-id-generator.ts"
 import { AuthTokenDigester } from "../../ports/services/auth-token-digester.ts"
 import { AuthTokenGenerator } from "../../ports/services/auth-token-generator.ts"
 import { PasswordHasher } from "../../ports/services/password-hasher.ts"
+import {
+  expiresAtMillis,
+  gymUserSessionTtlMillis,
+} from "../../domain/auth-expiration.ts"
 import { GymUserAuthentication } from "./gym-user-authentication-input-boundary.ts"
 import {
   requireActiveGymUserSession,
@@ -65,6 +69,7 @@ export const GymUserAuthenticationInteractor = Layer.effect(
 
           yield* requireVerifiedGymUser(user)
 
+          const now = yield* Clock.currentTimeMillis
           const sessionToken = GymUserSessionId.make(
             yield* tokens.nextGymUserSessionToken
           )
@@ -72,6 +77,7 @@ export const GymUserAuthenticationInteractor = Layer.effect(
             id: yield* ids.nextGymUserSessionId,
             userId: user.id,
             tokenDigest: yield* tokenDigester.digestToken(sessionToken),
+            expiresAtMillis: expiresAtMillis(now, gymUserSessionTtlMillis),
             active: true,
           })
 

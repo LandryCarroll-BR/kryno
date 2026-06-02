@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Cause, Effect, Exit } from "effect"
+import { TestClock } from "effect/testing"
 
 import { Auth } from "@workspace/auth"
 import { GymUserSessionId } from "../src/domain/gym-user"
@@ -150,6 +151,33 @@ describe("Auth gym user authentication", () => {
       )
 
       expectFailureTag(logout, "GymUserSessionInvalid")
+    }).pipe(Effect.provide(AuthTestLayer))
+  )
+
+  it.effect("denies expired gym-side sessions", () =>
+    Effect.gen(function* () {
+      const auth = yield* Auth
+
+      yield* auth.signUpGymUser({
+        email: "alex@example.com",
+        password: "correct horse battery staple",
+        displayName: "Alex",
+      })
+      yield* auth.verifyGymUserEmail({
+        token: "gym-user-email-verification-token-1",
+      })
+      const login = yield* auth.loginGymUser({
+        email: "alex@example.com",
+        password: "correct horse battery staple",
+      })
+
+      yield* TestClock.adjust("30 days")
+
+      const current = yield* Effect.exit(
+        auth.currentGymUserSession({ sessionId: login.sessionToken })
+      )
+
+      expectFailureTag(current, "GymUserSessionInvalid")
     }).pipe(Effect.provide(AuthTestLayer))
   )
 })

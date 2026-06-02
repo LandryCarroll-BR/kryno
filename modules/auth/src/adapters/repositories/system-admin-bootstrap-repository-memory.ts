@@ -64,6 +64,7 @@ export const SystemAdminBootstrapRepositoryMemoryAdapter = Layer.sync(
                 id: session.id,
                 adminId: session.adminId,
                 tokenDigest: session.tokenDigest,
+                expiresAtMillis: session.expiresAtMillis,
                 active: false,
               })
             )
