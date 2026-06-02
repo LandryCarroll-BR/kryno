@@ -14,6 +14,7 @@
     "./schema": "./src/schema.ts"
   },
   "dependencies": {
+    "@workspace/auth": "workspace:*",
     "@workspace/drizzle": "workspace:*",
     "drizzle-orm": "1.0.0-rc.4-5d5b77c",
     "effect": "4.0.0-beta.70"

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "@effect/vitest"
+import { authSchemaContribution } from "@workspace/auth/schema"
 import { pgTable, text } from "drizzle-orm/pg-core"
 import { Layer } from "effect"
 
@@ -23,8 +24,9 @@ describe("@workspace/database", () => {
     expect(Object.isFrozen(schema)).toBe(true)
   })
 
-  it("starts with an intentionally empty merged schema until modules contribute tables", () => {
-    expect(krynoSchema).toEqual({})
+  it("includes the auth module schema contribution in the product schema", () => {
+    expect(krynoSchema).toEqual(authSchemaContribution)
+    expect(Object.isFrozen(krynoSchema)).toBe(true)
   })
 
   it("exports the product Drizzle database layer for application composition", () => {
