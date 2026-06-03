@@ -2,8 +2,16 @@ import { describe, expect, it } from "@effect/vitest"
 import { DrizzleDatabase, type DrizzleDatabaseShape } from "@workspace/drizzle"
 import { Effect, Layer, Option } from "effect"
 
+import { GymRepositoryPostgresAdapter } from "../src/adapters/repositories/gym-repository-postgres.ts"
 import { GymUserRegistrationRepositoryPostgresAdapter } from "../src/adapters/repositories/gym-user-registration-repository-postgres.ts"
 import { SystemAdminBootstrapRepositoryPostgresAdapter } from "../src/adapters/repositories/system-admin-bootstrap-repository-postgres.ts"
+import {
+  GymAffiliationRecord,
+  GymCreationRequestId,
+  GymCreationRequestRecord,
+  GymId,
+  GymRecord,
+} from "../src/domain/gym.ts"
 import {
   GymUserId,
   GymUserRegistrationRecord,
@@ -15,6 +23,7 @@ import {
   SystemAdminSessionId,
   SystemAdminSessionRecord,
 } from "../src/domain/system-admin.ts"
+import { GymRepository } from "../src/ports/repositories/gym-repository.ts"
 import { GymUserRegistrationRepository } from "../src/ports/repositories/gym-user-registration-repository.ts"
 import { SystemAdminBootstrapRepository } from "../src/ports/repositories/system-admin-bootstrap-repository.ts"
 
@@ -35,6 +44,49 @@ describe("GymUserRegistrationRepositoryPostgresAdapter", () => {
 
       expect(Option.getOrUndefined(found)).toEqual(user)
     }).pipe(Effect.provide(testLayer()))
+  )
+})
+
+describe("GymRepositoryPostgresAdapter", () => {
+  it.effect("saves gyms, creation requests, and active affiliations", () =>
+    Effect.gen(function* () {
+      const repository = yield* GymRepository
+      const gym = new GymRecord({
+        id: GymId.make("20000000-0000-0000-0000-000000000001"),
+        name: "Downtown Strength",
+        status: "active",
+      })
+      const userId = GymUserId.make("20000000-0000-0000-0000-000000000002")
+      const request = new GymCreationRequestRecord({
+        id: GymCreationRequestId.make(
+          "20000000-0000-0000-0000-000000000003"
+        ),
+        gymId: gym.id,
+        requesterUserId: userId,
+        status: "approved",
+      })
+      const affiliation = new GymAffiliationRecord({
+        gymId: gym.id,
+        userId,
+        role: "Owner",
+        status: "active",
+      })
+
+      yield* repository.saveGym(gym)
+      yield* repository.saveCreationRequest(request)
+      yield* repository.saveAffiliation(affiliation)
+
+      const foundGym = yield* repository.findGymById(gym.id)
+      const foundRequest = yield* repository.findCreationRequestById(request.id)
+      const foundAffiliation = yield* repository.findAffiliation(gym.id, userId)
+      const activeAffiliations =
+        yield* repository.findActiveAffiliationsByUserId(userId)
+
+      expect(Option.getOrUndefined(foundGym)).toEqual(gym)
+      expect(Option.getOrUndefined(foundRequest)).toEqual(request)
+      expect(Option.getOrUndefined(foundAffiliation)).toEqual(affiliation)
+      expect(activeAffiliations).toEqual([affiliation])
+    }).pipe(Effect.provide(gymTestLayer()))
   )
 })
 
@@ -110,6 +162,9 @@ const testLayer = () =>
   )
 
 const makeInMemoryDb = () => {
+  const gyms = new Map<string, Record<string, unknown>>()
+  const gymCreationRequests = new Map<string, Record<string, unknown>>()
+  const gymAffiliations = new Map<string, Record<string, unknown>>()
   const gymUsers = new Map<string, Record<string, unknown>>()
   const systemAdmins = new Map<string, Record<string, unknown>>()
   const systemAdminCredentials = new Map<string, Record<string, unknown>>()
@@ -117,6 +172,12 @@ const makeInMemoryDb = () => {
 
   const rowsForTable = (table: { readonly [key: string]: unknown }) => {
     switch (tableKey(table)) {
+      case "gyms":
+        return gyms
+      case "gym_creation_requests":
+        return gymCreationRequests
+      case "gym_affiliations":
+        return gymAffiliations
       case "gym_users":
         return gymUsers
       case "system_admins":
@@ -135,6 +196,8 @@ const makeInMemoryDb = () => {
     values: Record<string, unknown>
   ) => {
     switch (tableKey(table)) {
+      case "gym_affiliations":
+        return `${String(values.gymId)}:${String(values.userId)}`
       case "system_admin_credentials":
         return String(values.adminId)
       default:
@@ -147,15 +210,18 @@ const makeInMemoryDb = () => {
       from: (table: { readonly [key: string]: unknown }) => ({
         limit: () =>
           Effect.sync(() => Array.from(rowsForTable(table).values()).slice(0, 1)),
-        where: (condition: unknown) => ({
-          limit: () =>
-            Effect.sync(() => {
-              const [column, value] = conditionParts(condition)
-              const rows = Array.from(rowsForTable(table).values())
+        where: (condition: unknown) => {
+          const matchingRows = Effect.sync(() => {
+            const [column, value] = conditionParts(condition)
+            const rows = Array.from(rowsForTable(table).values())
 
-              return rows.filter((row) => row[column] === value).slice(0, 1)
-            }),
-        }),
+            return rows.filter((row) => row[column] === value)
+          })
+
+          return Object.assign(matchingRows, {
+            limit: () => matchingRows.pipe(Effect.map((rows) => rows.slice(0, 1))),
+          })
+        },
       }),
     }),
     insert: (table: { readonly [key: string]: unknown }) => ({
@@ -208,6 +274,17 @@ const snakeToCamel = (value: string) =>
 
 const systemAdminTestLayer = () =>
   SystemAdminBootstrapRepositoryPostgresAdapter.pipe(
+    Layer.provide(
+      Layer.succeed(DrizzleDatabase, ({
+        db: makeInMemoryDb(),
+        sqlClient: {},
+        transaction: <A, E, R>(effect: Effect.Effect<A, E, R>) => effect,
+      } as unknown) as DrizzleDatabaseShape)
+    )
+  )
+
+const gymTestLayer = () =>
+  GymRepositoryPostgresAdapter.pipe(
     Layer.provide(
       Layer.succeed(DrizzleDatabase, ({
         db: makeInMemoryDb(),
