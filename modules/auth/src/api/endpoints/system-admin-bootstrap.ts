@@ -3,6 +3,7 @@ import { HttpApiEndpoint, HttpApiSchema } from "effect/unstable/httpapi"
 
 import { FirstSystemAdminAlreadyExists } from "../../domain/errors.ts"
 import { BootstrapFirstSystemAdminSuccess } from "../../domain/system-admin.ts"
+import { PersistenceFailureInternalServerError } from "../persistence-error-response.ts"
 
 export const BootstrapFirstSystemAdminPayload = Schema.Struct({
   email: Schema.String,
@@ -18,6 +19,9 @@ export const BootstrapFirstSystemAdminEndpoint = HttpApiEndpoint.post(
   {
     payload: BootstrapFirstSystemAdminPayload,
     success: BootstrapFirstSystemAdminSuccess,
-    error: FirstSystemAdminAlreadyExistsConflict,
+    error: [
+      FirstSystemAdminAlreadyExistsConflict,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )

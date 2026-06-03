@@ -1,5 +1,6 @@
 import { Effect } from "effect"
 import * as Context from "effect/Context"
+import type { PersistenceError } from "@workspace/drizzle"
 
 import {
   type GymUserInvalidCredentials,
@@ -21,16 +22,16 @@ export class GymUserAuthentication extends Context.Service<
       input: LoginGymUserInput
     ) => Effect.Effect<
       GymUserLoginSuccess,
-      GymUserInvalidCredentials | GymUserUnverified
+      GymUserInvalidCredentials | GymUserUnverified | PersistenceError
     >
     readonly currentSession: (
       input: CurrentGymUserSessionInput
     ) => Effect.Effect<
       CurrentGymUserSessionSuccess,
-      GymUserSessionInvalid | GymUserUnverified
+      GymUserSessionInvalid | GymUserUnverified | PersistenceError
     >
     readonly logout: (
       input: LogoutGymUserInput
-    ) => Effect.Effect<void, GymUserSessionInvalid>
+    ) => Effect.Effect<void, GymUserSessionInvalid | PersistenceError>
   }
 >()("@kryno/auth/GymUserAuthentication") {}

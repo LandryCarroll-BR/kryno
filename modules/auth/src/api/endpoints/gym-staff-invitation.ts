@@ -14,6 +14,7 @@ import {
   GymStaffInvitationAccepted,
   GymStaffInvitationCreated,
 } from "../../domain/gym.ts"
+import { PersistenceFailureInternalServerError } from "../persistence-error-response.ts"
 
 export const CreateGymStaffInvitationPayload = Schema.Struct({
   gymId: GymId,
@@ -62,6 +63,7 @@ export const CreateGymStaffInvitationEndpoint = HttpApiEndpoint.post(
       GymAccessInactiveForbidden,
       GymOwnerAccessDeniedForbidden,
       GymStaffSelfAssignmentDeniedForbidden,
+      PersistenceFailureInternalServerError,
     ],
   }
 )
@@ -78,6 +80,7 @@ export const AcceptGymStaffInvitationEndpoint = HttpApiEndpoint.post(
       GymAccessInactiveForbidden,
       GymStaffInvitationInvalidBadRequest,
       GymStaffSelfAssignmentDeniedForbidden,
+      PersistenceFailureInternalServerError,
     ],
   }
 )

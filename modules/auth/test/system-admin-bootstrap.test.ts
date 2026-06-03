@@ -78,10 +78,12 @@ describe("SystemAdminBootstrap.bootstrapFirstAdmin", () => {
             expect(failure.error._tag).toBe(
               "FirstSystemAdminAlreadyExists"
             )
-            expect(failure.error.existingAdminId).toBe(first.admin.id)
-            expect(failure.error.requestedEmail).toBe(
-              "other-admin@example.com"
-            )
+            if (failure.error._tag === "FirstSystemAdminAlreadyExists") {
+              expect(failure.error.existingAdminId).toBe(first.admin.id)
+              expect(failure.error.requestedEmail).toBe(
+                "other-admin@example.com"
+              )
+            }
           }
         }
       }).pipe(Effect.provide(AuthApplicationTestLayer))

@@ -1,5 +1,6 @@
 import { Effect } from "effect"
 import * as Context from "effect/Context"
+import type { PersistenceError } from "@workspace/drizzle"
 
 import {
   type GymAccessInactive,
@@ -30,13 +31,13 @@ export class GymRequest extends Context.Service<
       input: RequestGymCreationInput
     ) => Effect.Effect<
       GymCreationRequested,
-      GymUserSessionInvalid | GymUserUnverified
+      GymUserSessionInvalid | GymUserUnverified | PersistenceError
     >
     readonly approveCreationRequest: (
       input: ApproveGymCreationRequestInput
     ) => Effect.Effect<
       GymCreationRequestApproved,
-      SystemAdminSessionInvalid | GymCreationRequestInvalid
+      SystemAdminSessionInvalid | GymCreationRequestInvalid | PersistenceError
     >
     readonly currentOwnerAccess: (
       input: CurrentGymOwnerAccessInput
@@ -46,6 +47,7 @@ export class GymRequest extends Context.Service<
       | GymUserUnverified
       | GymAccessInactive
       | GymOwnerAccessDenied
+      | PersistenceError
     >
     readonly joinAsMember: (
       input: JoinGymAsMemberInput
@@ -55,6 +57,7 @@ export class GymRequest extends Context.Service<
       | GymUserUnverified
       | GymAccessInactive
       | GymMemberAffiliationInvalid
+      | PersistenceError
     >
     readonly leaveAsMember: (
       input: LeaveGymAsMemberInput
@@ -64,6 +67,7 @@ export class GymRequest extends Context.Service<
       | GymUserUnverified
       | GymAccessInactive
       | GymMemberAffiliationInvalid
+      | PersistenceError
     >
   }
 >()("@kryno/auth/GymRequest") {}

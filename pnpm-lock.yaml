@@ -149,6 +149,9 @@ importers:
 
   modules/auth:
     dependencies:
+      '@workspace/drizzle':
+        specifier: workspace:*
+        version: link:../../packages/drizzle
       drizzle-orm:
         specifier: 1.0.0-rc.4-5d5b77c
         version: 1.0.0-rc.4-5d5b77c(@effect/sql-pg@4.0.0-beta.70(effect@4.0.0-beta.70))(@types/pg@8.20.0)(effect@4.0.0-beta.70)(pg@8.21.0)(valibot@1.4.1(typescript@5.9.3))(zod@3.25.76)

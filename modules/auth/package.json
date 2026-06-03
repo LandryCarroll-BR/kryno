@@ -64,6 +64,7 @@
     "./testing": "./src/layers/test-layer.ts"
   },
   "dependencies": {
+    "@workspace/drizzle": "workspace:*",
     "drizzle-orm": "1.0.0-rc.4-5d5b77c",
     "effect": "4.0.0-beta.70"
   },

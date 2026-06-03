@@ -10,6 +10,7 @@ import {
   CurrentGymUserSessionSuccess,
   GymUserLoginSuccess,
 } from "../../domain/gym-user.ts"
+import { PersistenceFailureInternalServerError } from "../persistence-error-response.ts"
 
 export const LoginGymUserPayload = Schema.Struct({
   email: Schema.String,
@@ -33,7 +34,11 @@ export const LoginGymUserEndpoint = HttpApiEndpoint.post(
   {
     payload: LoginGymUserPayload,
     success: GymUserLoginSuccess,
-    error: [GymUserInvalidCredentialsUnauthorized, GymUserUnverifiedForbidden],
+    error: [
+      GymUserInvalidCredentialsUnauthorized,
+      GymUserUnverifiedForbidden,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )
 
@@ -42,7 +47,11 @@ export const CurrentGymUserSessionEndpoint = HttpApiEndpoint.get(
   "/gym-users/session",
   {
     success: CurrentGymUserSessionSuccess,
-    error: [GymUserSessionInvalidUnauthorized, GymUserUnverifiedForbidden],
+    error: [
+      GymUserSessionInvalidUnauthorized,
+      GymUserUnverifiedForbidden,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )
 
@@ -50,6 +59,9 @@ export const LogoutGymUserEndpoint = HttpApiEndpoint.delete(
   "logoutGymUser",
   "/gym-users/session",
   {
-    error: GymUserSessionInvalidUnauthorized,
+    error: [
+      GymUserSessionInvalidUnauthorized,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )

@@ -19,6 +19,7 @@ import {
   GymMemberJoined,
   GymMemberLeft,
 } from "../../domain/gym.ts"
+import { PersistenceFailureInternalServerError } from "../persistence-error-response.ts"
 
 export const RequestGymCreationPayload = Schema.Struct({
   name: Schema.String,
@@ -76,7 +77,11 @@ export const RequestGymCreationEndpoint = HttpApiEndpoint.post(
   {
     payload: RequestGymCreationPayload,
     success: GymCreationRequestedCreated,
-    error: [GymUserSessionInvalidUnauthorized, GymUserUnverifiedForbidden],
+    error: [
+      GymUserSessionInvalidUnauthorized,
+      GymUserUnverifiedForbidden,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )
 
@@ -89,6 +94,7 @@ export const ApproveGymCreationRequestEndpoint = HttpApiEndpoint.post(
     error: [
       SystemAdminSessionInvalidUnauthorized,
       GymCreationRequestInvalidBadRequest,
+      PersistenceFailureInternalServerError,
     ],
   }
 )
@@ -104,6 +110,7 @@ export const CurrentGymOwnerAccessEndpoint = HttpApiEndpoint.post(
       GymUserUnverifiedForbidden,
       GymAccessInactiveForbidden,
       GymOwnerAccessDeniedForbidden,
+      PersistenceFailureInternalServerError,
     ],
   }
 )
@@ -119,6 +126,7 @@ export const JoinGymAsMemberEndpoint = HttpApiEndpoint.post(
       GymUserUnverifiedForbidden,
       GymAccessInactiveForbidden,
       GymMemberAffiliationInvalidConflict,
+      PersistenceFailureInternalServerError,
     ],
   }
 )
@@ -134,6 +142,7 @@ export const LeaveGymAsMemberEndpoint = HttpApiEndpoint.post(
       GymUserUnverifiedForbidden,
       GymAccessInactiveForbidden,
       GymMemberAffiliationInvalidConflict,
+      PersistenceFailureInternalServerError,
     ],
   }
 )

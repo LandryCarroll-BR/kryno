@@ -1,5 +1,6 @@
 import { Effect } from "effect"
 import * as Context from "effect/Context"
+import type { PersistenceError } from "@workspace/drizzle"
 
 import type {
   GymAccessInactive,
@@ -28,6 +29,7 @@ export class GymStaffInvitation extends Context.Service<
       | GymAccessInactive
       | GymOwnerAccessDenied
       | GymStaffSelfAssignmentDenied
+      | PersistenceError
     >
     readonly accept: (
       input: AcceptGymStaffInvitationInput
@@ -38,6 +40,7 @@ export class GymStaffInvitation extends Context.Service<
       | GymAccessInactive
       | GymStaffInvitationInvalid
       | GymStaffSelfAssignmentDenied
+      | PersistenceError
     >
   }
 >()("@kryno/auth/GymStaffInvitation") {}

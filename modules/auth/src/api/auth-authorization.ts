@@ -8,6 +8,10 @@ import {
 import { Auth } from "../auth.ts"
 import { GymUserSessionId } from "../domain/gym-user.ts"
 import { SystemAdminSessionId } from "../domain/system-admin.ts"
+import {
+  PersistenceFailureInternalServerError,
+  persistenceFailureInternalServerError,
+} from "./persistence-error-response.ts"
 
 export class CurrentGymUserSessionId extends Context.Service<
   CurrentGymUserSessionId,
@@ -26,7 +30,10 @@ export class GymUserSessionRequired extends HttpApiMiddleware.Service<
     requires: Auth
   }
 >()("@workspace/auth/GymUserSessionRequired", {
-  error: HttpApiError.UnauthorizedNoContent,
+  error: [
+    HttpApiError.UnauthorizedNoContent,
+    PersistenceFailureInternalServerError,
+  ],
   security: {
     bearer: HttpApiSecurity.bearer,
   },
@@ -39,7 +46,10 @@ export class SystemAdminSessionRequired extends HttpApiMiddleware.Service<
     requires: Auth
   }
 >()("@workspace/auth/SystemAdminSessionRequired", {
-  error: HttpApiError.UnauthorizedNoContent,
+  error: [
+    HttpApiError.UnauthorizedNoContent,
+    PersistenceFailureInternalServerError,
+  ],
   security: {
     bearer: HttpApiSecurity.bearer,
   },
@@ -65,7 +75,16 @@ export const GymUserSessionRequiredLive = Layer.succeed(
           auth.currentGymUserSession({
             sessionId: gymUserSessionId,
           })
-        ).pipe(Effect.mapError(() => new HttpApiError.Unauthorized({})))
+        ).pipe(
+          Effect.catchTags({
+            GymUserSessionInvalid: () =>
+              Effect.fail(new HttpApiError.Unauthorized({})),
+            GymUserUnverified: () =>
+              Effect.fail(new HttpApiError.Unauthorized({})),
+            PersistenceError: () =>
+              Effect.fail(persistenceFailureInternalServerError()),
+          })
+        )
 
         return yield* Effect.provideService(
           httpEffect,
@@ -88,7 +107,14 @@ export const SystemAdminSessionRequiredLive = Layer.succeed(
           auth.currentSystemAdminSession({
             sessionId: systemAdminSessionId,
           })
-        ).pipe(Effect.mapError(() => new HttpApiError.Unauthorized({})))
+        ).pipe(
+          Effect.catchTags({
+            SystemAdminSessionInvalid: () =>
+              Effect.fail(new HttpApiError.Unauthorized({})),
+            PersistenceError: () =>
+              Effect.fail(persistenceFailureInternalServerError()),
+          })
+        )
 
         return yield* Effect.provideService(
           httpEffect,

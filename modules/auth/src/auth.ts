@@ -1,5 +1,6 @@
 import { Effect, Layer } from "effect"
 import * as Context from "effect/Context"
+import type { PersistenceError } from "@workspace/drizzle"
 
 import { GymUserAuthentication } from "./application/gym-user-authentication/gym-user-authentication-input-boundary.ts"
 import { GymUserPasswordReset } from "./application/gym-user-password-reset/gym-user-password-reset-input-boundary.ts"
@@ -77,36 +78,42 @@ export class Auth extends Context.Service<
   {
     readonly signUpGymUser: (
       input: SignUpGymUserInput
-    ) => Effect.Effect<GymUserSignupSuccess, GymUserEmailAlreadyReserved>
+    ) => Effect.Effect<
+      GymUserSignupSuccess,
+      GymUserEmailAlreadyReserved | PersistenceError
+    >
     readonly verifyGymUserEmail: (
       input: VerifyGymUserEmailInput
     ) => Effect.Effect<
       GymUserEmailVerificationSuccess,
-      GymUserEmailVerificationInvalid | GymUserNotFound
+      GymUserEmailVerificationInvalid | GymUserNotFound | PersistenceError
     >
     readonly reserveGymUserEmail: (
       input: ReserveGymUserEmailInput
-    ) => Effect.Effect<GymUserRegistrationRecord, GymUserEmailAlreadyReserved>
+    ) => Effect.Effect<
+      GymUserRegistrationRecord,
+      GymUserEmailAlreadyReserved | PersistenceError
+    >
     readonly loginGymUser: (
       input: LoginGymUserInput
     ) => Effect.Effect<
       GymUserLoginSuccess,
-      GymUserInvalidCredentials | GymUserUnverified
+      GymUserInvalidCredentials | GymUserUnverified | PersistenceError
     >
     readonly currentGymUserSession: (
       input: CurrentGymUserSessionInput
     ) => Effect.Effect<
       CurrentGymUserSessionSuccess,
-      GymUserSessionInvalid | GymUserUnverified
+      GymUserSessionInvalid | GymUserUnverified | PersistenceError
     >
     readonly logoutGymUser: (
       input: LogoutGymUserInput
-    ) => Effect.Effect<void, GymUserSessionInvalid>
+    ) => Effect.Effect<void, GymUserSessionInvalid | PersistenceError>
     readonly requestGymUserPasswordReset: (
       input: RequestGymUserPasswordResetInput
     ) => Effect.Effect<
       GymUserPasswordResetRequested,
-      GymUserPasswordResetUnknownEmail
+      GymUserPasswordResetUnknownEmail | PersistenceError
     >
     readonly completeGymUserPasswordReset: (
       input: CompleteGymUserPasswordResetInput
@@ -116,18 +123,19 @@ export class Auth extends Context.Service<
       | GymUserPasswordResetTokenExpired
       | GymUserPasswordResetTokenAlreadyUsed
       | GymUserNotFound
+      | PersistenceError
     >
     readonly requestGymCreation: (
       input: RequestGymCreationInput
     ) => Effect.Effect<
       GymCreationRequested,
-      GymUserSessionInvalid | GymUserUnverified
+      GymUserSessionInvalid | GymUserUnverified | PersistenceError
     >
     readonly approveGymCreationRequest: (
       input: ApproveGymCreationRequestInput
     ) => Effect.Effect<
       GymCreationRequestApproved,
-      SystemAdminSessionInvalid | GymCreationRequestInvalid
+      SystemAdminSessionInvalid | GymCreationRequestInvalid | PersistenceError
     >
     readonly currentGymOwnerAccess: (
       input: CurrentGymOwnerAccessInput
@@ -137,6 +145,7 @@ export class Auth extends Context.Service<
       | GymUserUnverified
       | GymAccessInactive
       | GymOwnerAccessDenied
+      | PersistenceError
     >
     readonly joinGymAsMember: (
       input: JoinGymAsMemberInput
@@ -146,6 +155,7 @@ export class Auth extends Context.Service<
       | GymUserUnverified
       | GymAccessInactive
       | GymMemberAffiliationInvalid
+      | PersistenceError
     >
     readonly leaveGymAsMember: (
       input: LeaveGymAsMemberInput
@@ -155,6 +165,7 @@ export class Auth extends Context.Service<
       | GymUserUnverified
       | GymAccessInactive
       | GymMemberAffiliationInvalid
+      | PersistenceError
     >
     readonly createGymStaffInvitation: (
       input: CreateGymStaffInvitationInput
@@ -165,6 +176,7 @@ export class Auth extends Context.Service<
       | GymAccessInactive
       | GymOwnerAccessDenied
       | GymStaffSelfAssignmentDenied
+      | PersistenceError
     >
     readonly acceptGymStaffInvitation: (
       input: AcceptGymStaffInvitationInput
@@ -175,25 +187,29 @@ export class Auth extends Context.Service<
       | GymAccessInactive
       | GymStaffInvitationInvalid
       | GymStaffSelfAssignmentDenied
+      | PersistenceError
     >
     readonly bootstrapFirstSystemAdmin: (
       input: BootstrapFirstSystemAdminInput
     ) => Effect.Effect<
       BootstrapFirstSystemAdminSuccess,
-      FirstSystemAdminAlreadyExists
+      FirstSystemAdminAlreadyExists | PersistenceError
     >
     readonly loginSystemAdmin: (
       input: LoginSystemAdminInput
-    ) => Effect.Effect<SystemAdminLoginSuccess, SystemAdminInvalidCredentials>
+    ) => Effect.Effect<
+      SystemAdminLoginSuccess,
+      SystemAdminInvalidCredentials | PersistenceError
+    >
     readonly currentSystemAdminSession: (
       input: CurrentSystemAdminSessionInput
     ) => Effect.Effect<
       CurrentSystemAdminSessionSuccess,
-      SystemAdminSessionInvalid
+      SystemAdminSessionInvalid | PersistenceError
     >
     readonly logoutSystemAdmin: (
       input: LogoutSystemAdminInput
-    ) => Effect.Effect<void, SystemAdminSessionInvalid>
+    ) => Effect.Effect<void, SystemAdminSessionInvalid | PersistenceError>
   }
 >()("@kryno/auth/Auth") {
   static readonly layer = Layer.effect(

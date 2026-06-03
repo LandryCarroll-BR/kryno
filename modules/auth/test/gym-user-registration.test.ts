@@ -246,7 +246,9 @@ describe("GymUserRegistration.reserveEmail", () => {
           expect(failure).toBeDefined()
           if (failure !== undefined) {
             expect(failure.error._tag).toBe("GymUserEmailAlreadyReserved")
-            expect(failure.error.email).toBe("alex@example.com")
+            if (failure.error._tag === "GymUserEmailAlreadyReserved") {
+              expect(failure.error.email).toBe("alex@example.com")
+            }
           }
         }
       }).pipe(Effect.provide(AuthApplicationTestLayer))

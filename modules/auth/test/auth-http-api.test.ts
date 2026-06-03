@@ -152,43 +152,43 @@ describe("Auth HTTP API contracts", () => {
       method: "POST",
       path: "/auth/system-admin/bootstrap",
       successes: [200],
-      errors: [409],
+      errors: [409, 500],
     })
     expect(endpoints.get("signUpGymUser")).toEqual({
       method: "POST",
       path: "/auth/gym-users/signups",
       successes: [201],
-      errors: [409],
+      errors: [409, 500],
     })
     expect(endpoints.get("currentGymUserSession")).toEqual({
       method: "GET",
       path: "/auth/gym-users/session",
       successes: [200],
-      errors: [401, 403],
+      errors: [401, 403, 500],
     })
     expect(endpoints.get("logoutGymUser")).toEqual({
       method: "DELETE",
       path: "/auth/gym-users/session",
       successes: [204],
-      errors: [401],
+      errors: [401, 500],
     })
     expect(endpoints.get("currentSystemAdminSession")).toEqual({
       method: "GET",
       path: "/auth/system-admin/session",
       successes: [200],
-      errors: [401],
+      errors: [401, 500],
     })
     expect(endpoints.get("logoutSystemAdmin")).toEqual({
       method: "DELETE",
       path: "/auth/system-admin/session",
       successes: [204],
-      errors: [401],
+      errors: [401, 500],
     })
     expect(endpoints.get("createGymStaffInvitation")).toEqual({
       method: "POST",
       path: "/auth/gyms/staff-invitations",
       successes: [201],
-      errors: [401, 403],
+      errors: [401, 403, 500],
     })
     expect(
       [...endpoints.values()].map((endpoint) => endpoint.path)

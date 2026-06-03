@@ -12,6 +12,7 @@ import {
   GymUserPasswordResetCompleted,
   GymUserPasswordResetRequested,
 } from "../../domain/gym-user.ts"
+import { PersistenceFailureInternalServerError } from "../persistence-error-response.ts"
 
 export const RequestGymUserPasswordResetPayload = Schema.Struct({
   email: Schema.String,
@@ -44,7 +45,10 @@ export const RequestGymUserPasswordResetEndpoint = HttpApiEndpoint.post(
   {
     payload: RequestGymUserPasswordResetPayload,
     success: GymUserPasswordResetRequested,
-    error: GymUserPasswordResetUnknownEmailNotFound,
+    error: [
+      GymUserPasswordResetUnknownEmailNotFound,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )
 
@@ -59,6 +63,7 @@ export const CompleteGymUserPasswordResetEndpoint = HttpApiEndpoint.post(
       GymUserPasswordResetTokenExpiredGone,
       GymUserPasswordResetTokenAlreadyUsedConflict,
       GymUserPasswordResetUserNotFoundNotFound,
+      PersistenceFailureInternalServerError,
     ],
   }
 )

@@ -1,5 +1,6 @@
 import { Effect } from "effect"
 import * as Context from "effect/Context"
+import type { PersistenceError } from "@workspace/drizzle"
 
 import {
   type GymUserNotFound,
@@ -22,7 +23,7 @@ export class GymUserPasswordReset extends Context.Service<
       input: RequestGymUserPasswordResetInput
     ) => Effect.Effect<
       GymUserPasswordResetRequested,
-      GymUserPasswordResetUnknownEmail
+      GymUserPasswordResetUnknownEmail | PersistenceError
     >
     readonly complete: (
       input: CompleteGymUserPasswordResetInput
@@ -32,6 +33,7 @@ export class GymUserPasswordReset extends Context.Service<
       | GymUserPasswordResetTokenExpired
       | GymUserPasswordResetTokenAlreadyUsed
       | GymUserNotFound
+      | PersistenceError
     >
   }
 >()("@kryno/auth/GymUserPasswordReset") {}

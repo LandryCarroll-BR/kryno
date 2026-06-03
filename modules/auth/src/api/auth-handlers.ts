@@ -1,11 +1,17 @@
 import { Effect } from "effect"
-import { HttpApiBuilder, HttpApiGroup } from "effect/unstable/httpapi"
+import {
+  HttpApiBuilder,
+  HttpApiError,
+  HttpApiGroup,
+} from "effect/unstable/httpapi"
+import type { PersistenceError } from "@workspace/drizzle"
 
 import {
   CurrentGymUserSessionId,
   CurrentSystemAdminSessionId,
 } from "./auth-authorization.ts"
 import { AuthHttpGroup } from "./auth-group.ts"
+import { persistenceFailureInternalServerError } from "./persistence-error-response.ts"
 import { Auth } from "../auth.ts"
 
 export type ApiPrefixedAuthHttpGroup = HttpApiGroup.AddPrefix<
@@ -18,21 +24,26 @@ export const buildAuthHttpHandlers = (
 ) =>
   handlers
     .handle("reserveGymUserEmail", ({ payload }) =>
-      Auth.use((auth) => auth.reserveGymUserEmail(payload))
+      Auth.use((auth) => auth.reserveGymUserEmail(payload)).pipe(
+        mapPersistenceError
+      )
     )
     .handle("signUpGymUser", ({ payload }) =>
-      Auth.use((auth) => auth.signUpGymUser(payload))
+      Auth.use((auth) => auth.signUpGymUser(payload)).pipe(mapPersistenceError)
     )
     .handle("verifyGymUserEmail", ({ payload }) =>
-      Auth.use((auth) => auth.verifyGymUserEmail(payload))
+      Auth.use((auth) => auth.verifyGymUserEmail(payload)).pipe(
+        mapPersistenceError
+      )
     )
     .handle("loginGymUser", ({ payload }) =>
-      Auth.use((auth) => auth.loginGymUser(payload))
+      Auth.use((auth) => auth.loginGymUser(payload)).pipe(mapPersistenceError)
     )
     .handle("currentGymUserSession", () =>
       CurrentGymUserSessionId.pipe(
         Effect.flatMap((sessionId) =>
           Auth.use((auth) => auth.currentGymUserSession({ sessionId }))
+            .pipe(mapPersistenceError)
         )
       )
     )
@@ -40,14 +51,19 @@ export const buildAuthHttpHandlers = (
       CurrentGymUserSessionId.pipe(
         Effect.flatMap((sessionId) =>
           Auth.use((auth) => auth.logoutGymUser({ sessionId }))
+            .pipe(mapPersistenceError)
         )
       )
     )
     .handle("requestGymUserPasswordReset", ({ payload }) =>
-      Auth.use((auth) => auth.requestGymUserPasswordReset(payload))
+      Auth.use((auth) => auth.requestGymUserPasswordReset(payload)).pipe(
+        mapPersistenceError
+      )
     )
     .handle("completeGymUserPasswordReset", ({ payload }) =>
-      Auth.use((auth) => auth.completeGymUserPasswordReset(payload))
+      Auth.use((auth) => auth.completeGymUserPasswordReset(payload)).pipe(
+        mapPersistenceError
+      )
     )
     .handle("requestGymCreation", ({ payload }) =>
       CurrentGymUserSessionId.pipe(
@@ -57,7 +73,7 @@ export const buildAuthHttpHandlers = (
               ...payload,
               sessionId,
             })
-          )
+          ).pipe(mapPersistenceError)
         )
       )
     )
@@ -69,7 +85,7 @@ export const buildAuthHttpHandlers = (
               ...payload,
               sessionId,
             })
-          )
+          ).pipe(mapPersistenceError)
         )
       )
     )
@@ -81,7 +97,7 @@ export const buildAuthHttpHandlers = (
               ...payload,
               sessionId,
             })
-          )
+          ).pipe(mapPersistenceError)
         )
       )
     )
@@ -93,7 +109,7 @@ export const buildAuthHttpHandlers = (
               ...payload,
               sessionId,
             })
-          )
+          ).pipe(mapPersistenceError)
         )
       )
     )
@@ -105,7 +121,7 @@ export const buildAuthHttpHandlers = (
               ...payload,
               sessionId,
             })
-          )
+          ).pipe(mapPersistenceError)
         )
       )
     )
@@ -117,7 +133,7 @@ export const buildAuthHttpHandlers = (
               ...payload,
               sessionId,
             })
-          )
+          ).pipe(mapPersistenceError)
         )
       )
     )
@@ -129,20 +145,25 @@ export const buildAuthHttpHandlers = (
               ...payload,
               sessionId,
             })
-          )
+          ).pipe(mapPersistenceError)
         )
       )
     )
     .handle("bootstrapFirstSystemAdmin", ({ payload }) =>
-      Auth.use((auth) => auth.bootstrapFirstSystemAdmin(payload))
+      Auth.use((auth) => auth.bootstrapFirstSystemAdmin(payload)).pipe(
+        mapPersistenceError
+      )
     )
     .handle("loginSystemAdmin", ({ payload }) =>
-      Auth.use((auth) => auth.loginSystemAdmin(payload))
+      Auth.use((auth) => auth.loginSystemAdmin(payload)).pipe(
+        mapPersistenceError
+      )
     )
     .handle("currentSystemAdminSession", () =>
       CurrentSystemAdminSessionId.pipe(
         Effect.flatMap((sessionId) =>
           Auth.use((auth) => auth.currentSystemAdminSession({ sessionId }))
+            .pipe(mapPersistenceError)
         )
       )
     )
@@ -150,6 +171,32 @@ export const buildAuthHttpHandlers = (
       CurrentSystemAdminSessionId.pipe(
         Effect.flatMap((sessionId) =>
           Auth.use((auth) => auth.logoutSystemAdmin({ sessionId }))
+            .pipe(mapPersistenceError)
         )
       )
     )
+
+const mapPersistenceError = <
+  A,
+  E extends { readonly _tag: string },
+  R,
+>(
+  effect: Effect.Effect<A, E, R>
+): Effect.Effect<
+  A,
+  Exclude<E, PersistenceError> | HttpApiError.InternalServerError,
+  R
+> =>
+  effect.pipe(
+    Effect.catch(
+      (
+        error
+      ): Effect.Effect<
+        never,
+        Exclude<E, PersistenceError> | HttpApiError.InternalServerError
+      > =>
+        error._tag === "PersistenceError"
+          ? Effect.fail(persistenceFailureInternalServerError())
+          : Effect.fail(error as Exclude<E, PersistenceError>)
+    )
+  )

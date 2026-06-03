@@ -11,6 +11,7 @@ import {
   GymUserRegistrationRecord,
   GymUserSignupSuccess,
 } from "../../domain/gym-user.ts"
+import { PersistenceFailureInternalServerError } from "../persistence-error-response.ts"
 
 export const ReserveGymUserEmailPayload = Schema.Struct({
   email: Schema.String,
@@ -47,7 +48,10 @@ export const ReserveGymUserEmailEndpoint = HttpApiEndpoint.post(
   {
     payload: ReserveGymUserEmailPayload,
     success: GymUserRegistrationCreated,
-    error: GymUserEmailAlreadyReservedConflict,
+    error: [
+      GymUserEmailAlreadyReservedConflict,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )
 
@@ -57,7 +61,10 @@ export const SignUpGymUserEndpoint = HttpApiEndpoint.post(
   {
     payload: SignUpGymUserPayload,
     success: GymUserSignupSuccess.pipe(HttpApiSchema.status(201)),
-    error: GymUserEmailAlreadyReservedConflict,
+    error: [
+      GymUserEmailAlreadyReservedConflict,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )
 
@@ -67,6 +74,10 @@ export const VerifyGymUserEmailEndpoint = HttpApiEndpoint.post(
   {
     payload: VerifyGymUserEmailPayload,
     success: GymUserEmailVerificationSuccess,
-    error: [GymUserEmailVerificationInvalidBadRequest, GymUserNotFoundNotFound],
+    error: [
+      GymUserEmailVerificationInvalidBadRequest,
+      GymUserNotFoundNotFound,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )

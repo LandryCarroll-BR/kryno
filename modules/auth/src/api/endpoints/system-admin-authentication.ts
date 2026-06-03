@@ -9,6 +9,7 @@ import {
   CurrentSystemAdminSessionSuccess,
   SystemAdminLoginSuccess,
 } from "../../domain/system-admin.ts"
+import { PersistenceFailureInternalServerError } from "../persistence-error-response.ts"
 
 export const LoginSystemAdminPayload = Schema.Struct({
   email: Schema.String,
@@ -27,7 +28,10 @@ export const LoginSystemAdminEndpoint = HttpApiEndpoint.post(
   {
     payload: LoginSystemAdminPayload,
     success: SystemAdminLoginSuccess,
-    error: SystemAdminInvalidCredentialsUnauthorized,
+    error: [
+      SystemAdminInvalidCredentialsUnauthorized,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )
 
@@ -36,7 +40,10 @@ export const CurrentSystemAdminSessionEndpoint = HttpApiEndpoint.get(
   "/system-admin/session",
   {
     success: CurrentSystemAdminSessionSuccess,
-    error: SystemAdminSessionInvalidUnauthorized,
+    error: [
+      SystemAdminSessionInvalidUnauthorized,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )
 
@@ -44,6 +51,9 @@ export const LogoutSystemAdminEndpoint = HttpApiEndpoint.delete(
   "logoutSystemAdmin",
   "/system-admin/session",
   {
-    error: SystemAdminSessionInvalidUnauthorized,
+    error: [
+      SystemAdminSessionInvalidUnauthorized,
+      PersistenceFailureInternalServerError,
+    ],
   }
 )

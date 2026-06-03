@@ -1,5 +1,6 @@
 import { Effect } from "effect"
 import * as Context from "effect/Context"
+import type { PersistenceError } from "@workspace/drizzle"
 
 import { type FirstSystemAdminAlreadyExists } from "../../domain/errors.ts"
 import {
@@ -14,7 +15,7 @@ export class SystemAdminBootstrap extends Context.Service<
       input: BootstrapFirstSystemAdminInput
     ) => Effect.Effect<
       BootstrapFirstSystemAdminSuccess,
-      FirstSystemAdminAlreadyExists
+      FirstSystemAdminAlreadyExists | PersistenceError
     >
   }
 >()("@kryno/auth/SystemAdminBootstrap") {}

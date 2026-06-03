@@ -1,5 +1,6 @@
 import { Effect } from "effect"
 import * as Context from "effect/Context"
+import type { PersistenceError } from "@workspace/drizzle"
 
 import {
   type GymUserEmailAlreadyReserved,
@@ -20,15 +21,21 @@ export class GymUserRegistration extends Context.Service<
   {
     readonly signUp: (
       input: SignUpGymUserInput
-    ) => Effect.Effect<GymUserSignupSuccess, GymUserEmailAlreadyReserved>
+    ) => Effect.Effect<
+      GymUserSignupSuccess,
+      GymUserEmailAlreadyReserved | PersistenceError
+    >
     readonly verifyEmail: (
       input: VerifyGymUserEmailInput
     ) => Effect.Effect<
       GymUserEmailVerificationSuccess,
-      GymUserEmailVerificationInvalid | GymUserNotFound
+      GymUserEmailVerificationInvalid | GymUserNotFound | PersistenceError
     >
     readonly reserveEmail: (
       input: ReserveGymUserEmailInput
-    ) => Effect.Effect<GymUserRegistrationRecord, GymUserEmailAlreadyReserved>
+    ) => Effect.Effect<
+      GymUserRegistrationRecord,
+      GymUserEmailAlreadyReserved | PersistenceError
+    >
   }
 >()("@kryno/auth/GymUserRegistration") {}
