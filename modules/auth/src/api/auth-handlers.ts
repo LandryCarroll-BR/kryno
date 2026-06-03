@@ -188,15 +188,12 @@ const mapPersistenceError = <
   R
 > =>
   effect.pipe(
-    Effect.catch(
+    Effect.mapError(
       (
         error
-      ): Effect.Effect<
-        never,
-        Exclude<E, PersistenceError> | HttpApiError.InternalServerError
-      > =>
+      ): Exclude<E, PersistenceError> | HttpApiError.InternalServerError =>
         error._tag === "PersistenceError"
-          ? Effect.fail(persistenceFailureInternalServerError())
-          : Effect.fail(error as Exclude<E, PersistenceError>)
+          ? persistenceFailureInternalServerError()
+          : (error as Exclude<E, PersistenceError>)
     )
   )
