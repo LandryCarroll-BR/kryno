@@ -171,6 +171,7 @@ export const GymStaffInvitationInteractor = Layer.effect(
             token: invitation.token,
             expiresAtMillis: invitation.expiresAtMillis,
             status: "accepted",
+            acceptedAtMillis: now,
           })
 
           yield* gymRepository.saveAffiliation(affiliation)

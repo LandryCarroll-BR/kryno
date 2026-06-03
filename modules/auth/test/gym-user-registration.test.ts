@@ -91,6 +91,7 @@ describe("GymUserRegistration.reserveEmail", () => {
   it.effect("rejects invalid and replayed email verification tokens", () =>
     Effect.gen(function* () {
       const registration = yield* GymUserRegistration
+      const repository = yield* GymUserRegistrationRepository
 
       const missingToken = yield* Effect.exit(
         registration.verifyEmail({
@@ -107,6 +108,15 @@ describe("GymUserRegistration.reserveEmail", () => {
       yield* registration.verifyEmail({
         token: "gym-user-email-verification-token-1",
       })
+
+      const consumedToken = yield* repository.findEmailVerificationToken(
+        "gym-user-email-verification-token-1"
+      )
+      expect(consumedToken._tag).toBe("Some")
+      if (consumedToken._tag === "Some") {
+        expect(consumedToken.value.used).toBe(true)
+        expect(consumedToken.value.usedAtMillis).toBe(0)
+      }
 
       const replay = yield* Effect.exit(
         registration.verifyEmail({

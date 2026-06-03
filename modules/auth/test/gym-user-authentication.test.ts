@@ -1,10 +1,15 @@
 import { describe, expect, it } from "@effect/vitest"
-import { Cause, Effect, Exit } from "effect"
+import { Cause, Effect, Exit, Layer } from "effect"
 import { TestClock } from "effect/testing"
 
 import { Auth } from "@workspace/auth"
 import { GymUserSessionId } from "../src/domain/gym-user"
-import { AuthTestLayer } from "../src/layers/test-layer"
+import { AuthApplicationTestLayer, AuthTestLayer } from "../src/layers/test-layer"
+import { GymUserRegistrationRepository } from "../src/ports/repositories/gym-user-registration-repository"
+
+const GymUserAuthenticationTestLayer = Auth.layer.pipe(
+  Layer.provideMerge(AuthApplicationTestLayer)
+)
 
 const expectFailureTag = <Tag extends string>(
   exit: Exit.Exit<unknown, { readonly _tag: string }>,
@@ -24,6 +29,7 @@ describe("Auth gym user authentication", () => {
   it.effect("logs in a verified gym user, resolves the current session, and logs out", () =>
     Effect.gen(function* () {
       const auth = yield* Auth
+      const repository = yield* GymUserRegistrationRepository
 
       const signup = yield* auth.signUpGymUser({
         email: "alex@example.com",
@@ -57,12 +63,21 @@ describe("Auth gym user authentication", () => {
 
       yield* auth.logoutGymUser({ sessionId: login.sessionToken })
 
+      const revoked = yield* repository.findSessionByTokenDigest(
+        `digest:${login.sessionToken}`
+      )
+      expect(revoked._tag).toBe("Some")
+      if (revoked._tag === "Some") {
+        expect(revoked.value.active).toBe(false)
+        expect(revoked.value.revokedAtMillis).toBe(0)
+      }
+
       const afterLogout = yield* Effect.exit(
         auth.currentGymUserSession({ sessionId: login.sessionToken })
       )
 
       expectFailureTag(afterLogout, "GymUserSessionInvalid")
-    }).pipe(Effect.provide(AuthTestLayer))
+    }).pipe(Effect.provide(GymUserAuthenticationTestLayer))
   )
 
   it.effect("denies login with invalid gym-side credentials", () =>

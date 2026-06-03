@@ -71,6 +71,8 @@ export class GymStaffInvitationRecord extends Schema.Class<GymStaffInvitationRec
   token: Schema.String,
   expiresAtMillis: Schema.Number,
   status: GymStaffInvitationStatus,
+  acceptedAtMillis: Schema.optional(Schema.Number),
+  revokedAtMillis: Schema.optional(Schema.Number),
 }) {}
 
 export class RequestGymCreationInput extends Schema.Class<RequestGymCreationInput>(

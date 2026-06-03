@@ -5,6 +5,7 @@ import { TestClock } from "effect/testing"
 import { Auth } from "@workspace/auth"
 import { AuthEmailDelivery } from "../src/ports/services/auth-email-delivery"
 import { AuthApplicationTestLayer } from "../src/layers/test-layer"
+import { GymUserRegistrationRepository } from "../src/ports/repositories/gym-user-registration-repository"
 
 const PasswordResetTestLayer = Auth.layer.pipe(
   Layer.provideMerge(AuthApplicationTestLayer)
@@ -55,6 +56,7 @@ describe("Auth gym user password reset", () => {
   it.effect("completes a reset and replaces the password credential", () =>
     Effect.gen(function* () {
       const auth = yield* Auth
+      const repository = yield* GymUserRegistrationRepository
 
       yield* auth.signUpGymUser({
         email: "alex@example.com",
@@ -72,6 +74,15 @@ describe("Auth gym user password reset", () => {
       })
 
       expect(reset.user.email).toBe("alex@example.com")
+
+      const consumedToken = yield* repository.findPasswordResetToken(
+        "gym-user-password-reset-token-1"
+      )
+      expect(consumedToken._tag).toBe("Some")
+      if (consumedToken._tag === "Some") {
+        expect(consumedToken.value.used).toBe(true)
+        expect(consumedToken.value.usedAtMillis).toBe(0)
+      }
 
       const oldPasswordLogin = yield* Effect.exit(
         auth.loginGymUser({

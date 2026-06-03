@@ -121,6 +121,7 @@ export const GymUserPasswordResetInteractor = Layer.effect(
               userId: maybeToken.value.userId,
               expiresAtMillis: maybeToken.value.expiresAtMillis,
               used: true,
+              usedAtMillis: now,
             })
           )
 

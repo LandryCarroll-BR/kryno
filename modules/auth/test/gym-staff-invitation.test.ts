@@ -7,6 +7,7 @@ import { GymRecord, GymId } from "../src/domain/gym"
 import { AuthEmailDelivery } from "../src/ports/services/auth-email-delivery"
 import { AuthApplicationTestLayer } from "../src/layers/test-layer"
 import { GymRepository } from "../src/ports/repositories/gym-repository"
+import { GymStaffInvitationRepository } from "../src/ports/repositories/gym-staff-invitation-repository"
 
 const GymStaffInvitationTestLayer = Auth.layer.pipe(
   Layer.provideMerge(AuthApplicationTestLayer)
@@ -31,6 +32,7 @@ describe("Auth gym Staff invitation", () => {
     Effect.gen(function* () {
       const auth = yield* Auth
       const emails = yield* AuthEmailDelivery
+      const invitations = yield* GymStaffInvitationRepository
 
       yield* auth.signUpGymUser({
         email: "owner@example.com",
@@ -103,6 +105,16 @@ describe("Auth gym Staff invitation", () => {
       expect(acceptance.affiliation.role).toBe("Staff")
       expect(acceptance.affiliation.status).toBe("active")
       expect(acceptance.affiliation.userId).toBe(staffLogin.user.id)
+      expect(acceptance.invitation.acceptedAtMillis).toBe(0)
+
+      const storedInvitation = yield* invitations.findByToken(
+        "gym-staff-invitation-token-1"
+      )
+      expect(storedInvitation._tag).toBe("Some")
+      if (storedInvitation._tag === "Some") {
+        expect(storedInvitation.value.status).toBe("accepted")
+        expect(storedInvitation.value.acceptedAtMillis).toBe(0)
+      }
 
       const current = yield* auth.currentGymUserSession({
         sessionId: staffLogin.sessionToken,

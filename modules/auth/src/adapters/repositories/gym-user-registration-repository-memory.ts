@@ -77,7 +77,10 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
           sessionsById.set(session.id, session)
           sessionIdsByTokenDigest.set(session.tokenDigest, session.id)
         }),
-      invalidateSession: (sessionId: GymUserSessionRecord["id"]) =>
+      invalidateSession: (
+        sessionId: GymUserSessionRecord["id"],
+        revokedAtMillis: number
+      ) =>
         Effect.sync(() => {
           const session = sessionsById.get(sessionId)
           if (session !== undefined) {
@@ -89,6 +92,7 @@ export const GymUserRegistrationRepositoryMemoryAdapter = Layer.sync(
                 tokenDigest: session.tokenDigest,
                 expiresAtMillis: session.expiresAtMillis,
                 active: false,
+                revokedAtMillis,
               })
             )
           }

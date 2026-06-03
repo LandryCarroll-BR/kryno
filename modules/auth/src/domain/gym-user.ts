@@ -49,6 +49,7 @@ export class GymUserSessionRecord extends Schema.Class<GymUserSessionRecord>(
   tokenDigest: Schema.String,
   expiresAtMillis: Schema.Number,
   active: Schema.Boolean,
+  revokedAtMillis: Schema.optional(Schema.Number),
 }) {}
 
 export class GymUserEmailVerificationTokenRecord extends Schema.Class<GymUserEmailVerificationTokenRecord>(
@@ -58,6 +59,7 @@ export class GymUserEmailVerificationTokenRecord extends Schema.Class<GymUserEma
   userId: GymUserId,
   expiresAtMillis: Schema.Number,
   used: Schema.Boolean,
+  usedAtMillis: Schema.optional(Schema.Number),
 }) {}
 
 export class GymUserPasswordResetTokenRecord extends Schema.Class<GymUserPasswordResetTokenRecord>(
@@ -67,6 +69,7 @@ export class GymUserPasswordResetTokenRecord extends Schema.Class<GymUserPasswor
   userId: GymUserId,
   expiresAtMillis: Schema.Number,
   used: Schema.Boolean,
+  usedAtMillis: Schema.optional(Schema.Number),
 }) {}
 
 export class GymUserSignupSuccess extends Schema.Class<GymUserSignupSuccess>(

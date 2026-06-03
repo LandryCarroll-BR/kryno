@@ -44,7 +44,8 @@ export class GymUserRegistrationRepository extends Context.Service<
     ) => Effect.Effect<Option.Option<GymUserPasswordResetTokenRecord>>
     readonly saveSession: (session: GymUserSessionRecord) => Effect.Effect<void>
     readonly invalidateSession: (
-      sessionId: GymUserSessionId
+      sessionId: GymUserSessionId,
+      revokedAtMillis: number
     ) => Effect.Effect<void>
   }
 >()("@kryno/auth/GymUserRegistrationRepository") {}

@@ -135,8 +135,9 @@ export const GymUserAuthenticationInteractor = Layer.effect(
             command.sessionId,
             yield* repository.findSessionByTokenDigest(tokenDigest)
           )
+          const now = yield* Clock.currentTimeMillis
 
-          yield* repository.invalidateSession(session.id)
+          yield* repository.invalidateSession(session.id, now)
         })
     )
 
