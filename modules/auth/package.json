@@ -41,6 +41,7 @@
     "./adapters/repositories/gym-repository-memory": "./src/adapters/repositories/gym-repository-memory.ts",
     "./adapters/repositories/gym-staff-invitation-repository-memory": "./src/adapters/repositories/gym-staff-invitation-repository-memory.ts",
     "./adapters/repositories/system-admin-bootstrap-repository-memory": "./src/adapters/repositories/system-admin-bootstrap-repository-memory.ts",
+    "./adapters/repositories/system-admin-bootstrap-repository-postgres": "./src/adapters/repositories/system-admin-bootstrap-repository-postgres.ts",
     "./api/auth-api": "./src/api/auth-api.ts",
     "./api/auth-authorization": "./src/api/auth-authorization.ts",
     "./api/auth-group": "./src/api/auth-group.ts",
