@@ -37,6 +37,7 @@
     "./adapters/services/password-hasher-argon2id": "./src/adapters/services/password-hasher-argon2id.ts",
     "./adapters/services/password-hasher-deterministic": "./src/adapters/services/password-hasher-deterministic.ts",
     "./adapters/repositories/gym-user-registration-repository-memory": "./src/adapters/repositories/gym-user-registration-repository-memory.ts",
+    "./adapters/repositories/gym-user-registration-repository-postgres": "./src/adapters/repositories/gym-user-registration-repository-postgres.ts",
     "./adapters/repositories/gym-repository-memory": "./src/adapters/repositories/gym-repository-memory.ts",
     "./adapters/repositories/gym-staff-invitation-repository-memory": "./src/adapters/repositories/gym-staff-invitation-repository-memory.ts",
     "./adapters/repositories/system-admin-bootstrap-repository-memory": "./src/adapters/repositories/system-admin-bootstrap-repository-memory.ts",
