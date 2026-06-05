@@ -38,4 +38,5 @@ Implement database-backed auth repository adapters that depend on the shared `Dr
 - Added a repository behavior test covering durable save plus normalized email lookup through the repository service layer with a fake Drizzle database.
 - Added `SystemAdminBootstrapRepositoryPostgresAdapter`, exported it through an explicit auth package subpath, and covered first-admin save, normalized email lookup, credential lookup, and session token-digest lookup through the repository boundary.
 - Added `GymRepositoryPostgresAdapter`, exported it through an explicit auth package subpath, and covered gym, creation request, exact affiliation, and active affiliation persistence through the repository boundary.
-- Remaining work: add Postgres adapters/tests for staff invitations, broader token/session digest lookup coverage, database constraints, and true restart durability against a live database.
+- Added `GymStaffInvitationRepositoryPostgresAdapter`, exported it through an explicit auth package subpath, and covered staff invitation persistence, normalized invited email storage, and token-digest lookup through the repository boundary.
+- Remaining work: add broader token/session digest lookup coverage, database constraints, and true restart durability against a live database.

@@ -3,6 +3,7 @@ import { DrizzleDatabase, type DrizzleDatabaseShape } from "@workspace/drizzle"
 import { Effect, Layer, Option } from "effect"
 
 import { GymRepositoryPostgresAdapter } from "../src/adapters/repositories/gym-repository-postgres.ts"
+import { GymStaffInvitationRepositoryPostgresAdapter } from "../src/adapters/repositories/gym-staff-invitation-repository-postgres.ts"
 import { GymUserRegistrationRepositoryPostgresAdapter } from "../src/adapters/repositories/gym-user-registration-repository-postgres.ts"
 import { SystemAdminBootstrapRepositoryPostgresAdapter } from "../src/adapters/repositories/system-admin-bootstrap-repository-postgres.ts"
 import {
@@ -11,6 +12,8 @@ import {
   GymCreationRequestRecord,
   GymId,
   GymRecord,
+  GymStaffInvitationId,
+  GymStaffInvitationRecord,
 } from "../src/domain/gym.ts"
 import {
   GymUserId,
@@ -24,6 +27,7 @@ import {
   SystemAdminSessionRecord,
 } from "../src/domain/system-admin.ts"
 import { GymRepository } from "../src/ports/repositories/gym-repository.ts"
+import { GymStaffInvitationRepository } from "../src/ports/repositories/gym-staff-invitation-repository.ts"
 import { GymUserRegistrationRepository } from "../src/ports/repositories/gym-user-registration-repository.ts"
 import { SystemAdminBootstrapRepository } from "../src/ports/repositories/system-admin-bootstrap-repository.ts"
 
@@ -87,6 +91,44 @@ describe("GymRepositoryPostgresAdapter", () => {
       expect(Option.getOrUndefined(foundAffiliation)).toEqual(affiliation)
       expect(activeAffiliations).toEqual([affiliation])
     }).pipe(Effect.provide(gymTestLayer()))
+  )
+})
+
+describe("GymStaffInvitationRepositoryPostgresAdapter", () => {
+  it.effect("saves staff invitations and resolves them by token digest", () =>
+    Effect.gen(function* () {
+      const repository = yield* GymStaffInvitationRepository
+      const invitation = new GymStaffInvitationRecord({
+        id: GymStaffInvitationId.make(
+          "30000000-0000-0000-0000-000000000001"
+        ),
+        gymId: GymId.make("30000000-0000-0000-0000-000000000002"),
+        invitedEmail: " Staff@Example.COM ",
+        invitedByUserId: GymUserId.make(
+          "30000000-0000-0000-0000-000000000003"
+        ),
+        token: "digest:gym-staff-invitation-token",
+        expiresAtMillis: 1_800_000,
+        status: "pending",
+      })
+
+      yield* repository.save(invitation)
+
+      const found = yield* repository.findByToken(
+        "digest:gym-staff-invitation-token"
+      )
+      const rawTokenLookup = yield* repository.findByToken(
+        "gym-staff-invitation-token"
+      )
+
+      expect(Option.getOrUndefined(found)).toEqual(
+        new GymStaffInvitationRecord({
+          ...invitation,
+          invitedEmail: "staff@example.com",
+        })
+      )
+      expect(Option.isNone(rawTokenLookup)).toBe(true)
+    }).pipe(Effect.provide(staffInvitationTestLayer()))
   )
 })
 
@@ -169,6 +211,7 @@ const makeInMemoryDb = () => {
   const systemAdmins = new Map<string, Record<string, unknown>>()
   const systemAdminCredentials = new Map<string, Record<string, unknown>>()
   const systemAdminSessions = new Map<string, Record<string, unknown>>()
+  const gymStaffInvitations = new Map<string, Record<string, unknown>>()
 
   const rowsForTable = (table: { readonly [key: string]: unknown }) => {
     switch (tableKey(table)) {
@@ -186,6 +229,8 @@ const makeInMemoryDb = () => {
         return systemAdminCredentials
       case "system_admin_sessions":
         return systemAdminSessions
+      case "gym_staff_invitations":
+        return gymStaffInvitations
       default:
         return new Map<string, Record<string, unknown>>()
     }
@@ -285,6 +330,17 @@ const systemAdminTestLayer = () =>
 
 const gymTestLayer = () =>
   GymRepositoryPostgresAdapter.pipe(
+    Layer.provide(
+      Layer.succeed(DrizzleDatabase, ({
+        db: makeInMemoryDb(),
+        sqlClient: {},
+        transaction: <A, E, R>(effect: Effect.Effect<A, E, R>) => effect,
+      } as unknown) as DrizzleDatabaseShape)
+    )
+  )
+
+const staffInvitationTestLayer = () =>
+  GymStaffInvitationRepositoryPostgresAdapter.pipe(
     Layer.provide(
       Layer.succeed(DrizzleDatabase, ({
         db: makeInMemoryDb(),
