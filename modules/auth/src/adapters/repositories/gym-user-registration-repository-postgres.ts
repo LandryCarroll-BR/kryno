@@ -1,6 +1,7 @@
 import { makePersistenceError, DrizzleDatabase } from "@workspace/drizzle"
 import { eq } from "drizzle-orm"
 import { Effect, Layer, Option } from "effect"
+import { randomUUID } from "node:crypto"
 
 import { normalizeEmailIdentity } from "../../domain/email-identity.ts"
 import {
@@ -138,9 +139,10 @@ export const GymUserRegistrationRepositoryPostgresAdapter = Layer.effect(
           db
             .insert(gymUserEmailVerificationTokens)
             .values({
-              id: token.token,
+              id: randomUUID(),
               userId: token.userId,
               tokenDigest: token.token,
+              expiresAt: new Date(token.expiresAtMillis),
               usedAt:
                 token.usedAtMillis === undefined
                   ? null
@@ -149,6 +151,7 @@ export const GymUserRegistrationRepositoryPostgresAdapter = Layer.effect(
             .onConflictDoUpdate({
               target: gymUserEmailVerificationTokens.tokenDigest,
               set: {
+                expiresAt: new Date(token.expiresAtMillis),
                 usedAt:
                   token.usedAtMillis === undefined
                     ? null
@@ -174,7 +177,7 @@ export const GymUserRegistrationRepositoryPostgresAdapter = Layer.effect(
           db
             .insert(gymUserPasswordResetTokens)
             .values({
-              id: token.token,
+              id: randomUUID(),
               userId: token.userId,
               tokenDigest: token.token,
               expiresAt: new Date(token.expiresAtMillis),
@@ -281,7 +284,7 @@ const rowToGymUserEmailVerificationTokenRecord = (
   new GymUserEmailVerificationTokenRecord({
     token: row.tokenDigest,
     userId: GymUserId.make(row.userId),
-    expiresAtMillis: Number.MAX_SAFE_INTEGER,
+    expiresAtMillis: dateToMillis(row.expiresAt),
     used: row.usedAt !== null,
     usedAtMillis: row.usedAt === null ? undefined : dateToMillis(row.usedAt),
   })

@@ -39,4 +39,5 @@ Implement database-backed auth repository adapters that depend on the shared `Dr
 - Added `SystemAdminBootstrapRepositoryPostgresAdapter`, exported it through an explicit auth package subpath, and covered first-admin save, normalized email lookup, credential lookup, and session token-digest lookup through the repository boundary.
 - Added `GymRepositoryPostgresAdapter`, exported it through an explicit auth package subpath, and covered gym, creation request, exact affiliation, and active affiliation persistence through the repository boundary.
 - Added `GymStaffInvitationRepositoryPostgresAdapter`, exported it through an explicit auth package subpath, and covered staff invitation persistence, normalized invited email storage, and token-digest lookup through the repository boundary.
-- Remaining work: add broader token/session digest lookup coverage, database constraints, and true restart durability against a live database.
+- Added broader `GymUserRegistrationRepositoryPostgresAdapter` coverage for credentials, email verification tokens, password reset tokens, and session token-digest lookups. Fixed gym-user token persistence so token digests no longer get inserted into UUID primary-key columns, and persisted email verification expiration timestamps.
+- Remaining work: add live database constraint coverage and true restart durability against a live database.

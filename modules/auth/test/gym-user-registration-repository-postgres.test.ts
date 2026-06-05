@@ -16,8 +16,13 @@ import {
   GymStaffInvitationRecord,
 } from "../src/domain/gym.ts"
 import {
+  GymUserCredentialRecord,
+  GymUserEmailVerificationTokenRecord,
   GymUserId,
+  GymUserPasswordResetTokenRecord,
   GymUserRegistrationRecord,
+  GymUserSessionId,
+  GymUserSessionRecord,
 } from "../src/domain/gym-user.ts"
 import {
   SystemAdminCredentialRecord,
@@ -32,7 +37,7 @@ import { GymUserRegistrationRepository } from "../src/ports/repositories/gym-use
 import { SystemAdminBootstrapRepository } from "../src/ports/repositories/system-admin-bootstrap-repository.ts"
 
 describe("GymUserRegistrationRepositoryPostgresAdapter", () => {
-  it.effect("saves gym users and looks them up by normalized email", () =>
+  it.effect("saves gym user signup records and token digests", () =>
     Effect.gen(function* () {
       const repository = yield* GymUserRegistrationRepository
       const user = new GymUserRegistrationRecord({
@@ -41,12 +46,74 @@ describe("GymUserRegistrationRepositoryPostgresAdapter", () => {
         displayName: "Alex",
         emailVerified: false,
       })
+      const credential = new GymUserCredentialRecord({
+        userId: user.id,
+        passwordHash: "hashed:password",
+      })
+      const emailVerificationToken =
+        new GymUserEmailVerificationTokenRecord({
+          token: "digest:gym-user-email-verification-token",
+          userId: user.id,
+          expiresAtMillis: 1_800_000,
+          used: true,
+          usedAtMillis: 600_000,
+        })
+      const passwordResetToken = new GymUserPasswordResetTokenRecord({
+        token: "digest:gym-user-password-reset-token",
+        userId: user.id,
+        expiresAtMillis: 2_400_000,
+        used: false,
+      })
+      const session = new GymUserSessionRecord({
+        id: GymUserSessionId.make("00000000-0000-0000-0000-000000000002"),
+        userId: user.id,
+        tokenDigest: "digest:gym-user-session-token",
+        expiresAtMillis: 3_000_000,
+        active: true,
+      })
 
       yield* repository.save(user)
+      yield* repository.saveCredential(credential)
+      yield* repository.saveEmailVerificationToken(emailVerificationToken)
+      yield* repository.savePasswordResetToken(passwordResetToken)
+      yield* repository.saveSession(session)
 
       const found = yield* repository.findByEmail(" ALEX@EXAMPLE.COM ")
+      const foundCredential = yield* repository.findCredentialByUserId(user.id)
+      const foundEmailVerificationToken =
+        yield* repository.findEmailVerificationToken(
+          "digest:gym-user-email-verification-token"
+        )
+      const rawEmailVerificationLookup =
+        yield* repository.findEmailVerificationToken(
+          "gym-user-email-verification-token"
+        )
+      const foundPasswordResetToken =
+        yield* repository.findPasswordResetToken(
+          "digest:gym-user-password-reset-token"
+        )
+      const rawPasswordResetLookup = yield* repository.findPasswordResetToken(
+        "gym-user-password-reset-token"
+      )
+      const foundSession = yield* repository.findSessionByTokenDigest(
+        "digest:gym-user-session-token"
+      )
+      const rawSessionLookup = yield* repository.findSessionByTokenDigest(
+        "gym-user-session-token"
+      )
 
       expect(Option.getOrUndefined(found)).toEqual(user)
+      expect(Option.getOrUndefined(foundCredential)).toEqual(credential)
+      expect(Option.getOrUndefined(foundEmailVerificationToken)).toEqual(
+        emailVerificationToken
+      )
+      expect(Option.isNone(rawEmailVerificationLookup)).toBe(true)
+      expect(Option.getOrUndefined(foundPasswordResetToken)).toEqual(
+        passwordResetToken
+      )
+      expect(Option.isNone(rawPasswordResetLookup)).toBe(true)
+      expect(Option.getOrUndefined(foundSession)).toEqual(session)
+      expect(Option.isNone(rawSessionLookup)).toBe(true)
     }).pipe(Effect.provide(testLayer()))
   )
 })
@@ -208,6 +275,16 @@ const makeInMemoryDb = () => {
   const gymCreationRequests = new Map<string, Record<string, unknown>>()
   const gymAffiliations = new Map<string, Record<string, unknown>>()
   const gymUsers = new Map<string, Record<string, unknown>>()
+  const gymUserCredentials = new Map<string, Record<string, unknown>>()
+  const gymUserEmailVerificationTokens = new Map<
+    string,
+    Record<string, unknown>
+  >()
+  const gymUserPasswordResetTokens = new Map<
+    string,
+    Record<string, unknown>
+  >()
+  const gymUserSessions = new Map<string, Record<string, unknown>>()
   const systemAdmins = new Map<string, Record<string, unknown>>()
   const systemAdminCredentials = new Map<string, Record<string, unknown>>()
   const systemAdminSessions = new Map<string, Record<string, unknown>>()
@@ -223,6 +300,14 @@ const makeInMemoryDb = () => {
         return gymAffiliations
       case "gym_users":
         return gymUsers
+      case "gym_user_credentials":
+        return gymUserCredentials
+      case "gym_user_email_verification_tokens":
+        return gymUserEmailVerificationTokens
+      case "gym_user_password_reset_tokens":
+        return gymUserPasswordResetTokens
+      case "gym_user_sessions":
+        return gymUserSessions
       case "system_admins":
         return systemAdmins
       case "system_admin_credentials":
@@ -243,6 +328,8 @@ const makeInMemoryDb = () => {
     switch (tableKey(table)) {
       case "gym_affiliations":
         return `${String(values.gymId)}:${String(values.userId)}`
+      case "gym_user_credentials":
+        return String(values.userId)
       case "system_admin_credentials":
         return String(values.adminId)
       default:
@@ -273,6 +360,7 @@ const makeInMemoryDb = () => {
       values: (values: Record<string, unknown>) => ({
         onConflictDoUpdate: () =>
           Effect.sync(() => {
+            assertValidInsertValues(table, values)
             rowsForTable(table).set(primaryKeyForTable(table, values), {
               ...values,
             })
@@ -299,6 +387,25 @@ const makeInMemoryDb = () => {
 
 const tableKey = (table: { readonly [key: string]: unknown }) =>
   String(table[tableNameSymbol(table)])
+
+const assertValidInsertValues = (
+  table: { readonly [key: string]: unknown },
+  values: Record<string, unknown>
+) => {
+  const key = tableKey(table)
+
+  if (
+    (key === "gym_user_email_verification_tokens" ||
+      key === "gym_user_password_reset_tokens") &&
+    typeof values.id === "string" &&
+    !uuidPattern.test(values.id)
+  ) {
+    throw new Error(`${key}.id must be a UUID`)
+  }
+}
+
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u
 
 const tableNameSymbol = (table: object) =>
   Object.getOwnPropertySymbols(table).find(

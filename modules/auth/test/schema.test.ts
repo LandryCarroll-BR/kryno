@@ -48,6 +48,7 @@ describe("@workspace/auth/schema", () => {
     expect(gymUsers.email.notNull).toBe(true)
     expect(gymUserSessions.tokenDigest.notNull).toBe(true)
     expect(gymUserEmailVerificationTokens.tokenDigest.notNull).toBe(true)
+    expect(gymUserEmailVerificationTokens.expiresAt.notNull).toBe(true)
     expect(gymUserPasswordResetTokens.expiresAt.notNull).toBe(true)
   })
 })

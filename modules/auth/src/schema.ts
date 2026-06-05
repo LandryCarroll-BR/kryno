@@ -81,6 +81,7 @@ export const gymUserEmailVerificationTokens = authSchema.table(
     tokenDigest: requiredText("token_digest").unique(
       "gym_user_email_verification_tokens_token_digest_unique"
     ),
+    expiresAt: timestamptz("expires_at"),
     usedAt: timestamp("used_at", { withTimezone: true }),
     createdAt: timestamptz("created_at").defaultNow(),
   }
