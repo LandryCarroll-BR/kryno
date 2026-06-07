@@ -1,20 +1,10 @@
-import { Link } from "react-router"
-
-import { buttonVariants } from "@workspace/ui/components/button"
-
 export default function Home() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Link to="/signup" className={buttonVariants({ className: "mt-2" })}>
-            Create account
-          </Link>
-        </div>
-      </div>
-    </div>
+    <main className="container mx-auto p-4 pt-16">
+      <h1 className="text-4xl font-bold">Welcome to Kryno!</h1>
+      <p className="mt-4 text-lg text-gray-600">
+        This is the home page of your new Remix app.
+      </p>
+    </main>
   )
 }
