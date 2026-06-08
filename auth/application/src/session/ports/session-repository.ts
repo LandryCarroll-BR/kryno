@@ -1,4 +1,5 @@
-import type { Session, SessionId } from "@/entites/session-entities"
+import type { Session } from "@/session/domain/session-entities"
+import type { SessionId } from "@/session/domain/session-value-objects"
 import { Effect, Option } from "effect"
 import { Service } from "effect/Context"
 

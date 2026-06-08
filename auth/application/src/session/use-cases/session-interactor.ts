@@ -1,22 +1,16 @@
-import { SessionRepository } from "@/repositories/session-repository"
-import { SessionService } from "@/services/session-service"
-import { SessionInputBoundary } from "@/session/session-input-boundary"
+import { SessionRepository } from "@/session/ports/session-repository"
+import { SessionService } from "@/session/ports/session-service"
+import { SessionInputBoundary } from "@/session/use-cases/session-input-boundary"
 import { DateTime, Effect, Layer, Option } from "effect"
 
-import {
-  Session,
-  sessionIsExpired,
-  sessionSecretHashIsEqual,
-  sessionStructFromToken,
-  SessionToken,
-  SessionWithToken,
-} from "@/entites/session-entities"
+import { Session, SessionWithToken } from "@/session/domain/session-entities"
+import { ParsedSessionToken } from "@/session/domain/session-value-objects"
 
 import {
   InvalidSessionSecretHashError,
   InvalidSessionTokenError,
   SessionNotFoundError,
-} from "@/errors/session-errors"
+} from "@/session/domain/session-errors"
 
 export const SessionInteractor = Layer.effect(
   SessionInputBoundary,
@@ -32,7 +26,7 @@ export const SessionInteractor = Layer.effect(
           const id = yield* sessionService.generateId()
           const secret = yield* sessionService.generateSecret()
           const secretHash = yield* sessionService.hashSecret(secret)
-          const token = SessionToken.make(`${id}.${secret}`)
+          const token = ParsedSessionToken.make({ id, secret }).token
 
           const session = Session.make({
             id,
@@ -44,7 +38,7 @@ export const SessionInteractor = Layer.effect(
 
           const sessionWithToken = SessionWithToken.make({
             ...persistedSession,
-            token: token,
+            token,
           })
 
           return sessionWithToken
@@ -53,32 +47,29 @@ export const SessionInteractor = Layer.effect(
 
       validateSession: Effect.fn("session-interactor/validate-session")(
         function* (token) {
-          const session = yield* sessionStructFromToken(token).pipe(
-            Effect.mapError(() => new InvalidSessionTokenError())
-          )
+          const { id: sessionId, secret: sessionSecret } =
+            yield* ParsedSessionToken.fromString(token).pipe(
+              Effect.mapError(() => new InvalidSessionTokenError())
+            )
 
-          const persistedSession = yield* sessionRepository.findById(session.id)
+          const persistedSession = yield* sessionRepository.findById(sessionId)
           if (Option.isNone(persistedSession)) {
-            return yield* new SessionNotFoundError({ sessionId: session.id })
+            return yield* new SessionNotFoundError({ sessionId })
           }
 
           const sessionValue = persistedSession.value
 
-          const isExpired = yield* sessionIsExpired(sessionValue)
+          const isExpired = yield* sessionValue.isExpired()
 
           if (isExpired) {
-            yield* sessionRepository.deleteSession(session.id)
+            yield* sessionRepository.deleteSession(sessionId)
             return Option.none()
           }
 
-          const tokenSecretHash = yield* sessionService.hashSecret(
-            session.secret
-          )
+          const tokenSecretHash =
+            yield* sessionService.hashSecret(sessionSecret)
 
-          const isValidSessionHash = sessionSecretHashIsEqual(
-            tokenSecretHash,
-            sessionValue.secretHash
-          )
+          const isValidSessionHash = sessionValue.hasSecretHash(tokenSecretHash)
 
           if (!isValidSessionHash) {
             return yield* new InvalidSessionSecretHashError()
