@@ -1,16 +1,16 @@
-import { SessionRepository } from "@/session/ports/session-repository"
-import { SessionService } from "@/session/ports/session-service"
-import { SessionInputBoundary } from "@/session/use-cases/session-input-boundary"
+import { SessionRepository } from "@/repositories/session-repository"
+import { SessionService } from "@/services/session-service"
+import { SessionInputBoundary } from "@/session/session-input-boundary"
 import { DateTime, Effect, Layer, Option } from "effect"
 
-import { Session, SessionWithToken } from "@/session/domain/session-entities"
-import { ParsedSessionToken } from "@/session/domain/session-value-objects"
+import { Session, SessionWithToken } from "@/domain/session-entities"
+import { ParsedSessionToken } from "@/domain/session-value-objects"
 
 import {
   InvalidSessionSecretHashError,
   InvalidSessionTokenError,
   SessionNotFoundError,
-} from "@/session/domain/session-errors"
+} from "@/errors/session-errors"
 
 export const SessionInteractor = Layer.effect(
   SessionInputBoundary,

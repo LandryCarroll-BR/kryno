@@ -4,7 +4,7 @@ import {
   SessionId,
   SessionSecretHash,
   SessionToken,
-} from "@/session/domain/session-value-objects"
+} from "@/domain/session-value-objects"
 
 export class Session extends Schema.Class<Session>("Session")({
   id: SessionId,
