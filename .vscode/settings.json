@@ -18,7 +18,6 @@
     "docker-compose.yml": true,
     "package.json": true,
     "pnpm-lock.yaml": true,
-    "pnpm-workspace.yaml": true,
     "README.md": true,
     "tsconfig.json": true,
     "turbo.json": true,
@@ -26,7 +25,8 @@
     ".turbo": true,
     ".pnpm-store": true,
     "node_modules": true,
-    "tooling": true
+    "tooling": true,
+    "modules/auth/src/application/session/session-output-boundary.ts": true
   },
   "hide-files.files": [
     ".agents",
@@ -40,7 +40,6 @@
     "docker-compose.yml",
     "package.json",
     "pnpm-lock.yaml",
-    "pnpm-workspace.yaml",
     "README.md",
     "tsconfig.json",
     "turbo.json",
@@ -48,6 +47,7 @@
     ".turbo",
     ".pnpm-store",
     "node_modules",
-    "tooling"
+    "tooling",
+    "modules/auth/src/application/session/session-output-boundary.ts"
   ]
 }

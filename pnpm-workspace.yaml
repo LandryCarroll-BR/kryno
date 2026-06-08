@@ -1,11 +1,10 @@
 packages:
   - "apps/*"
   - "packages/*"
-  - "tooling/*"
-  - "modules/*"
+  - "auth/*"
 allowBuilds:
   esbuild: true
-  msgpackr-extract: true 
+  msgpackr-extract: true
   msw: true
 minimumReleaseAgeExclude:
   - shadcn@4.8.1
