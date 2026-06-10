@@ -4,7 +4,7 @@ import {
   SessionId,
   SessionSecret,
   SessionSecretHash,
-} from "@/domain/session-value-objects"
+} from "@/models/session-value-objects"
 
 export class SessionService extends Service<
   SessionService,

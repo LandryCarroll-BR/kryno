@@ -1,4 +1,4 @@
-import { Effect, Schema } from "effect"
+import { Schema } from "effect"
 
 export type SessionId = typeof SessionId.Type
 export const SessionId = Schema.NonEmptyString.pipe(Schema.brand("SessionId"))
@@ -14,34 +14,11 @@ export const SessionSecret = Schema.NonEmptyString.pipe(
 )
 
 export type SessionToken = typeof SessionToken.Type
-export const SessionToken = Schema.TemplateLiteral([
-  SessionId,
-  ".",
-  SessionSecret,
-]).pipe(Schema.brand("SessionToken"))
+const SessionTokenParts = [SessionId, ".", SessionSecret] as const
 
-export const SessionTokenParser = Schema.TemplateLiteralParser([
-  SessionId,
-  ".",
-  SessionSecret,
-])
+export const SessionToken = Schema.TemplateLiteral(SessionTokenParts).pipe(
+  Schema.brand("SessionToken")
+)
 
-export class ParsedSessionToken extends Schema.Class<ParsedSessionToken>(
-  "ParsedSessionToken"
-)({
-  id: SessionId,
-  secret: SessionSecret,
-}) {
-  static fromString = Effect.fn("parsed-session-token/from-string")(function* (
-    token: string
-  ) {
-    const [id, _, secret] =
-      yield* Schema.decodeUnknownEffect(SessionTokenParser)(token)
-
-    return new ParsedSessionToken({ id, secret })
-  })
-
-  get token() {
-    return SessionToken.make(`${this.id}.${this.secret}`)
-  }
-}
+export const SessionTokenParser =
+  Schema.TemplateLiteralParser(SessionTokenParts)

@@ -1,5 +1,5 @@
-import type { Session } from "@/domain/session-entities"
-import type { SessionId } from "@/domain/session-value-objects"
+import type { Session } from "@/models/session-entities"
+import type { SessionId } from "@/models/session-value-objects"
 import { Effect, Option } from "effect"
 import { Service } from "effect/Context"
 

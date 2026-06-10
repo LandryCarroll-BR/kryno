@@ -2,9 +2,11 @@ import { DateTime, Effect, Equivalence, Schema } from "effect"
 
 import {
   SessionId,
+  SessionSecret,
   SessionSecretHash,
   SessionToken,
-} from "@/domain/session-value-objects"
+  SessionTokenParser,
+} from "@/models/session-value-objects"
 
 export class Session extends Schema.Class<Session>("Session")({
   id: SessionId,
@@ -43,3 +45,23 @@ export class SessionWithToken extends Schema.Class<SessionWithToken>(
   ...Session.fields,
   token: SessionToken,
 }) {}
+
+export class ParsedSessionToken extends Schema.Class<ParsedSessionToken>(
+  "ParsedSessionToken"
+)({
+  id: SessionId,
+  secret: SessionSecret,
+}) {
+  static fromString = Effect.fn("parsed-session-token/from-string")(function* (
+    token: string
+  ) {
+    const [id, _, secret] =
+      yield* Schema.decodeUnknownEffect(SessionTokenParser)(token)
+
+    return new ParsedSessionToken({ id, secret })
+  })
+
+  get token() {
+    return SessionToken.make(`${this.id}.${this.secret}`)
+  }
+}

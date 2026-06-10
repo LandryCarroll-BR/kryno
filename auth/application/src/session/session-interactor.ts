@@ -3,8 +3,11 @@ import { SessionService } from "@/services/session-service"
 import { SessionInputBoundary } from "@/session/session-input-boundary"
 import { DateTime, Effect, Layer, Option } from "effect"
 
-import { Session, SessionWithToken } from "@/domain/session-entities"
-import { ParsedSessionToken } from "@/domain/session-value-objects"
+import {
+  ParsedSessionToken,
+  Session,
+  SessionWithToken,
+} from "@/models/session-entities"
 
 import {
   InvalidSessionSecretHashError,
