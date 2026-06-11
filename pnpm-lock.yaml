@@ -94,7 +94,7 @@ importers:
         specifier: ^4.0.15
         version: 4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
 
-  auth/application:
+  modules/auth/application:
     dependencies:
       effect:
         specifier: 4.0.0-beta.70
@@ -108,7 +108,7 @@ importers:
         version: 25.9.1
       '@workspace/tsconfig':
         specifier: workspace:*
-        version: link:../../packages/tsconfig
+        version: link:../../../packages/tsconfig
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
