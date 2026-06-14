@@ -11,15 +11,25 @@ import {
 export class Session extends Schema.Class<Session>("Session")({
   id: SessionId,
   secretHash: SessionSecretHash,
+  lastVerifiedAt: Schema.Date,
   createdAt: Schema.Date,
 }) {
-  readonly SESSION_EXPIRES_IN_SECONDS = 60 * 60 * 24
+  readonly ACTIVITY_CHECK_INTERVAL_SECONDS = 60 * 60 // 1 hour
+  readonly INACTIVITY_TIMEOUT_SECONDS = 60 * 60 * 24 * 10 // 10 days
 
   isExpired = Effect.fn("session/is-expired")(function* (this: Session) {
     const now = yield* DateTime.nowAsDate
     return (
-      now.getTime() - this.createdAt.getTime() >=
-      this.SESSION_EXPIRES_IN_SECONDS * 1000
+      now.getTime() - this.lastVerifiedAt.getTime() >=
+      this.INACTIVITY_TIMEOUT_SECONDS * 1000
+    )
+  })
+
+  isInactive = Effect.fn("session/is-inactive")(function* (this: Session) {
+    const now = yield* DateTime.nowAsDate
+    return (
+      now.getTime() - this.lastVerifiedAt.getTime() >=
+      this.ACTIVITY_CHECK_INTERVAL_SECONDS * 1000
     )
   })
 

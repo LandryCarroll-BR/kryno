@@ -34,6 +34,7 @@ export const SessionInteractor = Layer.effect(
           const session = Session.make({
             id,
             secretHash,
+            lastVerifiedAt: now,
             createdAt: now,
           })
 
@@ -55,30 +56,36 @@ export const SessionInteractor = Layer.effect(
               Effect.mapError(() => new InvalidSessionTokenError())
             )
 
-          const persistedSession = yield* sessionRepository.findById(sessionId)
-          if (Option.isNone(persistedSession)) {
+          const persistedSessionResult =
+            yield* sessionRepository.findById(sessionId)
+          if (Option.isNone(persistedSessionResult)) {
             return yield* new SessionNotFoundError({ sessionId })
           }
 
-          const sessionValue = persistedSession.value
-
-          const isExpired = yield* sessionValue.isExpired()
-
+          const session = persistedSessionResult.value
+          const isExpired = yield* session.isExpired()
           if (isExpired) {
-            yield* sessionRepository.deleteSession(sessionId)
+            yield* sessionRepository.delete(sessionId)
             return Option.none()
           }
 
           const tokenSecretHash =
             yield* sessionService.hashSecret(sessionSecret)
-
-          const isValidSessionHash = sessionValue.hasSecretHash(tokenSecretHash)
-
+          const isValidSessionHash = session.hasSecretHash(tokenSecretHash)
           if (!isValidSessionHash) {
             return yield* new InvalidSessionSecretHashError()
           }
 
-          return Option.some(sessionValue)
+          const isInactive = yield* session.isInactive()
+          if (isInactive) {
+            const updatedSession = Session.make({
+              ...session,
+              lastVerifiedAt: yield* DateTime.nowAsDate,
+            })
+            yield* sessionRepository.update(updatedSession)
+          }
+
+          return Option.some(session)
         }
       ),
     }
