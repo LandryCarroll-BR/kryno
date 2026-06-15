@@ -1,15 +1,33 @@
 import { DateTime, Effect, Equivalence, Schema } from "effect"
 
-import {
-  SessionId,
-  SessionSecret,
-  SessionSecretHash,
-  SessionToken,
-  SessionTokenParser,
-} from "@/models/session-value-objects"
+import { UserId } from "@/user/user.models"
+
+export type SessionId = typeof SessionId.Type
+export const SessionId = Schema.NonEmptyString.pipe(Schema.brand("SessionId"))
+
+export type SessionSecretHash = typeof SessionSecretHash.Type
+export const SessionSecretHash = Schema.Uint8Array.pipe(
+  Schema.brand("SessionSecretHash")
+)
+
+export type SessionSecret = typeof SessionSecret.Type
+export const SessionSecret = Schema.NonEmptyString.pipe(
+  Schema.brand("SessionSecret")
+)
+
+export type SessionToken = typeof SessionToken.Type
+const SessionTokenParts = [SessionId, ".", SessionSecret] as const
+
+export const SessionToken = Schema.TemplateLiteral(SessionTokenParts).pipe(
+  Schema.brand("SessionToken")
+)
+
+export const SessionTokenParser =
+  Schema.TemplateLiteralParser(SessionTokenParts)
 
 export class Session extends Schema.Class<Session>("Session")({
   id: SessionId,
+  userId: UserId,
   secretHash: SessionSecretHash,
   lastVerifiedAt: Schema.Date,
   createdAt: Schema.Date,
@@ -75,3 +93,21 @@ export class ParsedSessionToken extends Schema.Class<ParsedSessionToken>(
     return SessionToken.make(`${this.id}.${this.secret}`)
   }
 }
+
+export const CookieAttributes = Schema.Struct({
+  secure: Schema.Boolean,
+  path: Schema.String,
+  domain: Schema.String,
+  sameSite: Schema.Literals(["lax", "strict", "none"]),
+  httpOnly: Schema.Boolean,
+  maxAge: Schema.Number,
+  expires: Schema.Date,
+})
+
+export class SessionCookie extends Schema.Class<SessionCookie>("SessionCookie")(
+  {
+    name: Schema.String,
+    value: Schema.String,
+    attributes: CookieAttributes,
+  }
+) {}

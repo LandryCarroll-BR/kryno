@@ -1,4 +1,4 @@
-import { SessionId } from "@/models/session-value-objects"
+import { SessionId } from "@/session/session.models"
 import { Schema } from "effect"
 
 export class InvalidSessionTokenError extends Schema.ErrorClass<InvalidSessionTokenError>(

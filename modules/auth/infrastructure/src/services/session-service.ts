@@ -24,11 +24,12 @@ export const SessionServiceLive = Layer.effect(
       ),
 
       hashSecret: Effect.fn("session-service/hash-secret")(function* (secret) {
-        const digest = yield* Effect.promise(() =>
-          crypto.subtle.digest("SHA-256", textEncoder.encode(secret))
+        const secretBytes = textEncoder.encode(secret)
+        const secretHashBuffer = yield* Effect.promise(() =>
+          crypto.subtle.digest("SHA-256", secretBytes)
         )
 
-        return SessionSecretHash.make(new Uint8Array(digest))
+        return SessionSecretHash.make(new Uint8Array(secretHashBuffer))
       }),
     }
   })
