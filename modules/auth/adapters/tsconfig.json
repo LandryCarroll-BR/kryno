@@ -2,6 +2,10 @@
   "extends": "@workspace/tsconfig/effect.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@workspace/auth/*": ["./src/*"]
+    },
     "types": ["vitest/globals", "node"]
   },
   "include": ["src/**/*.ts", "test/**/*.ts"]

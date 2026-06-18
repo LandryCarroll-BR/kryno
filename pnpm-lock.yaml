@@ -116,6 +116,34 @@ importers:
         specifier: ^4.0.15
         version: 4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
 
+  modules/auth/component:
+    dependencies:
+      '@auth/application':
+        specifier: workspace:*
+        version: link:../application
+      '@auth/infrastructure':
+        specifier: workspace:*
+        version: link:../infrastructure
+      effect:
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70
+    devDependencies:
+      '@effect/vitest':
+        specifier: 4.0.0-beta.69
+        version: 4.0.0-beta.69(effect@4.0.0-beta.70)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))
+      '@types/node':
+        specifier: ^25.1.0
+        version: 25.9.1
+      '@workspace/tsconfig':
+        specifier: workspace:*
+        version: link:../../../packages/tsconfig
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.15
+        version: 4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
+
   modules/auth/infrastructure:
     dependencies:
       '@auth/application':
@@ -3431,6 +3459,7 @@ packages:
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
+    deprecated: unmaintained
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0

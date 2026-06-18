@@ -1,5 +1,4 @@
-import type { Session } from "@/session/session.models"
-import type { SessionId } from "@/session/session.models"
+import type { Session, SessionId } from "../models/session.models"
 import { Effect, Option } from "effect"
 import { Service } from "effect/Context"
 

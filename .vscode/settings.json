@@ -7,7 +7,6 @@
     "**/.hg": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
-    ".agents": true,
     ".env.example": true,
     ".gitignore": true,
     ".npmrc": true,
@@ -26,10 +25,17 @@
     ".pnpm-store": true,
     "node_modules": true,
     "tooling": true,
-    "modules/auth/src/application/session/session-output-boundary.ts": true
+    ".agents": true,
+    "modules/auth/application/node_modules": true,
+    "modules/auth/application/.turbo": true,
+    "modules/auth/infrastructure/.turbo": true,
+    "modules/auth/infrastructure/node_modules": true,
+    "modules/auth/component/node_modules": true,
+    "modules/auth/component/.turbo": true,
+    "modules/auth/adapters/.turbo": true,
+    "modules/auth/adapters/node_modules": true
   },
   "hide-files.files": [
-    ".agents",
     ".env.example",
     ".gitignore",
     ".npmrc",
@@ -48,6 +54,14 @@
     ".pnpm-store",
     "node_modules",
     "tooling",
-    "modules/auth/src/application/session/session-output-boundary.ts"
+    ".agents",
+    "modules/auth/application/node_modules",
+    "modules/auth/application/.turbo",
+    "modules/auth/infrastructure/.turbo",
+    "modules/auth/infrastructure/node_modules",
+    "modules/auth/component/node_modules",
+    "modules/auth/component/.turbo",
+    "modules/auth/adapters/.turbo",
+    "modules/auth/adapters/node_modules"
   ]
 }

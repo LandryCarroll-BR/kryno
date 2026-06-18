@@ -1,9 +1,10 @@
 import { DateTime, Effect, Equivalence, Schema } from "effect"
 
-import { UserId } from "@/user/user.models"
+import { SecureRandomString } from "./identity.models"
+import { UserId } from "./user.models"
 
 export type SessionId = typeof SessionId.Type
-export const SessionId = Schema.NonEmptyString.pipe(Schema.brand("SessionId"))
+export const SessionId = SecureRandomString.pipe(Schema.brand("SessionId"))
 
 export type SessionSecretHash = typeof SessionSecretHash.Type
 export const SessionSecretHash = Schema.Uint8Array.pipe(
@@ -11,7 +12,7 @@ export const SessionSecretHash = Schema.Uint8Array.pipe(
 )
 
 export type SessionSecret = typeof SessionSecret.Type
-export const SessionSecret = Schema.NonEmptyString.pipe(
+export const SessionSecret = SecureRandomString.pipe(
   Schema.brand("SessionSecret")
 )
 
