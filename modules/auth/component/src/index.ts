@@ -1,25 +1,18 @@
-import {
-  IdentityServiceLive,
-  SessionInMemoryRepository,
-  SessionServiceLive,
-  UserInMemoryRepository,
-  UserServiceLive,
-} from "@auth/infrastructure"
-
-import { SignUpInputBoundary, SignUpInteractor } from "@auth/application"
 import { Effect, Layer } from "effect"
 import { Service } from "effect/Context"
+import { SignUpUseCase } from "@auth/application"
+import { InfrastructureLayer } from "@auth/infrastructure"
 
 export class Auth extends Service<
   Auth,
   {
-    signUp: SignUpInputBoundary["Service"]["execute"]
+    signUp: SignUpUseCase["Service"]["execute"]
   }
 >()("@auth/component/index/auth") {
   static Live = Layer.effect(
     Auth,
     Effect.gen(function* () {
-      const signUp = yield* SignUpInputBoundary
+      const signUp = yield* SignUpUseCase
       return {
         signUp: signUp.execute,
       }
@@ -27,17 +20,9 @@ export class Auth extends Service<
   )
 }
 
-const InfrastructureLayers = Layer.mergeAll(
-  IdentityServiceLive,
-  SessionInMemoryRepository,
-  SessionServiceLive,
-  UserInMemoryRepository,
-  UserServiceLive
+const ApplicationLayer = Layer.provideMerge(
+  SignUpUseCase.Live,
+  InfrastructureLayer
 )
 
-const ApplicationLayers = Layer.provideMerge(
-  SignUpInteractor,
-  InfrastructureLayers
-)
-
-export const AuthLayer = Auth.Live.pipe(Layer.provide(ApplicationLayers))
+export const AuthLayer = Auth.Live.pipe(Layer.provide(ApplicationLayer))

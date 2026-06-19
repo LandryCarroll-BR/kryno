@@ -7,5 +7,6 @@ export class UserRepository extends Service<
   {
     createUser: (user: User) => Effect.Effect<User>
     findByUsername: (username: string) => Effect.Effect<Option.Option<User>>
+    findByEmail: (email: string) => Effect.Effect<Option.Option<User>>
   }
 >()("@auth/application/user/user.repositories/UserRepository") {}

@@ -94,21 +94,3 @@ export class ParsedSessionToken extends Schema.Class<ParsedSessionToken>(
     return SessionToken.make(`${this.id}.${this.secret}`)
   }
 }
-
-export const CookieAttributes = Schema.Struct({
-  secure: Schema.Boolean,
-  path: Schema.String,
-  domain: Schema.String,
-  sameSite: Schema.Literals(["lax", "strict", "none"]),
-  httpOnly: Schema.Boolean,
-  maxAge: Schema.Number,
-  expires: Schema.Date,
-})
-
-export class SessionCookie extends Schema.Class<SessionCookie>("SessionCookie")(
-  {
-    name: Schema.String,
-    value: Schema.String,
-    attributes: CookieAttributes,
-  }
-) {}

@@ -12,6 +12,4 @@ export * from "./services/identity.service"
 export * from "./services/session.service"
 export * from "./services/user.service"
 
-export * from "./use-cases/sign-up/sign-up.input-boundary"
-export * from "./use-cases/sign-up/sign-up.interactor"
-export * from "./use-cases/sign-up/sign-up.output-boundary"
+export * from "./use-cases/sign-up.use-case"

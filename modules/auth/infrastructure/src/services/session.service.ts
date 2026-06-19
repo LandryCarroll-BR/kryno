@@ -1,10 +1,5 @@
 import { Effect, Layer } from "effect"
-
-import {
-  SessionService,
-  SessionSecretHash,
-  SessionCookie,
-} from "@auth/application"
+import { SessionService, SessionSecretHash } from "@auth/application"
 
 export const SessionServiceLive = Layer.effect(
   SessionService,
@@ -20,23 +15,6 @@ export const SessionServiceLive = Layer.effect(
           )
 
           return SessionSecretHash.make(new Uint8Array(secretHashBuffer))
-        }
-      ),
-      createSessionCookie: Effect.fn("session-service/create-session-cookie")(
-        function* (session) {
-          return SessionCookie.make({
-            name: "session",
-            value: session.token,
-            attributes: {
-              secure: true,
-              httpOnly: true,
-              sameSite: "strict",
-              domain: "localhost",
-              expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 1 week
-              maxAge: 60 * 60 * 24 * 7, // 1 week in seconds
-              path: "/",
-            },
-          })
         }
       ),
     }

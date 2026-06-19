@@ -33,7 +33,12 @@
     "modules/auth/component/node_modules": true,
     "modules/auth/component/.turbo": true,
     "modules/auth/adapters/.turbo": true,
-    "modules/auth/adapters/node_modules": true
+    "modules/auth/adapters/node_modules": true,
+    "modules/auth/adapters/web/.turbo": true,
+    "modules/auth/adapters/web/node_modules": true,
+    "modules/auth/adapters/next/node_modules": true,
+    "modules/auth/adapters/next/.turbo": true,
+    "packages/next-effect/node_modules": true
   },
   "hide-files.files": [
     ".env.example",
@@ -62,6 +67,11 @@
     "modules/auth/component/node_modules",
     "modules/auth/component/.turbo",
     "modules/auth/adapters/.turbo",
-    "modules/auth/adapters/node_modules"
+    "modules/auth/adapters/node_modules",
+    "modules/auth/adapters/web/.turbo",
+    "modules/auth/adapters/web/node_modules",
+    "modules/auth/adapters/next/node_modules",
+    "modules/auth/adapters/next/.turbo",
+    "packages/next-effect/node_modules"
   ]
 }

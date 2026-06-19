@@ -1,0 +1,77 @@
+@reference "tailwindcss";
+
+.form {
+  @apply w-full max-w-md rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-[0_24px_70px_-28px_rgba(24,24,27,0.35)] sm:p-8 dark:border-zinc-800 dark:bg-zinc-950;
+}
+
+.header {
+  @apply mb-7 flex items-center gap-4;
+}
+
+.icon {
+  @apply flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/20;
+}
+
+.icon svg {
+  @apply size-6;
+}
+
+.title {
+  @apply text-xl font-semibold tracking-tight text-zinc-950 dark:text-white;
+}
+
+.subtitle {
+  @apply mt-1 text-sm leading-5 text-zinc-500 dark:text-zinc-400;
+}
+
+.formError {
+  @apply mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300;
+}
+
+.fields {
+  @apply space-y-4;
+}
+
+.field {
+  @apply flex flex-col;
+}
+
+.label {
+  @apply mb-1.5 text-sm font-medium text-zinc-800 dark:text-zinc-200;
+}
+
+.input {
+  @apply h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50/70 px-3.5 text-[15px] text-zinc-950 transition duration-200 outline-none placeholder:text-zinc-400 hover:border-zinc-300 hover:bg-white focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900/70 dark:text-white dark:placeholder:text-zinc-600 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:focus:border-indigo-500 dark:focus:bg-zinc-950;
+}
+
+.input[aria-invalid="true"] {
+  @apply border-red-400 bg-red-50/50 focus:border-red-500 focus:ring-red-500/10 dark:border-red-800 dark:bg-red-950/20;
+}
+
+.fieldError {
+  @apply mt-1.5 text-xs font-medium text-red-600 dark:text-red-400;
+}
+
+.button {
+  @apply mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-zinc-950 px-4 text-sm font-semibold text-white shadow-lg shadow-zinc-950/15 transition duration-200 hover:-translate-y-0.5 hover:bg-indigo-600 hover:shadow-indigo-600/20 focus-visible:ring-4 focus-visible:ring-indigo-500/25 focus-visible:outline-none active:translate-y-0 disabled:pointer-events-none disabled:opacity-60 dark:bg-white dark:text-zinc-950 dark:shadow-none dark:hover:bg-indigo-400;
+}
+
+.arrow {
+  @apply size-4 transition-transform duration-200;
+}
+
+.button:hover .arrow {
+  @apply translate-x-0.5;
+}
+
+.spinner {
+  @apply size-4 animate-spin rounded-full border-2 border-current border-t-transparent;
+}
+
+.terms {
+  @apply mt-5 text-center text-xs leading-5 text-zinc-400 dark:text-zinc-500;
+}
+
+.terms a {
+  @apply font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-2 transition hover:text-indigo-600 dark:text-zinc-300 dark:decoration-zinc-700 dark:hover:text-indigo-400;
+}

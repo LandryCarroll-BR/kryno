@@ -1,16 +1,16 @@
-import { SessionId } from "../models/session.models"
-import { Schema } from "effect"
+import type { SessionId } from "../models/session.models"
+import { Data } from "effect"
 
-export class InvalidSessionTokenError extends Schema.ErrorClass<InvalidSessionTokenError>(
+export class InvalidSessionTokenError extends Data.TaggedError(
   "InvalidSessionTokenError"
-)({}) {}
+) {}
 
-export class SessionNotFoundError extends Schema.ErrorClass<SessionNotFoundError>(
+export class SessionNotFoundError extends Data.TaggedError(
   "SessionNotFoundError"
-)({
-  sessionId: SessionId,
-}) {}
+)<{
+  readonly sessionId: SessionId
+}> {}
 
-export class InvalidSessionSecretHashError extends Schema.ErrorClass<InvalidSessionSecretHashError>(
+export class InvalidSessionSecretHashError extends Data.TaggedError(
   "InvalidSessionSecretHashError"
-)({}) {}
+) {}

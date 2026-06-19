@@ -27,6 +27,16 @@ export const UserInMemoryRepository = Layer.effect(
           return user ? Option.some(user) : Option.none()
         }
       ),
+      findByEmail: Effect.fn("user-in-memory-repository/find-by-email")(
+        function* (email: string) {
+          const current = yield* Ref.get(store)
+          const user = Array.from(current.values()).find(
+            (user) => user.email === email
+          )
+
+          return user ? Option.some(user) : Option.none()
+        }
+      ),
     }
   })
 )
