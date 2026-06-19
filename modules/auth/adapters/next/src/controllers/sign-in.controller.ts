@@ -68,17 +68,17 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
           confirmPassword: formData.get("confirmPassword"),
         })
 
-        const result = yield* auth.signIn({
+        const session = yield* auth.signIn({
           email: parsedInput.email,
           password: parsedInput.password,
         })
 
-        cookies.set("authToken", result.session.token, {
+        cookies.set("authToken", session.token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
           expires: new Date(
-            result.session.lastVerifiedAt.getTime() + 7 * 24 * 60 * 60 * 1000
+            session.lastVerifiedAt.getTime() + 7 * 24 * 60 * 60 * 1000
           ), // 7 days
         })
 

@@ -27,7 +27,7 @@ export class SignUpUseCase extends Service<
     execute: (
       input: SignUpInput
     ) => Effect.Effect<
-      { user: User; session: SessionWithToken },
+      SessionWithToken,
       UserEmailAlreadyExistsError | UsernameAlreadyExistsError
     >
   }
@@ -79,9 +79,7 @@ export class SignUpUseCase extends Service<
           const user = yield* userRepository.createUser(newUser)
 
           // Create a new session for the user and return the session cookie
-          const session = yield* createSession({ userId: user.id })
-
-          return { session, user }
+          return yield* createSession({ userId: user.id })
         }),
       }
     })

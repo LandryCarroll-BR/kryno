@@ -3,7 +3,6 @@ import { Service } from "effect/Context"
 
 import type { SessionWithToken } from "../models/session.models"
 import { CreateSessionFactory } from "../factories/create-session.factory"
-import { User } from "../models/user.models"
 import { UserRepository } from "../repositories/user.repository"
 import { UserService } from "../services/user.service"
 
@@ -25,7 +24,7 @@ export class SignInUseCase extends Service<
     execute: (
       input: SignInInput
     ) => Effect.Effect<
-      { user: User; session: SessionWithToken },
+      SessionWithToken,
       UserEmailNotFoundError | UserPasswordInvalidError
     >
   }
@@ -58,11 +57,9 @@ export class SignInUseCase extends Service<
             })
           }
 
-          const session = yield* createSession({
+          return yield* createSession({
             userId: existingUser.value.id,
           })
-
-          return { session, user: existingUser.value }
         }),
       }
     })
