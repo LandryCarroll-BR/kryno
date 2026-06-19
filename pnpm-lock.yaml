@@ -32,6 +32,9 @@ importers:
       '@auth/adapters-next':
         specifier: workspace:*
         version: link:../../modules/auth/adapters/next
+      '@packages/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       effect:
         specifier: 4.0.0-beta.70
         version: 4.0.0-beta.70
@@ -211,9 +214,6 @@ importers:
       '@base-ui/react':
         specifier: ^1.5.0
         version: 1.5.0(@date-fns/tz@1.5.0)(@types/react@19.2.15)(date-fns@4.3.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@fontsource-variable/instrument-sans':
-        specifier: ^5.2.8
-        version: 5.2.8
       '@fontsource-variable/outfit':
         specifier: ^5.2.8
         version: 5.2.8
@@ -879,9 +879,6 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
-
-  '@fontsource-variable/instrument-sans@5.2.8':
-    resolution: {integrity: sha512-mTCaukbdIjjoipj2E3Q5XoZM3ZxJWdzyHevf/LG/0PHlfF9Q85pxOM7B7A9MerFyxmRzz5kVlumgIvgDSG4CPg==}
 
   '@fontsource-variable/outfit@5.2.8':
     resolution: {integrity: sha512-4oUDCZx/Tcz6HZP423w/niqEH31Gks5IsqHV2ZZz1qKHaVIZdj2f0/S1IK2n8jl6Xo0o3N+3RjNHlV9R73ozQA==}
@@ -5417,8 +5414,6 @@ snapshots:
       react-dom: 19.2.6(react@19.2.6)
 
   '@floating-ui/utils@0.2.11': {}
-
-  '@fontsource-variable/instrument-sans@5.2.8': {}
 
   '@fontsource-variable/outfit@5.2.8': {}
 
