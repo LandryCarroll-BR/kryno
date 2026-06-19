@@ -1,5 +1,6 @@
 "use server"
 
+import { SIGN_UP_REDIRECT_PATH } from "@/config/constants"
 import {
   AuthRuntime,
   SignUpController,
@@ -14,8 +15,10 @@ export async function signUp(
   formData: FormData
 ): Promise<SignUpViewModel> {
   return AuthRuntime.runPromise(
-    SignUpController({ previousState, formData, redirectUrl }).pipe(
-      Effect.flatMap(({ handle }) => handle())
-    )
+    SignUpController({
+      previousState,
+      formData,
+      redirectUrl: redirectUrl || SIGN_UP_REDIRECT_PATH,
+    }).pipe(Effect.flatMap(({ handle }) => handle()))
   )
 }

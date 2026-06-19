@@ -8,6 +8,6 @@ allowBuilds:
   msgpackr-extract: true
   msw: true
   sharp: true
-  unrs-resolver: set this to true or false
+  unrs-resolver: true
 minimumReleaseAgeExclude:
   - shadcn@4.8.1
