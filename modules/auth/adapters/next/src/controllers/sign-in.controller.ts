@@ -77,6 +77,9 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
+          expires: new Date(
+            result.session.lastVerifiedAt.getTime() + 7 * 24 * 60 * 60 * 1000
+          ), // 7 days
         })
 
         if (redirectUrl) {
