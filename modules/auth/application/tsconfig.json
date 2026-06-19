@@ -1,5 +1,5 @@
 {
-  "extends": "@workspace/tsconfig/effect.json",
+  "extends": "@packages/tsconfig/effect.json",
   "compilerOptions": {
     "baseUrl": ".",
     "types": ["vitest/globals", "node"]
