@@ -36,7 +36,7 @@ export class Session extends Schema.Class<Session>("Session")({
   readonly ACTIVITY_CHECK_INTERVAL_SECONDS = 60 * 60 // 1 hour
   readonly INACTIVITY_TIMEOUT_SECONDS = 60 * 60 * 24 * 10 // 10 days
 
-  isExpired = Effect.fn("session/is-expired")(function* (this: Session) {
+  isExpired = Effect.fn("Session.isExpired")(function* (this: Session) {
     const now = yield* DateTime.nowAsDate
     return (
       now.getTime() - this.lastVerifiedAt.getTime() >=
@@ -44,7 +44,7 @@ export class Session extends Schema.Class<Session>("Session")({
     )
   })
 
-  isInactive = Effect.fn("session/is-inactive")(function* (this: Session) {
+  isInactive = Effect.fn("Session.isInactive")(function* (this: Session) {
     const now = yield* DateTime.nowAsDate
     return (
       now.getTime() - this.lastVerifiedAt.getTime() >=
@@ -81,7 +81,7 @@ export class ParsedSessionToken extends Schema.Class<ParsedSessionToken>(
   id: SessionId,
   secret: SessionSecret,
 }) {
-  static fromString = Effect.fn("parsed-session-token/from-string")(function* (
+  static fromString = Effect.fn("ParsedSessionToken.fromString")(function* (
     token: string
   ) {
     const [id, _, secret] =

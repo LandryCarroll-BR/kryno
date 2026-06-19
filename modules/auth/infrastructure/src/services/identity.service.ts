@@ -6,7 +6,7 @@ export const IdentityServiceLive = Layer.effect(
   Effect.gen(function* () {
     return {
       generateSecureRandomString: Effect.fn(
-        "identity-service/generate-secure-random-string"
+        "IdentityService.generateSecureRandomString"
       )(function* () {
         // Human readable alphabet (a-z, 0-9 without l, o, 0, 1 to avoid confusion)
         const alphabet = "abcdefghijkmnpqrstuvwxyz23456789"

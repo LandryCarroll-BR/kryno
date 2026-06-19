@@ -6,7 +6,7 @@ export const UserServiceLive = Layer.effect(
   Effect.gen(function* () {
     const textEncoder = new TextEncoder()
     return {
-      hashPassword: Effect.fn("user-service/hash-password")(function* (
+      hashPassword: Effect.fn("UserService.hashPassword")(function* (
         password: string
       ) {
         const passwordBytes = textEncoder.encode(password)
@@ -16,7 +16,7 @@ export const UserServiceLive = Layer.effect(
 
         return PasswordHash.make(new Uint8Array(passwordHashBuffer))
       }),
-      validatePasswords: Effect.fn("user-service/validate-passwords")(
+      validatePasswords: Effect.fn("UserService.validatePasswords")(
         function* ({ password, passwordHash }) {
           const passwordBytes = textEncoder.encode(password)
           const passwordHashBuffer = yield* Effect.promise(() =>

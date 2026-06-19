@@ -29,9 +29,9 @@ const PasswordSchema = Schema.String.pipe(
 export const SignInControllerInputSchema = Schema.Struct({
   email: EmailSchema,
   password: PasswordSchema,
-})
+}).annotate({ identifier: "SignInControllerInput" })
 
-export const SignInController = Effect.fn("SignInController")(function* ({
+export const SignInController = Effect.fn("SignInController.make")(function* ({
   previousState,
   formData,
   redirectUrl,
@@ -54,7 +54,7 @@ export const SignInController = Effect.fn("SignInController")(function* ({
   }
 
   return {
-    handle: Effect.fn("SignInController/execute")(
+    handle: Effect.fn("SignInController.handle")(
       function* () {
         const from = headers.get("Referer")
           ? new URL(headers.get("Referer")!).pathname

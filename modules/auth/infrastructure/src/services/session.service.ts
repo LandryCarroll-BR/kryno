@@ -7,7 +7,7 @@ export const SessionServiceLive = Layer.effect(
     const textEncoder = new TextEncoder()
 
     return {
-      hashSessionSecret: Effect.fn("session-service/hash-secret")(
+      hashSessionSecret: Effect.fn("SessionService.hashSessionSecret")(
         function* (secret) {
           const secretBytes = textEncoder.encode(secret)
           const secretHashBuffer = yield* Effect.promise(() =>

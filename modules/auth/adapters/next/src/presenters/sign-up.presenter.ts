@@ -20,7 +20,7 @@ export class SignUpPresenter extends Service<
     ) => SignUpViewModel
     presentUnexpectedError: (prev: SignUpViewModel) => SignUpViewModel
   }
->()("@auth/adapters-web/presenters/sign-up-presenter") {
+>()("@auth/adapters-next/SignUpPresenter") {
   static Live = Layer.effect(
     SignUpPresenter,
     Effect.gen(function* () {

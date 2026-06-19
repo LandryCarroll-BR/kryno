@@ -15,7 +15,7 @@ import {
 export const SignInInputSchema = Schema.Struct({
   email: Schema.NonEmptyString,
   password: Schema.NonEmptyString,
-})
+}).annotate({ identifier: "SignInInput" })
 
 export type SignInInput = typeof SignInInputSchema.Type
 
@@ -29,7 +29,7 @@ export class SignInUseCase extends Service<
       UserEmailNotFoundError | UserPasswordInvalidError
     >
   }
->()("@workspace/auth/application/use-cases/sign-in-input-boundary") {
+>()("@auth/application/SignInUseCase") {
   static Live = Layer.effect(
     SignInUseCase,
     Effect.gen(function* () {
@@ -38,9 +38,7 @@ export class SignInUseCase extends Service<
       const createSession = yield* CreateSessionFactory
 
       return {
-        execute: Effect.fn(
-          "@workspace/auth/application/use-cases/sign-up-SignInInputBoundary/execute"
-        )(function* (input) {
+        execute: Effect.fn("SignInUseCase.execute")(function* (input) {
           // Check if the email already exists
           const existingUser = yield* userRepository.findByEmail(input.email)
           if (Option.isNone(existingUser)) {

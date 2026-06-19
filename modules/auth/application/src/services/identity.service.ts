@@ -7,4 +7,4 @@ export class IdentityService extends Service<
   {
     generateSecureRandomString: () => Effect.Effect<SecureRandomString>
   }
->()("@workspace/auth/application/services/identity-service") {}
+>()("@auth/application/IdentityService") {}

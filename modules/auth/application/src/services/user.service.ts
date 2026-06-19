@@ -12,4 +12,4 @@ export class UserService extends Service<
       passwordHash: PasswordHash
     }) => Effect.Effect<boolean>
   }
->()("@workspace/auth/application/services/user-service") {}
+>()("@auth/application/UserService") {}

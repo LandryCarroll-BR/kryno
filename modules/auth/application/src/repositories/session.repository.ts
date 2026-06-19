@@ -10,4 +10,4 @@ export class SessionRepository extends Service<
     findById: (id: SessionId) => Effect.Effect<Option.Option<Session>>
     delete: (id: SessionId) => Effect.Effect<SessionId>
   }
->()("@workspace/auth/application/repositories/session-repository") {}
+>()("@auth/application/SessionRepository") {}

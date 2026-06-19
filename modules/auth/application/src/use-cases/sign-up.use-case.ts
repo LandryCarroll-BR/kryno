@@ -17,7 +17,7 @@ export const SignUpInputSchema = Schema.Struct({
   email: Schema.NonEmptyString,
   username: Schema.NonEmptyString,
   password: Schema.NonEmptyString,
-})
+}).annotate({ identifier: "SignUpInput" })
 
 export type SignUpInput = typeof SignUpInputSchema.Type
 
@@ -31,7 +31,7 @@ export class SignUpUseCase extends Service<
       UserEmailAlreadyExistsError | UsernameAlreadyExistsError
     >
   }
->()("@workspace/auth/application/use-cases/sign-up-input-boundary") {
+>()("@auth/application/SignUpUseCase") {
   static Live = Layer.effect(
     SignUpUseCase,
     Effect.gen(function* () {
@@ -41,9 +41,7 @@ export class SignUpUseCase extends Service<
       const createSession = yield* CreateSessionFactory
 
       return {
-        execute: Effect.fn(
-          "@workspace/auth/application/use-cases/sign-up-signUpInputBoundary/execute"
-        )(function* (input) {
+        execute: Effect.fn("SignUpUseCase.execute")(function* (input) {
           // Check if the username already exists
           const existingUser = yield* userRepository.findByUsername(
             input.username

@@ -52,10 +52,11 @@ export const SignUpControllerInputSchema = Schema.Struct({
             issue: "confirmPassword must match password",
           }
     )
-  )
+  ),
+  Schema.annotate({ identifier: "SignUpControllerInput" })
 )
 
-export const SignUpController = Effect.fn("SignUpController")(function* ({
+export const SignUpController = Effect.fn("SignUpController.make")(function* ({
   previousState,
   formData,
   redirectUrl,
@@ -80,7 +81,7 @@ export const SignUpController = Effect.fn("SignUpController")(function* ({
   }
 
   return {
-    handle: Effect.fn("SignUpController/execute")(
+    handle: Effect.fn("SignUpController.handle")(
       function* () {
         const from = headers.get("Referer")
           ? new URL(headers.get("Referer")!).pathname

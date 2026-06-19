@@ -10,4 +10,4 @@ export class SessionService extends Service<
       secret: SessionSecret
     ) => Effect.Effect<SessionSecretHash>
   }
->()("@workspace/auth/application/services/session-service") {}
+>()("@auth/application/SessionService") {}

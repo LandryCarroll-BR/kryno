@@ -9,7 +9,7 @@ export class Auth extends Service<
     signUp: SignUpUseCase["Service"]["execute"]
     signIn: SignInUseCase["Service"]["execute"]
   }
->()("@auth/component/index/auth") {
+>()("@auth/component/Auth") {
   static Live = Layer.effect(
     Auth,
     Effect.gen(function* () {

@@ -19,7 +19,7 @@ export const ValidateSessionFactory = Effect.gen(function* () {
   const sessionRepository = yield* SessionRepository
   const sessionService = yield* SessionService
 
-  return Effect.fn("session-interactor/validate-session")(function* (params: {
+  return Effect.fn("ValidateSession.execute")(function* (params: {
     token: SessionToken
   }) {
     const { id: sessionId, secret: sessionSecret } =
