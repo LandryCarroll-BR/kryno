@@ -1,5 +1,21 @@
 import { Data } from "effect"
 
+export class UserEmailNotFoundError extends Data.TaggedError(
+  "UserEmailNotFoundError"
+)<{
+  readonly email: string
+}> {
+  override message: string = `No user found with the email "${this.email}".`
+}
+
+export class UserPasswordInvalidError extends Data.TaggedError(
+  "UserPasswordInvalidError"
+)<{
+  readonly email: string
+}> {
+  override message: string = `The password provided for the email "${this.email}" is invalid.`
+}
+
 export class UserEmailAlreadyExistsError extends Data.TaggedError(
   "UserEmailAlreadyExistsError"
 )<{

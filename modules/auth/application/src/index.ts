@@ -13,3 +13,4 @@ export * from "./services/session.service"
 export * from "./services/user.service"
 
 export * from "./use-cases/sign-up.use-case"
+export * from "./use-cases/sign-in.use-case"

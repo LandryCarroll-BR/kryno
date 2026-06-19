@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "effect": "4.0.0-beta.70",
+    "@auth/application": "workspace:*",
     "@auth/component": "workspace:*",
     "@auth/infrastructure": "workspace:*",
     "@packages/next-effect": "workspace:*"

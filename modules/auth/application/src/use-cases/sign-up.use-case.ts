@@ -3,14 +3,15 @@ import { Service } from "effect/Context"
 
 import type { SessionWithToken } from "../models/session.models"
 import { CreateSessionFactory } from "../factories/create-session.factory"
-import {
-  UserEmailAlreadyExistsError,
-  UsernameAlreadyExistsError,
-} from "../errors/user.errors"
 import { User, UserId } from "../models/user.models"
 import { IdentityService } from "../services/identity.service"
 import { UserRepository } from "../repositories/user.repository"
 import { UserService } from "../services/user.service"
+
+import {
+  UserEmailAlreadyExistsError,
+  UsernameAlreadyExistsError,
+} from "../errors/user.errors"
 
 export const SignUpInputSchema = Schema.Struct({
   email: Schema.NonEmptyString,

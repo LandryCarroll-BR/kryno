@@ -7,5 +7,9 @@ export class UserService extends Service<
   UserService,
   {
     hashPassword: (password: string) => Effect.Effect<PasswordHash>
+    validatePasswords: (params: {
+      password: string
+      passwordHash: PasswordHash
+    }) => Effect.Effect<boolean>
   }
 >()("@workspace/auth/application/services/user-service") {}
