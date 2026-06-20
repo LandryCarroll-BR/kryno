@@ -57,7 +57,9 @@ export const SessionDBRepository = Layer.effect(
           .limit(1)
           .pipe(Effect.orDie)
 
-        return Option.fromNullishOr(session).pipe(Option.map(Session.make))
+        return Option.fromNullishOr(session).pipe(
+          Option.map((session) => Session.make(session))
+        )
       }),
 
       delete: Effect.fn("SessionRepository.delete")(function* (

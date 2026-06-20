@@ -14,9 +14,6 @@
     ".prettierrc": true,
     "AGENTS.md": true,
     "CLAUDE.md": true,
-    "docker-compose.yml": true,
-    "package.json": true,
-    "pnpm-lock.yaml": true,
     "README.md": true,
     "tsconfig.json": true,
     "turbo.json": true,
@@ -29,7 +26,6 @@
     "modules/auth/application/node_modules": true,
     "modules/auth/application/.turbo": true,
     "modules/auth/infrastructure/.turbo": true,
-    "modules/auth/infrastructure/node_modules": true,
     "modules/auth/component/node_modules": true,
     "modules/auth/component/.turbo": true,
     "modules/auth/adapters/.turbo": true,
@@ -54,7 +50,9 @@
     "packages/effect-drizzle/.turbo": true,
     "packages/effect-drizzle/node_modules": true,
     "packages/effect-next/node_modules": true,
-    "packages/effect-next/.turbo": true
+    "packages/effect-next/.turbo": true,
+    "pnpm-lock.yaml": true,
+    "modules/auth/infrastructure/node_modules": true
   },
   "hide-files.files": [
     ".env.example",
@@ -64,9 +62,6 @@
     ".prettierrc",
     "AGENTS.md",
     "CLAUDE.md",
-    "docker-compose.yml",
-    "package.json",
-    "pnpm-lock.yaml",
     "README.md",
     "tsconfig.json",
     "turbo.json",
@@ -79,7 +74,6 @@
     "modules/auth/application/node_modules",
     "modules/auth/application/.turbo",
     "modules/auth/infrastructure/.turbo",
-    "modules/auth/infrastructure/node_modules",
     "modules/auth/component/node_modules",
     "modules/auth/component/.turbo",
     "modules/auth/adapters/.turbo",
@@ -104,6 +98,8 @@
     "packages/effect-drizzle/.turbo",
     "packages/effect-drizzle/node_modules",
     "packages/effect-next/node_modules",
-    "packages/effect-next/.turbo"
+    "packages/effect-next/.turbo",
+    "pnpm-lock.yaml",
+    "modules/auth/infrastructure/node_modules"
   ]
 }

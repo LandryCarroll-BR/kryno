@@ -184,6 +184,9 @@ importers:
       '@types/node':
         specifier: ^25.1.0
         version: 25.9.1
+      drizzle-kit:
+        specifier: 1.0.0-rc.4-5d5b77c
+        version: 1.0.0-rc.4-5d5b77c
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -327,9 +330,6 @@ importers:
       '@types/pg':
         specifier: ^8.20.0
         version: 8.20.0
-      drizzle-kit:
-        specifier: 1.0.0-beta.22
-        version: 1.0.0-beta.22
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2873,8 +2873,8 @@ packages:
     resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
     engines: {node: '>=12'}
 
-  drizzle-kit@1.0.0-beta.22:
-    resolution: {integrity: sha512-9HTZuQRljQKTgCx4UhiGn8KYYfHGk4+B/bRR1714W67kz0qgJvdrG527i8rQD8uUyET9UTGR1u8syySJD4znGw==}
+  drizzle-kit@1.0.0-rc.4-5d5b77c:
+    resolution: {integrity: sha512-cDQOQXacxeaQl0Ib18EfPwVMyfvvybuOBj/f/WclmuGZtxHOTOMTpJ/3qEpoXe8+lCDRagCpS3w1wYQyUmT9wg==}
     hasBin: true
 
   drizzle-orm@1.0.0-rc.4-5d5b77c:
@@ -7365,7 +7365,7 @@ snapshots:
 
   dotenv@17.4.2: {}
 
-  drizzle-kit@1.0.0-beta.22:
+  drizzle-kit@1.0.0-rc.4-5d5b77c:
     dependencies:
       '@drizzle-team/brocli': 0.11.0
       '@js-temporal/polyfill': 0.5.1

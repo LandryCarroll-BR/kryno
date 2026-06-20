@@ -4,14 +4,15 @@ services:
     container_name: kryno-postgres
     environment:
       POSTGRES_DB: kryno
-      POSTGRES_USER: kryno
-      POSTGRES_PASSWORD: kryno
+      POSTGRES_USER: kryno_admin
+      POSTGRES_PASSWORD: kryno_admin
     ports:
       - "5432:5432"
     volumes:
       - kryno-postgres-data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kryno -d kryno"]
+      test: ["CMD-SHELL", "pg_isready -U kryno_admin -d kryno"]
       interval: 5s
       timeout: 5s
       retries: 10

@@ -39,7 +39,9 @@ export const UserDBRepository = Layer.effect(
           .limit(1)
           .pipe(Effect.orDie)
 
-        return Option.fromNullishOr(user).pipe(Option.map(User.make))
+        return Option.fromNullishOr(user).pipe(
+          Option.map((user) => User.make(user))
+        )
       }),
 
       findByEmail: Effect.fn("UserRepository.findByEmail")(function* (
@@ -52,7 +54,9 @@ export const UserDBRepository = Layer.effect(
           .limit(1)
           .pipe(Effect.orDie)
 
-        return Option.fromNullishOr(user).pipe(Option.map(User.make))
+        return Option.fromNullishOr(user).pipe(
+          Option.map((user) => User.make(user))
+        )
       }),
     }
   })
