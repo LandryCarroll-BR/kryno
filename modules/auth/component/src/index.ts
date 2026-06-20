@@ -12,9 +12,9 @@ import {
 export class Auth extends Service<
   Auth,
   {
-    signUp: SignUpUseCase["Service"]["execute"]
-    signIn: SignInUseCase["Service"]["execute"]
-    validateSession: ValidateSessionUseCase["Service"]["execute"]
+    readonly signUp: SignUpUseCase["Service"]["execute"]
+    readonly signIn: SignInUseCase["Service"]["execute"]
+    readonly validateSession: ValidateSessionUseCase["Service"]["execute"]
   }
 >()("@auth/component/Auth") {
   static Live = Layer.effect(

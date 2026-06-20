@@ -17,7 +17,7 @@ export const CreateSessionFactory = Effect.gen(function* () {
   const sessionRepository = yield* SessionRepository
   const identityService = yield* IdentityService
 
-  return Effect.fn("CreateSession.execute")(function* (params: {
+  return Effect.fn("CreateSessionFactory.create")(function* (params: {
     userId: UserId
   }) {
     const now = yield* DateTime.nowAsDate

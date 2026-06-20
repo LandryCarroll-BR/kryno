@@ -1,5 +1,5 @@
-import { IdentityService } from "@auth/application"
 import { Effect, Layer } from "effect"
+import { IdentityService } from "@auth/application"
 
 export const IdentityServiceLive = Layer.effect(
   IdentityService,

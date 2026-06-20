@@ -1,7 +1,8 @@
+import { bytea } from "drizzle-orm/pg-core"
 import type { PasswordHash, Role, UserId } from "@auth/application"
-import { bytea, pgTable } from "drizzle-orm/pg-core"
+import { authSchema } from "./auth.schema"
 
-export const usersTable = pgTable("users", (t) => ({
+export const usersTable = authSchema.table("users", (t) => ({
   id: t.char({ length: 24 }).$type<UserId>().primaryKey(),
   username: t.text().notNull().unique(),
   email: t.text().notNull().unique(),

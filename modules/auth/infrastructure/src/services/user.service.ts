@@ -1,5 +1,5 @@
-import { PasswordHash, UserService } from "@auth/application"
 import { Effect, Layer } from "effect"
+import { PasswordHash, UserService } from "@auth/application"
 
 export const UserServiceLive = Layer.effect(
   UserService,

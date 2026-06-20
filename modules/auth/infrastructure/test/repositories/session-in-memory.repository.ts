@@ -7,7 +7,7 @@ export const SessionInMemoryRepository = Layer.effect(
     const store = yield* Ref.make(new Map<string, Session>())
 
     return {
-      create: Effect.fn("SessionInMemoryRepository.create")(
+      create: Effect.fn("SessionRepository.create")(
         function* (session) {
           return yield* Ref.modify(store, (current) => {
             const next = new Map(current)
@@ -18,7 +18,7 @@ export const SessionInMemoryRepository = Layer.effect(
         }
       ),
 
-      update: Effect.fn("SessionInMemoryRepository.update")(
+      update: Effect.fn("SessionRepository.update")(
         function* (session) {
           return yield* Ref.modify(store, (current) => {
             const next = new Map(current)
@@ -29,14 +29,14 @@ export const SessionInMemoryRepository = Layer.effect(
         }
       ),
 
-      findById: Effect.fn("SessionInMemoryRepository.findById")(
+      findById: Effect.fn("SessionRepository.findById")(
         function* (sessionId) {
           const current = yield* Ref.get(store)
           return Option.fromNullishOr(current.get(sessionId))
         }
       ),
 
-      delete: Effect.fn("SessionInMemoryRepository.delete")(
+      delete: Effect.fn("SessionRepository.delete")(
         function* (sessionId) {
           return yield* Ref.modify(store, (current) => {
             const next = new Map(current)

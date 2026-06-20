@@ -9,18 +9,20 @@ import type { SchemaError } from "effect/Schema"
 export class SignInPresenter extends Service<
   SignInPresenter,
   {
-    presentSuccess: (prev: SignInViewModel) => SignInViewModel
-    presentInputParseError: (
+    readonly presentSuccess: (prev: SignInViewModel) => SignInViewModel
+    readonly presentInputParseError: (
       prev: SignInViewModel,
       error: SchemaError
     ) => SignInViewModel
-    presentError: (
+    readonly presentError: (
       prev: SignInViewModel,
       error: UserEmailNotFoundError | UserPasswordInvalidError
     ) => SignInViewModel
-    presentUnexpectedError: (prev: SignInViewModel) => SignInViewModel
+    readonly presentUnexpectedError: (
+      prev: SignInViewModel
+    ) => SignInViewModel
   }
->()("@auth/adapters-next/SignInPresenter") {
+>()("@auth/adapters/next/SignInPresenter") {
   static Live = Layer.effect(
     SignInPresenter,
     Effect.gen(function* () {

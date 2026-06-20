@@ -1,16 +1,17 @@
-import { DB } from "@/db/context"
-import { usersTable } from "@/schemas/user.schema"
-import { User, UserRepository } from "@auth/application"
-import { eq } from "drizzle-orm"
 import { Effect, Layer, Option } from "effect"
+import { eq } from "drizzle-orm"
+import { User, UserRepository } from "@auth/application"
+
+import { AuthDB } from "../db/context"
+import { usersTable } from "../schemas/user.schema"
 
 export const UserDBRepository = Layer.effect(
   UserRepository,
   Effect.gen(function* () {
-    const db = yield* DB
+    const db = yield* AuthDB
 
     return {
-      createUser: Effect.fn("UserDBRepository.createUser")(function* (
+      createUser: Effect.fn("UserRepository.createUser")(function* (
         user: User
       ) {
         yield* db
@@ -28,7 +29,7 @@ export const UserDBRepository = Layer.effect(
         return user
       }),
 
-      findByUsername: Effect.fn("UserDBRepository.findByUsername")(function* (
+      findByUsername: Effect.fn("UserRepository.findByUsername")(function* (
         username: string
       ) {
         const [user] = yield* db
@@ -41,7 +42,7 @@ export const UserDBRepository = Layer.effect(
         return Option.fromNullishOr(user).pipe(Option.map(User.make))
       }),
 
-      findByEmail: Effect.fn("UserDBRepository.findByEmail")(function* (
+      findByEmail: Effect.fn("UserRepository.findByEmail")(function* (
         email: string
       ) {
         const [user] = yield* db

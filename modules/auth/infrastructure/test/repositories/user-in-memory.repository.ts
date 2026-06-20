@@ -7,7 +7,7 @@ export const UserInMemoryRepository = Layer.effect(
     const store = yield* Ref.make(new Map<string, User>())
 
     return {
-      createUser: Effect.fn("UserInMemoryRepository.createUser")(function* (
+      createUser: Effect.fn("UserRepository.createUser")(function* (
         user: User
       ) {
         return yield* Ref.modify(store, (current) => {
@@ -17,7 +17,7 @@ export const UserInMemoryRepository = Layer.effect(
           return [user, next]
         })
       }),
-      findByUsername: Effect.fn("UserInMemoryRepository.findByUsername")(
+      findByUsername: Effect.fn("UserRepository.findByUsername")(
         function* (username: string) {
           const current = yield* Ref.get(store)
           const user = Array.from(current.values()).find(
@@ -27,7 +27,7 @@ export const UserInMemoryRepository = Layer.effect(
           return user ? Option.some(user) : Option.none()
         }
       ),
-      findByEmail: Effect.fn("UserInMemoryRepository.findByEmail")(function* (
+      findByEmail: Effect.fn("UserRepository.findByEmail")(function* (
         email: string
       ) {
         const current = yield* Ref.get(store)

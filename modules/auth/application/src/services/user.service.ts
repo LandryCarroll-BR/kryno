@@ -6,8 +6,8 @@ import type { PasswordHash } from "../models/user.models"
 export class UserService extends Service<
   UserService,
   {
-    hashPassword: (password: string) => Effect.Effect<PasswordHash>
-    validatePasswords: (params: {
+    readonly hashPassword: (password: string) => Effect.Effect<PasswordHash>
+    readonly validatePasswords: (params: {
       password: string
       passwordHash: PasswordHash
     }) => Effect.Effect<boolean>

@@ -5,9 +5,9 @@ import { Service } from "effect/Context"
 export class SessionRepository extends Service<
   SessionRepository,
   {
-    create: (session: Session) => Effect.Effect<Session>
-    update: (session: Session) => Effect.Effect<Session>
-    findById: (id: SessionId) => Effect.Effect<Option.Option<Session>>
-    delete: (id: SessionId) => Effect.Effect<SessionId>
+    readonly create: (session: Session) => Effect.Effect<Session>
+    readonly update: (session: Session) => Effect.Effect<Session>
+    readonly findById: (id: SessionId) => Effect.Effect<Option.Option<Session>>
+    readonly delete: (id: SessionId) => Effect.Effect<SessionId>
   }
 >()("@auth/application/SessionRepository") {}

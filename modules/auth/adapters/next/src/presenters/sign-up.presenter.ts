@@ -9,18 +9,20 @@ import type { SchemaError } from "effect/Schema"
 export class SignUpPresenter extends Service<
   SignUpPresenter,
   {
-    presentSuccess: (prev: SignUpViewModel) => SignUpViewModel
-    presentInputParseError: (
+    readonly presentSuccess: (prev: SignUpViewModel) => SignUpViewModel
+    readonly presentInputParseError: (
       prev: SignUpViewModel,
       error: SchemaError
     ) => SignUpViewModel
-    presentError: (
+    readonly presentError: (
       prev: SignUpViewModel,
       error: UsernameAlreadyExistsError | UserEmailAlreadyExistsError
     ) => SignUpViewModel
-    presentUnexpectedError: (prev: SignUpViewModel) => SignUpViewModel
+    readonly presentUnexpectedError: (
+      prev: SignUpViewModel
+    ) => SignUpViewModel
   }
->()("@auth/adapters-next/SignUpPresenter") {
+>()("@auth/adapters/next/SignUpPresenter") {
   static Live = Layer.effect(
     SignUpPresenter,
     Effect.gen(function* () {

@@ -25,7 +25,7 @@ export type ValidateSessionInput = typeof ValidateSessionInputSchema.Type
 export class ValidateSessionUseCase extends Service<
   ValidateSessionUseCase,
   {
-    execute: (
+    readonly execute: (
       input: ValidateSessionInput
     ) => Effect.Effect<
       Option.Option<Session>,
@@ -42,7 +42,7 @@ export class ValidateSessionUseCase extends Service<
       const sessionService = yield* SessionService
 
       return {
-        execute: Effect.fn("ValidateSession.execute")(function* (input) {
+        execute: Effect.fn("ValidateSessionUseCase.execute")(function* (input) {
           const token = Schema.decodeUnknownEffect(SessionToken)(input.token)
           const { id: sessionId, secret: sessionSecret } =
             yield* ParsedSessionToken.fromString(token.toString()).pipe(

@@ -1,16 +1,17 @@
-import { DB } from "@/db/context"
-import { sessionsTable } from "@/schemas/session.schema"
-import { Session, type SessionId, SessionRepository } from "@auth/application"
-import { eq } from "drizzle-orm"
 import { Effect, Layer, Option } from "effect"
+import { eq } from "drizzle-orm"
+import { Session, type SessionId, SessionRepository } from "@auth/application"
+
+import { AuthDB } from "../db/context"
+import { sessionsTable } from "../schemas/session.schema"
 
 export const SessionDBRepository = Layer.effect(
   SessionRepository,
   Effect.gen(function* () {
-    const db = yield* DB
+    const db = yield* AuthDB
 
     return {
-      create: Effect.fn("SessionDBRepository.create")(function* (
+      create: Effect.fn("SessionRepository.create")(function* (
         session: Session
       ) {
         yield* db
@@ -28,7 +29,7 @@ export const SessionDBRepository = Layer.effect(
         return session
       }),
 
-      update: Effect.fn("SessionDBRepository.update")(function* (
+      update: Effect.fn("SessionRepository.update")(function* (
         session: Session
       ) {
         yield* db
@@ -46,7 +47,7 @@ export const SessionDBRepository = Layer.effect(
         return session
       }),
 
-      findById: Effect.fn("SessionDBRepository.findById")(function* (
+      findById: Effect.fn("SessionRepository.findById")(function* (
         sessionId: SessionId
       ) {
         const [session] = yield* db
@@ -59,7 +60,7 @@ export const SessionDBRepository = Layer.effect(
         return Option.fromNullishOr(session).pipe(Option.map(Session.make))
       }),
 
-      delete: Effect.fn("SessionDBRepository.delete")(function* (
+      delete: Effect.fn("SessionRepository.delete")(function* (
         sessionId: SessionId
       ) {
         yield* db

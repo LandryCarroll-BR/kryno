@@ -24,7 +24,7 @@ export type SignUpInput = typeof SignUpInputSchema.Type
 export class SignUpUseCase extends Service<
   SignUpUseCase,
   {
-    execute: (
+    readonly execute: (
       input: SignUpInput
     ) => Effect.Effect<
       SessionWithToken,

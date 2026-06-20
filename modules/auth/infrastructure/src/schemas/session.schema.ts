@@ -1,14 +1,24 @@
+import { bytea } from "drizzle-orm/pg-core"
+
 import type {
   Role,
   SessionId,
   SessionSecretHash,
   UserId,
 } from "@auth/application"
-import { bytea, pgTable } from "drizzle-orm/pg-core"
 
-export const sessionsTable = pgTable("sessions", (t) => ({
+import { authSchema } from "./auth.schema"
+import { usersTable } from "./user.schema"
+
+export const sessionsTable = authSchema.table("sessions", (t) => ({
   id: t.char({ length: 24 }).$type<SessionId>().primaryKey(),
-  userId: t.char({ length: 24 }).$type<UserId>().notNull(),
+  userId: t
+    .char({ length: 24 })
+    .$type<UserId>()
+    .notNull()
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    }),
   role: t
     .text({ enum: ["user", "admin"] })
     .$type<Role>()

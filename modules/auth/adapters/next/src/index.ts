@@ -17,5 +17,4 @@ export const PresenterLayer = Layer.mergeAll(
 
 export const AdapterLayer = Layer.mergeAll(AuthLayer, PresenterLayer)
 
-// @ts-expect-error - This is the main runtime for the adapter, which will be used in the Next.js Adpater. It can be merged with other runtimes if needed.
 export const AuthAdapterRuntime = ManagedRuntime.make(AdapterLayer)

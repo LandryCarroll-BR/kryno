@@ -6,7 +6,7 @@ import { SessionSecret, SessionSecretHash } from "../models/session.models"
 export class SessionService extends Service<
   SessionService,
   {
-    hashSessionSecret: (
+    readonly hashSessionSecret: (
       secret: SessionSecret
     ) => Effect.Effect<SessionSecretHash>
   }
