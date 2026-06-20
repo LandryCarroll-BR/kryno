@@ -38,7 +38,16 @@
     "modules/auth/adapters/web/node_modules": true,
     "modules/auth/adapters/next/node_modules": true,
     "modules/auth/adapters/next/.turbo": true,
-    "packages/next-effect/node_modules": true
+    "packages/next-effect/node_modules": true,
+    "apps/web/.next": true,
+    "apps/web/.turbo": true,
+    "apps/web/node_modules": true,
+    "apps/web/.gitignore": true,
+    "apps/web/AGENTS.md": true,
+    "apps/web/CLAUDE.md": true,
+    "apps/web/eslint.config.mjs": true,
+    "apps/web/next-env.d.ts": true,
+    "apps/web/postcss.config.mjs": true
   },
   "hide-files.files": [
     ".env.example",
@@ -72,6 +81,15 @@
     "modules/auth/adapters/web/node_modules",
     "modules/auth/adapters/next/node_modules",
     "modules/auth/adapters/next/.turbo",
-    "packages/next-effect/node_modules"
+    "packages/next-effect/node_modules",
+    "apps/web/.next",
+    "apps/web/.turbo",
+    "apps/web/node_modules",
+    "apps/web/.gitignore",
+    "apps/web/AGENTS.md",
+    "apps/web/CLAUDE.md",
+    "apps/web/eslint.config.mjs",
+    "apps/web/next-env.d.ts",
+    "apps/web/postcss.config.mjs"
   ]
 }
