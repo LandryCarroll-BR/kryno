@@ -1,7 +1,7 @@
 import { DateTime, Effect, Equivalence, Schema } from "effect"
 
 import { SecureRandomString } from "./identity.models"
-import { UserId } from "./user.models"
+import { Role, UserId } from "./user.models"
 
 export type SessionId = typeof SessionId.Type
 export const SessionId = SecureRandomString.pipe(Schema.brand("SessionId"))
@@ -29,6 +29,7 @@ export const SessionTokenParser =
 export class Session extends Schema.Class<Session>("Session")({
   id: SessionId,
   userId: UserId,
+  role: Role,
   secretHash: SessionSecretHash,
   lastVerifiedAt: Schema.Date,
   createdAt: Schema.Date,

@@ -1,5 +1,5 @@
 import { SecureRandomString } from "./identity.models"
-import { Schema } from "effect"
+import { Effect, Schema } from "effect"
 
 export type UserId = typeof UserId.Type
 export const UserId = SecureRandomString.pipe(Schema.brand("UserId"))
@@ -7,10 +7,16 @@ export const UserId = SecureRandomString.pipe(Schema.brand("UserId"))
 export type PasswordHash = typeof PasswordHash.Type
 export const PasswordHash = Schema.Uint8Array.pipe(Schema.brand("PasswordHash"))
 
+export const Role = Schema.Literals(["user", "admin"]).pipe(
+  Schema.withConstructorDefault(Effect.succeed("user"))
+)
+export type Role = typeof Role.Type
+
 export class User extends Schema.Class<User>("User")({
   id: UserId,
   username: Schema.String,
   email: Schema.String,
   passwordHash: PasswordHash,
   createdAt: Schema.Date,
+  role: Role,
 }) {}
