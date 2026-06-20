@@ -47,7 +47,14 @@
     "apps/web/CLAUDE.md": true,
     "apps/web/eslint.config.mjs": true,
     "apps/web/next-env.d.ts": true,
-    "apps/web/postcss.config.mjs": true
+    "apps/web/postcss.config.mjs": true,
+    "packages/ui/.turbo": true,
+    "packages/ui/node_modules": true,
+    "packages/next-effect/.turbo": true,
+    "packages/effect-drizzle/.turbo": true,
+    "packages/effect-drizzle/node_modules": true,
+    "packages/effect-next/node_modules": true,
+    "packages/effect-next/.turbo": true
   },
   "hide-files.files": [
     ".env.example",
@@ -90,6 +97,13 @@
     "apps/web/CLAUDE.md",
     "apps/web/eslint.config.mjs",
     "apps/web/next-env.d.ts",
-    "apps/web/postcss.config.mjs"
+    "apps/web/postcss.config.mjs",
+    "packages/ui/.turbo",
+    "packages/ui/node_modules",
+    "packages/next-effect/.turbo",
+    "packages/effect-drizzle/.turbo",
+    "packages/effect-drizzle/node_modules",
+    "packages/effect-next/node_modules",
+    "packages/effect-next/.turbo"
   ]
 }

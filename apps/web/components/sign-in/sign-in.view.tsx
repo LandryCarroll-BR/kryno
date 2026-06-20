@@ -4,6 +4,8 @@ import { use, useActionState } from "react"
 import type { SignInViewModel } from "@auth/adapters-next"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
+import { Input } from "@packages/ui/components/input"
+
 import {
   Card,
   CardContent,
@@ -11,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@packages/ui/components/card"
+
 import {
   Field,
   FieldDescription,
@@ -18,7 +21,6 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@packages/ui/components/field"
-import { Input } from "@packages/ui/components/input"
 
 const initialState = {
   status: "idle",
@@ -42,6 +44,10 @@ export function SignInView({
   const params = searchParams && use(searchParams)
   const signIn = action.bind(null, params?.from)
   const [state, formAction, pending] = useActionState(signIn, initialState)
+
+  const signUpUrl = params?.from
+    ? `/sign-up?from=${encodeURIComponent(params.from)}`
+    : "/sign-up"
 
   return (
     <Card className="w-[min(28rem,calc(100vw-2rem))]">
@@ -101,7 +107,7 @@ export function SignInView({
                 {pending ? "Signing in…" : "Sign in"}
               </Button>
               <FieldDescription className="text-center">
-                Don&apos;t have an account? <a href="/sign-up">Sign up</a>
+                Don&apos;t have an account? <a href={signUpUrl}>Sign up</a>
               </FieldDescription>
             </Field>
           </FieldGroup>

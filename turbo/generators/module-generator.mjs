@@ -90,7 +90,7 @@ const packageJson = (name, packageName) => {
       [`@${name}/application`]: "workspace:*",
       [`@${name}/component`]: "workspace:*",
       [`@${name}/infrastructure`]: "workspace:*",
-      "@packages/next-effect": "workspace:*",
+      "@packages/effect-next": "workspace:*",
     },
     devDependencies,
   }
@@ -166,7 +166,8 @@ export function scaffoldModule({
     SOURCE_DIRECTORIES
   )) {
     const packageRoot = join(moduleRoot, packagePath)
-    const packageName = packagePath === "adapters/next" ? "adapters-next" : packagePath
+    const packageName =
+      packagePath === "adapters/next" ? "adapters-next" : packagePath
 
     mkdirSync(join(packageRoot, "src"), { recursive: true })
     mkdirSync(join(packageRoot, "test"), { recursive: true })

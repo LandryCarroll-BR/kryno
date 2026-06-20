@@ -1,5 +1,5 @@
 import { Effect, Schema } from "effect"
-import { Headers, Navigation } from "@packages/next-effect"
+import { Headers, Navigation } from "@packages/effect-next"
 import { Auth } from "@auth/component"
 
 import {
