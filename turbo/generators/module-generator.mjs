@@ -5,12 +5,13 @@ import { spawnSync } from "node:child_process"
 export const MODULE_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 const EFFECT_VERSION = "4.0.0-beta.70"
-const EFFECT_VITEST_VERSION = "4.0.0-beta.69"
+const EFFECT_VITEST_VERSION = "4.0.0-beta.70"
+const DRIZZLE_VERSION = "1.0.0-rc.4-5d5b77c"
 const NODE_TYPES_VERSION = "^25.1.0"
 const TYPESCRIPT_VERSION = "^5.9.3"
 const VITEST_VERSION = "^4.0.15"
 
-const SOURCE_DIRECTORIES = {
+const PLACEHOLDER_DIRECTORIES = {
   application: [
     "src/errors",
     "src/factories",
@@ -19,12 +20,22 @@ const SOURCE_DIRECTORIES = {
     "src/services",
     "src/use-cases",
   ],
-  infrastructure: ["src/repositories", "src/services"],
+  infrastructure: ["src/repositories", "src/services", "test/repositories"],
   component: [],
   "adapters/next": ["src/controllers", "src/presenters"],
 }
 
 const json = (value) => `${JSON.stringify(value, null, 2)}\n`
+
+const words = (name) => name.split("-")
+const capitalize = (value) => `${value[0].toUpperCase()}${value.slice(1)}`
+const pascalCase = (name) => words(name).map(capitalize).join("")
+const camelCase = (name) => {
+  const [first, ...rest] = words(name)
+  return `${first}${rest.map(capitalize).join("")}`
+}
+const databaseName = (name) => words(name).join("_")
+const envPrefix = (name) => databaseName(name).toUpperCase()
 
 const packageJson = (name, packageName) => {
   const common = {
@@ -39,6 +50,23 @@ const packageJson = (name, packageName) => {
     exports: {
       ".": "./src/index.ts",
     },
+  }
+
+  if (packageName === "application") {
+    common.exports = {
+      ...common.exports,
+      "./errors/*": "./src/errors/*",
+      "./factories/*": "./src/factories/*",
+      "./models/*": "./src/models/*",
+      "./repositories/*": "./src/repositories/*",
+      "./services/*": "./src/services/*",
+      "./use-cases/*": "./src/use-cases/*",
+    }
+  } else {
+    common.exports = {
+      ...common.exports,
+      "./test": "./test/index.ts",
+    }
   }
 
   const devDependencies = {
@@ -62,11 +90,22 @@ const packageJson = (name, packageName) => {
   if (packageName === "infrastructure") {
     return {
       ...common,
+      scripts: {
+        ...common.scripts,
+        "db:generate": "drizzle-kit generate --config drizzle.config.ts",
+        "db:migrate": "drizzle-kit migrate --config drizzle.config.ts",
+        "db:studio": "drizzle-kit studio --config drizzle.config.ts",
+      },
       dependencies: {
         effect: EFFECT_VERSION,
+        "drizzle-orm": DRIZZLE_VERSION,
         [`@${name}/application`]: "workspace:*",
+        "@packages/effect-drizzle": "workspace:*",
       },
-      devDependencies,
+      devDependencies: {
+        ...devDependencies,
+        "drizzle-kit": DRIZZLE_VERSION,
+      },
     }
   }
 
@@ -96,12 +135,12 @@ const packageJson = (name, packageName) => {
   }
 }
 
-const tsconfig = (withPaths) =>
+const tsconfig = (packagePath) =>
   json({
     extends: "@packages/tsconfig/effect.json",
     compilerOptions: {
       baseUrl: ".",
-      ...(withPaths
+      ...(packagePath === "component" || packagePath === "adapters/next"
         ? {
             paths: {
               "@/*": ["./src/*"],
@@ -110,7 +149,11 @@ const tsconfig = (withPaths) =>
         : {}),
       types: ["vitest/globals", "node"],
     },
-    include: ["src/**/*.ts", "test/**/*.ts"],
+    include: [
+      "src/**/*.ts",
+      "test/**/*.ts",
+      ...(packagePath === "infrastructure" ? ["drizzle.config.ts"] : []),
+    ],
   })
 
 const vitestConfig = `import { defineConfig } from "vitest/config"
@@ -122,6 +165,89 @@ export default defineConfig({
   },
 })
 `
+
+const drizzleConfig = (name) => {
+  const schema = databaseName(name)
+  const environment = envPrefix(name)
+
+  return `import "dotenv/config"
+import { defineConfig } from "drizzle-kit"
+
+export default defineConfig({
+  schemaFilter: ["${schema}"],
+  dialect: "postgresql",
+  schema: "./src/schemas/*.schema.ts",
+  out: "./migrations",
+  migrations: {
+    schema: "${schema}",
+    table: "__drizzle_migrations",
+  },
+  dbCredentials: {
+    url: process.env.${environment}_DATABASE_URL!,
+  },
+})
+`
+}
+
+const bootstrapSql = (name) => {
+  const database = databaseName(name)
+
+  return `CREATE ROLE ${database}_role LOGIN PASSWORD '${database}_local';
+
+GRANT CONNECT, CREATE ON DATABASE kryno TO ${database}_role;
+`
+}
+
+const schema = (name) => {
+  const database = databaseName(name)
+  const variable = camelCase(name)
+
+  return `import { snakeCase } from "drizzle-orm/pg-core"
+
+export const ${variable}Schema = snakeCase.schema("${database}").existing()
+`
+}
+
+const relations = `import { defineRelations } from "drizzle-orm"
+
+export const relations = defineRelations({})
+`
+
+const databaseContext = (name) => {
+  const service = `${pascalCase(name)}DB`
+  const environment = envPrefix(name)
+
+  return `import { Config, Context, Effect, Layer } from "effect"
+import * as PgDrizzle from "drizzle-orm/effect-postgres"
+import { PgClientFactory } from "@packages/effect-drizzle"
+
+import { relations } from "../schemas/relations.schema"
+
+const dbEffect = PgDrizzle.make({ relations }).pipe(
+  Effect.provide(PgDrizzle.DefaultServices)
+)
+
+export class ${service} extends Context.Service<
+  ${service},
+  Effect.Success<typeof dbEffect>
+>()("@${name}/infrastructure/${service}") {}
+
+const ${service}Live = Layer.effect(${service}, dbEffect)
+
+const PgClientLive = PgClientFactory.create(
+  Config.redacted("${environment}_DATABASE_URL")
+)
+
+export const ${service}ContextLive = ${service}Live.pipe(
+  Layer.provide(PgClientLive)
+)
+`
+}
+
+const infrastructureIndex = (name) => {
+  const service = `${pascalCase(name)}DB`
+  return `export { ${service}, ${service}ContextLive } from "./db/context"\n`
+}
 
 export function validateModuleName(name, root = process.cwd()) {
   if (typeof name !== "string" || !MODULE_NAME_PATTERN.test(name)) {
@@ -162,8 +288,8 @@ export function scaffoldModule({
 
   const moduleRoot = join(root, "modules", name)
 
-  for (const [packagePath, sourceDirectories] of Object.entries(
-    SOURCE_DIRECTORIES
+  for (const [packagePath, placeholderDirectories] of Object.entries(
+    PLACEHOLDER_DIRECTORIES
   )) {
     const packageRoot = join(moduleRoot, packagePath)
     const packageName =
@@ -172,22 +298,50 @@ export function scaffoldModule({
     mkdirSync(join(packageRoot, "src"), { recursive: true })
     mkdirSync(join(packageRoot, "test"), { recursive: true })
 
-    for (const directory of sourceDirectories) {
+    for (const directory of placeholderDirectories) {
       mkdirSync(join(packageRoot, directory), { recursive: true })
       writeFileSync(join(packageRoot, directory, ".gitkeep"), "")
     }
 
-    writeFileSync(join(packageRoot, "src", "index.ts"), "")
-    writeFileSync(join(packageRoot, "test", ".gitkeep"), "")
+    const hasTestEntrypoint = packagePath !== "application"
+
+    writeFileSync(
+      join(packageRoot, "src", "index.ts"),
+      packagePath === "infrastructure" ? infrastructureIndex(name) : ""
+    )
+    writeFileSync(
+      join(packageRoot, "test", hasTestEntrypoint ? "index.ts" : ".gitkeep"),
+      hasTestEntrypoint ? "export {}\n" : ""
+    )
     writeFileSync(
       join(packageRoot, "package.json"),
       json(packageJson(name, packageName))
     )
-    writeFileSync(
-      join(packageRoot, "tsconfig.json"),
-      tsconfig(packagePath !== "application")
-    )
+    writeFileSync(join(packageRoot, "tsconfig.json"), tsconfig(packagePath))
     writeFileSync(join(packageRoot, "vitest.config.ts"), vitestConfig)
+
+    if (packagePath === "infrastructure") {
+      mkdirSync(join(packageRoot, "src", "db"), { recursive: true })
+      mkdirSync(join(packageRoot, "src", "schemas"), { recursive: true })
+      writeFileSync(join(packageRoot, "bootstrap.sql"), bootstrapSql(name))
+      writeFileSync(join(packageRoot, "drizzle.config.ts"), drizzleConfig(name))
+      writeFileSync(
+        join(packageRoot, ".env"),
+        `${envPrefix(name)}_DATABASE_URL=postgres://${databaseName(name)}_role:${databaseName(name)}_local@localhost:5432/kryno\n`
+      )
+      writeFileSync(
+        join(packageRoot, "src", "db", "context.ts"),
+        databaseContext(name)
+      )
+      writeFileSync(
+        join(packageRoot, "src", "schemas", `${name}.schema.ts`),
+        schema(name)
+      )
+      writeFileSync(
+        join(packageRoot, "src", "schemas", "relations.schema.ts"),
+        relations
+      )
+    }
   }
 
   install(root)

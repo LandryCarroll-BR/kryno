@@ -52,7 +52,9 @@
     "packages/effect-next/node_modules": true,
     "packages/effect-next/.turbo": true,
     "pnpm-lock.yaml": true,
-    "modules/auth/infrastructure/node_modules": true
+    "modules/auth/infrastructure/node_modules": true,
+    "modules/climbing/infrastructure/.turbo": true,
+    "modules/climbing/infrastructure/node_modules": true
   },
   "hide-files.files": [
     ".env.example",
@@ -100,6 +102,8 @@
     "packages/effect-next/node_modules",
     "packages/effect-next/.turbo",
     "pnpm-lock.yaml",
-    "modules/auth/infrastructure/node_modules"
+    "modules/auth/infrastructure/node_modules",
+    "modules/climbing/infrastructure/.turbo",
+    "modules/climbing/infrastructure/node_modules"
   ]
 }

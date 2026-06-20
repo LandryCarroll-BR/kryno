@@ -2,15 +2,15 @@ import "dotenv/config"
 import { defineConfig } from "drizzle-kit"
 
 export default defineConfig({
-  schemaFilter: ["auth"],
+  schemaFilter: ["climbing"],
   dialect: "postgresql",
   schema: "./src/schemas/*.schema.ts",
   out: "./migrations",
   migrations: {
-    schema: "auth",
+    schema: "climbing",
     table: "__drizzle_migrations",
   },
   dbCredentials: {
-    url: process.env.AUTH_DATABASE_URL!,
+    url: process.env.CLIMBING_DATABASE_URL!,
   },
 })

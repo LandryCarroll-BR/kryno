@@ -1,15 +1,11 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "a34a0f7f-b607-4b0f-8194-db781b8ef4c0",
+  "id": "3759b64a-0c8d-436d-b763-bb0e9deb5851",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
   "ddl": [
-    {
-      "name": "auth",
-      "entityType": "schemas"
-    },
     {
       "isRlsEnabled": false,
       "name": "sessions",

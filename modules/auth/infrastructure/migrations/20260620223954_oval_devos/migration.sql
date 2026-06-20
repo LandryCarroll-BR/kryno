@@ -1,5 +1,3 @@
-CREATE SCHEMA "auth";
---> statement-breakpoint
 CREATE TABLE "auth"."sessions" (
 	"id" char(24) PRIMARY KEY,
 	"user_id" char(24) NOT NULL,

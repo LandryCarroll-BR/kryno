@@ -283,6 +283,12 @@ importers:
       '@climbing/application':
         specifier: workspace:*
         version: link:../application
+      '@packages/effect-drizzle':
+        specifier: workspace:*
+        version: link:../../../packages/effect-drizzle
+      drizzle-orm:
+        specifier: 1.0.0-rc.4-5d5b77c
+        version: 1.0.0-rc.4-5d5b77c(@effect/sql-pg@4.0.0-beta.70(effect@4.0.0-beta.70))(@types/pg@8.20.0)(effect@4.0.0-beta.70)(pg@8.22.0)(zod@3.25.76)
       effect:
         specifier: 4.0.0-beta.70
         version: 4.0.0-beta.70
@@ -296,6 +302,9 @@ importers:
       '@types/node':
         specifier: ^25.1.0
         version: 25.9.1
+      drizzle-kit:
+        specifier: 1.0.0-rc.4-5d5b77c
+        version: 1.0.0-rc.4-5d5b77c
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
