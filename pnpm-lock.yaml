@@ -165,6 +165,12 @@ importers:
       '@auth/application':
         specifier: workspace:*
         version: link:../application
+      '@packages/effect-drizzle':
+        specifier: workspace:*
+        version: link:../../../packages/effect-drizzle
+      drizzle-orm:
+        specifier: 1.0.0-beta.22
+        version: 1.0.0-beta.22(@effect/sql-pg@4.0.0-beta.70(effect@4.0.0-beta.70))(@types/pg@8.20.0)(pg@8.22.0)(zod@3.25.76)
       effect:
         specifier: 4.0.0-beta.70
         version: 4.0.0-beta.70

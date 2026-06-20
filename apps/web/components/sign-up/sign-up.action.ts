@@ -1,20 +1,16 @@
 "use server"
 
-import { SIGN_UP_REDIRECT_PATH } from "@/config/constants"
-import {
-  AuthRuntime,
-  SignUpController,
-  SignUpViewModel,
-} from "@auth/adapters-next"
-
 import { Effect } from "effect"
+import { SIGN_UP_REDIRECT_PATH } from "@/config/constants"
+import { SignUpController, SignUpViewModel } from "@auth/adapters-next"
+import { AuthAdapterTestRuntime } from "@auth/adapters-next/test"
 
 export async function signUp(
   redirectUrl: string | undefined,
   previousState: SignUpViewModel,
   formData: FormData
 ): Promise<SignUpViewModel> {
-  return AuthRuntime.runPromise(
+  return AuthAdapterTestRuntime.runPromise(
     SignUpController({
       previousState,
       formData,

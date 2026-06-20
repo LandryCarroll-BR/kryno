@@ -16,20 +16,19 @@ export const UserServiceLive = Layer.effect(
 
         return PasswordHash.make(new Uint8Array(passwordHashBuffer))
       }),
-      validatePasswords: Effect.fn("UserService.validatePasswords")(
-        function* ({ password, passwordHash }) {
-          const passwordBytes = textEncoder.encode(password)
-          const passwordHashBuffer = yield* Effect.promise(() =>
-            crypto.subtle.digest("SHA-256", passwordBytes)
-          )
+      validatePasswords: Effect.fn("UserService.validatePasswords")(function* ({
+        password,
+        passwordHash,
+      }) {
+        const passwordBytes = textEncoder.encode(password)
+        const passwordHashBuffer = yield* Effect.promise(() =>
+          crypto.subtle.digest("SHA-256", passwordBytes)
+        )
 
-          const computedHash = new Uint8Array(passwordHashBuffer)
+        const computedHash = new Uint8Array(passwordHashBuffer)
 
-          return computedHash.every(
-            (byte, index) => byte === passwordHash[index]
-          )
-        }
-      ),
+        return computedHash.every((byte, index) => byte === passwordHash[index])
+      }),
     }
   })
 )

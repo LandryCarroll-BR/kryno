@@ -6,6 +6,7 @@ import {
   SignUpUseCase,
   SignInUseCase,
   ValidateSessionUseCase,
+  ApplicationLayer,
 } from "@auth/application"
 
 export class Auth extends Service<
@@ -32,13 +33,6 @@ export class Auth extends Service<
   )
 }
 
-const ApplicationLayer = Layer.provideMerge(
-  Layer.mergeAll(
-    SignUpUseCase.Live,
-    SignInUseCase.Live,
-    ValidateSessionUseCase.Live
-  ),
-  InfrastructureLayer
-)
+const ComponentLayer = Layer.provideMerge(ApplicationLayer, InfrastructureLayer)
 
-export const AuthLayer = Auth.Live.pipe(Layer.provide(ApplicationLayer))
+export const AuthLayer = Auth.Live.pipe(Layer.provide(ComponentLayer))

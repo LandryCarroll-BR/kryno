@@ -10,10 +10,12 @@ export * from "./controllers/sign-up.controller"
 export * from "./presenters/sign-in.presenter"
 export * from "./presenters/sign-up.presenter"
 
-export const AppLayer = Layer.mergeAll(
-  AuthLayer,
+export const PresenterLayer = Layer.mergeAll(
   SignUpPresenter.Live,
   SignInPresenter.Live
 )
 
-export const AuthRuntime = ManagedRuntime.make(AppLayer)
+export const AdapterLayer = Layer.mergeAll(AuthLayer, PresenterLayer)
+
+// @ts-expect-error - This is the main runtime for the adapter, which will be used in the Next.js Adpater. It can be merged with other runtimes if needed.
+export const AuthAdapterRuntime = ManagedRuntime.make(AdapterLayer)
