@@ -1,7 +1,7 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "5cfe8463-5616-44c0-aa62-24eabae572f3",
+  "id": "a34a0f7f-b607-4b0f-8194-db781b8ef4c0",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
@@ -43,7 +43,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "userId",
+      "name": "user_id",
       "entityType": "columns",
       "schema": "auth",
       "table": "sessions"
@@ -69,7 +69,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "secretHash",
+      "name": "secret_hash",
       "entityType": "columns",
       "schema": "auth",
       "table": "sessions"
@@ -82,7 +82,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "lastVerifiedAt",
+      "name": "last_verified_at",
       "entityType": "columns",
       "schema": "auth",
       "table": "sessions"
@@ -95,7 +95,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "createdAt",
+      "name": "created_at",
       "entityType": "columns",
       "schema": "auth",
       "table": "sessions"
@@ -147,7 +147,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "passwordHash",
+      "name": "password_hash",
       "entityType": "columns",
       "schema": "auth",
       "table": "users"
@@ -160,7 +160,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "createdAt",
+      "name": "created_at",
       "entityType": "columns",
       "schema": "auth",
       "table": "users"
@@ -181,7 +181,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "userId"
+        "user_id"
       ],
       "schemaTo": "auth",
       "tableTo": "users",
@@ -190,7 +190,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
-      "name": "sessions_userId_users_id_fkey",
+      "name": "sessions_user_id_users_id_fkey",
       "entityType": "fks",
       "schema": "auth",
       "table": "sessions"

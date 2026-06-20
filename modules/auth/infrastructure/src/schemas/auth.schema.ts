@@ -1,3 +1,3 @@
-import { pgSchema } from "drizzle-orm/pg-core"
+import { snakeCase } from "drizzle-orm/pg-core"
 
-export const authSchema = pgSchema("auth")
+export const authSchema = snakeCase.schema("auth")

@@ -10,7 +10,7 @@ services:
       - "5432:5432"
     volumes:
       - kryno-postgres-data:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+      - ./modules/auth/infrastructure/bootstrap.sql:/docker-entrypoint-initdb.d/010-create-auth-role.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U kryno_admin -d kryno"]
       interval: 5s
