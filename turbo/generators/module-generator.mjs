@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, writeFileSync } from "node:fs"
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 import { spawnSync } from "node:child_process"
 
@@ -36,6 +36,79 @@ const camelCase = (name) => {
 }
 const databaseName = (name) => words(name).join("_")
 const envPrefix = (name) => databaseName(name).toUpperCase()
+
+const rootDatabaseScripts = (name) => ({
+  [`db:${name}:generate`]: `pnpm --filter @${name}/infrastructure run db:generate`,
+  [`db:${name}:migrate`]: `pnpm --filter @${name}/infrastructure run db:migrate`,
+  [`db:${name}:studio`]: `pnpm --filter @${name}/infrastructure run db:studio`,
+})
+
+export function updateRootPackageJson(name, root = process.cwd()) {
+  const packageJsonPath = join(root, "package.json")
+  const rootPackageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"))
+  const scripts = Object.entries(rootPackageJson.scripts ?? {})
+  const moduleScripts = rootDatabaseScripts(name)
+  const moduleScriptNames = new Set(Object.keys(moduleScripts))
+  const existingScripts = scripts.filter(
+    ([script]) => !moduleScriptNames.has(script)
+  )
+  const lastDatabaseScriptIndex = existingScripts.findLastIndex(([script]) =>
+    script.startsWith("db:")
+  )
+
+  existingScripts.splice(
+    lastDatabaseScriptIndex + 1,
+    0,
+    ...Object.entries(moduleScripts)
+  )
+
+  rootPackageJson.scripts = Object.fromEntries(existingScripts)
+  writeFileSync(packageJsonPath, json(rootPackageJson))
+}
+
+export function updateDockerCompose(name, root = process.cwd()) {
+  const composePath = join(root, "docker-compose.yml")
+  const compose = readFileSync(composePath, "utf8")
+  const moduleBootstrapPath = `./modules/${name}/infrastructure/bootstrap.sql`
+
+  if (compose.includes(moduleBootstrapPath)) {
+    return
+  }
+
+  const lines = compose.split("\n")
+  const postgresIndex = lines.findIndex((line) => line === "  postgres:")
+  const volumesIndex = lines.findIndex(
+    (line, index) => index > postgresIndex && line === "    volumes:"
+  )
+
+  if (postgresIndex === -1 || volumesIndex === -1) {
+    throw new Error("Could not find the postgres volumes in docker-compose.yml")
+  }
+
+  let volumesEndIndex = volumesIndex + 1
+  while (
+    volumesEndIndex < lines.length &&
+    (lines[volumesEndIndex].startsWith("      - ") ||
+      lines[volumesEndIndex].trim() === "")
+  ) {
+    volumesEndIndex += 1
+  }
+
+  const initScriptNumbers = lines
+    .slice(volumesIndex + 1, volumesEndIndex)
+    .map((line) => line.match(/\/docker-entrypoint-initdb\.d\/(\d+)-/)?.[1])
+    .filter(Boolean)
+    .map(Number)
+  const nextInitScriptNumber =
+    (initScriptNumbers.length === 0 ? 0 : Math.max(...initScriptNumbers)) + 10
+  const initScriptPrefix = String(nextInitScriptNumber).padStart(3, "0")
+  const bootstrapMount =
+    `      - ${moduleBootstrapPath}` +
+    `:/docker-entrypoint-initdb.d/${initScriptPrefix}-create-${name}-role.sql:ro`
+
+  lines.splice(volumesEndIndex, 0, bootstrapMount)
+  writeFileSync(composePath, lines.join("\n"))
+}
 
 const packageJson = (name, packageName) => {
   const common = {
@@ -344,6 +417,8 @@ export function scaffoldModule({
     }
   }
 
+  updateRootPackageJson(name, root)
+  updateDockerCompose(name, root)
   install(root)
 
   return moduleRoot

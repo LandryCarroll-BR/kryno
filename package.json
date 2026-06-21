@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "dev": "turbo dev",
     "build": "turbo build",
+    "test": "node --test test/*.test.mjs && turbo test",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v",
@@ -13,9 +15,7 @@
     "db:climbing:generate": "pnpm --filter @climbing/infrastructure run db:generate",
     "db:climbing:migrate": "pnpm --filter @climbing/infrastructure run db:migrate",
     "db:climbing:studio": "pnpm --filter @climbing/infrastructure run db:studio",
-    "dev": "turbo dev",
     "format": "turbo format",
-    "test": "node --test test/*.test.mjs && turbo test",
     "prepare": "effect-language-service patch",
     "typecheck": "turbo typecheck"
   },
