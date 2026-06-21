@@ -6,9 +6,6 @@ export function proxy(request: NextRequest) {
   // MISSING the `authToken` cookie. So if we get here, the user is unauthenticated.
   const loginUrl = new URL("/sign-in", request.url)
 
-  // Preserve where the user was trying to go so we can send them back after login.
-  loginUrl.searchParams.set("from", request.nextUrl.pathname)
-
   return NextResponse.redirect(loginUrl)
 }
 

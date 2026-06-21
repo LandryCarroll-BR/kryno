@@ -3,7 +3,7 @@ import { Auth } from "@auth/component"
 import { Headers, Navigation } from "@packages/effect-next"
 
 export const SignOutController = Effect.fn("SignOutController.make")(
-  function* ({ redirectUrl }: { redirectUrl?: string | undefined }) {
+  function* () {
     const auth = yield* Auth
     const cookies = yield* Headers.Cookies
 
@@ -12,11 +12,15 @@ export const SignOutController = Effect.fn("SignOutController.make")(
         const authToken = cookies.get("authToken")
 
         if (authToken?.value) {
-          cookies.delete({ name: "authToken", path: "/" })
-          yield* auth.signOut({ token: authToken.value })
+          yield* auth.signOut({ token: authToken.value }).pipe(
+            Effect.catchCause((cause) =>
+              Effect.logError("Failed to revoke session during sign-out", cause)
+            )
+          )
         }
 
-        return yield* Navigation.Redirect(redirectUrl || "/")
+        cookies.delete({ name: "authToken", path: "/" })
+        return yield* Navigation.Redirect("/sign-in")
       }),
     }
   }

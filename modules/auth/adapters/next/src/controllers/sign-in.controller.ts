@@ -34,11 +34,9 @@ export const SignInControllerInputSchema = Schema.Struct({
 export const SignInController = Effect.fn("SignInController.make")(function* ({
   previousState,
   formData,
-  redirectUrl,
 }: {
   previousState: SignInViewModel
   formData: FormData
-  redirectUrl?: string | undefined
 }) {
   const auth = yield* Auth
   const signInPresenter = yield* SignInPresenter
@@ -79,11 +77,7 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
           ), // 7 days
         })
 
-        if (redirectUrl) {
-          return yield* Navigation.Redirect(redirectUrl)
-        }
-
-        return yield* signInPresenter.presentSuccess(submittedState)
+        return yield* Navigation.Redirect("/dashboard")
       },
       Effect.catchTags({
         SchemaError: (error) =>

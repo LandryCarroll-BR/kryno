@@ -4,10 +4,8 @@ import { Button } from "@packages/ui/components/button"
 
 export function SignOutView({
   action,
-  redirectUrl,
 }: {
-  action: (redirectUrl: string | undefined) => Promise<never>
-  redirectUrl?: string
+  action: () => Promise<never>
 }) {
-  return <Button onClick={() => action(redirectUrl)}>Sign Out</Button>
+  return <Button onClick={() => action()}>Sign Out</Button>
 }

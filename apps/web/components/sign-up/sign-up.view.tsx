@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useActionState } from "react"
+import { useActionState } from "react"
 import type { SignUpViewModel } from "@auth/adapters-next"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
@@ -34,22 +34,13 @@ const initialState = {
 
 export function SignUpView({
   action,
-  searchParams,
 }: {
   action: (
-    redirectUrl: string | undefined,
     previousState: SignUpViewModel,
     formData: FormData
   ) => Promise<SignUpViewModel>
-  searchParams?: Promise<{ from?: string }>
 }) {
-  const params = searchParams && use(searchParams)
-  const signUp = action.bind(null, params?.from)
-  const [state, formAction, pending] = useActionState(signUp, initialState)
-
-  const signInUrl = params?.from
-    ? `/sign-in?from=${encodeURIComponent(params.from)}`
-    : "/sign-in"
+  const [state, formAction, pending] = useActionState(action, initialState)
 
   return (
     <Card className="w-[min(28rem,calc(100vw-2rem))]">
@@ -150,7 +141,7 @@ export function SignUpView({
                 {pending ? "Creating account…" : "Sign up"}
               </Button>
               <FieldDescription className="text-center">
-                Already have an account? <a href={signInUrl}>Sign in</a>
+                Already have an account? <a href="/sign-in">Sign in</a>
               </FieldDescription>
               <FieldDescription className="text-center text-xs">
                 By creating an account, you agree to our{" "}

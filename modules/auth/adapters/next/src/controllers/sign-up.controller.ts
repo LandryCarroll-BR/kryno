@@ -59,11 +59,9 @@ export const SignUpControllerInputSchema = Schema.Struct({
 export const SignUpController = Effect.fn("SignUpController.make")(function* ({
   previousState,
   formData,
-  redirectUrl,
 }: {
   previousState: SignUpViewModel
   formData: FormData
-  redirectUrl?: string | undefined
 }) {
   const auth = yield* Auth
   const signUpPresenter = yield* SignUpPresenter
@@ -107,11 +105,7 @@ export const SignUpController = Effect.fn("SignUpController.make")(function* ({
           ), // 7 days
         })
 
-        if (redirectUrl) {
-          return yield* Navigation.Redirect(redirectUrl)
-        }
-
-        return yield* signUpPresenter.presentSuccess(submittedState)
+        return yield* Navigation.Redirect("/dashboard")
       },
       Effect.catchTags({
         SchemaError: (error) =>
