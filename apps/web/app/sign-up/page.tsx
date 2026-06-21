@@ -1,5 +1,5 @@
-import { signUp } from "@/components/sign-up/sign-up.action"
-import { SignUpView } from "@/components/sign-up/sign-up.view"
+import { signUp } from "@/features/auth/components/sign-up/sign-up.action"
+import { SignUpView } from "@/features/auth/components/sign-up/sign-up.view"
 
 export default function Home() {
   return (

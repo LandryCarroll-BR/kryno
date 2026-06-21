@@ -1,8 +1,8 @@
-import { SecureRandomString } from "./identity.models"
 import { Effect, Schema } from "effect"
+import { NonEmptyString } from "effect/Schema"
 
 export type UserId = typeof UserId.Type
-export const UserId = SecureRandomString.pipe(Schema.brand("UserId"))
+export const UserId = NonEmptyString.pipe(Schema.brand("UserId"))
 
 export type PasswordHash = typeof PasswordHash.Type
 export const PasswordHash = Schema.Uint8Array.pipe(Schema.brand("PasswordHash"))

@@ -1,33 +1,117 @@
 import { Effect, Layer } from "effect"
-import { PasswordHash, UserService } from "@auth/application"
+import { PasswordHash, UserId, UserService } from "@auth/application"
+import crypto from "node:crypto"
+
+const ARGON2_MEMORY_COST = 65_536
+const ARGON2_PASSES = 3
+const ARGON2_PARALLELISM = 1
+const ARGON2_SALT_LENGTH = 16
+const ARGON2_TAG_LENGTH = 32
+const ARGON2_VERSION = 19
+
+const textDecoder = new TextDecoder()
+const textEncoder = new TextEncoder()
+
+const encodeBase64 = (value: Uint8Array) =>
+  Buffer.from(value).toString("base64").replace(/=+$/, "")
+
+const decodeBase64 = (value: string) => {
+  if (!/^[A-Za-z0-9+/]+$/.test(value)) {
+    return null
+  }
+
+  const decoded = Buffer.from(value, "base64")
+  return encodeBase64(decoded) === value ? decoded : null
+}
+
+const parsePasswordHash = (passwordHash: PasswordHash) => {
+  const match =
+    /^\$argon2id\$v=19\$m=(\d+),t=(\d+),p=(\d+)\$([^$]+)\$([^$]+)$/.exec(
+      textDecoder.decode(passwordHash)
+    )
+
+  if (match === null) {
+    return null
+  }
+
+  const memory = Number(match[1])
+  const passes = Number(match[2])
+  const parallelism = Number(match[3])
+  const nonce = decodeBase64(match[4])
+  const hash = decodeBase64(match[5])
+
+  if (
+    !Number.isSafeInteger(memory) ||
+    memory < 16_384 ||
+    memory > 1_048_576 ||
+    !Number.isSafeInteger(passes) ||
+    passes < 3 ||
+    passes > 10 ||
+    !Number.isSafeInteger(parallelism) ||
+    parallelism < 1 ||
+    parallelism > 16 ||
+    nonce === null ||
+    nonce.length < ARGON2_SALT_LENGTH ||
+    hash === null ||
+    hash.length < ARGON2_TAG_LENGTH
+  ) {
+    return null
+  }
+
+  return { hash, memory, nonce, parallelism, passes }
+}
 
 export const UserServiceLive = Layer.effect(
   UserService,
   Effect.gen(function* () {
-    const textEncoder = new TextEncoder()
     return {
+      generateUserId: Effect.fn("UserService.generateUserId")(function* () {
+        return UserId.make(crypto.randomBytes(18).toString("base64url"))
+      }),
       hashPassword: Effect.fn("UserService.hashPassword")(function* (
         password: string
       ) {
-        const passwordBytes = textEncoder.encode(password)
-        const passwordHashBuffer = yield* Effect.promise(() =>
-          crypto.subtle.digest("SHA-256", passwordBytes)
-        )
+        const nonce = crypto.randomBytes(ARGON2_SALT_LENGTH)
+        const hash = crypto.argon2Sync("argon2id", {
+          message: textEncoder.encode(password),
+          nonce,
+          parallelism: ARGON2_PARALLELISM,
+          tagLength: ARGON2_TAG_LENGTH,
+          memory: ARGON2_MEMORY_COST,
+          passes: ARGON2_PASSES,
+        })
 
-        return PasswordHash.make(new Uint8Array(passwordHashBuffer))
+        const encodedHash = [
+          "",
+          "argon2id",
+          `v=${ARGON2_VERSION}`,
+          `m=${ARGON2_MEMORY_COST},t=${ARGON2_PASSES},p=${ARGON2_PARALLELISM}`,
+          encodeBase64(nonce),
+          encodeBase64(hash),
+        ].join("$")
+
+        return PasswordHash.make(textEncoder.encode(encodedHash))
       }),
       validatePasswords: Effect.fn("UserService.validatePasswords")(function* ({
         password,
         passwordHash,
       }) {
-        const passwordBytes = textEncoder.encode(password)
-        const passwordHashBuffer = yield* Effect.promise(() =>
-          crypto.subtle.digest("SHA-256", passwordBytes)
-        )
+        const parsedHash = parsePasswordHash(passwordHash)
 
-        const computedHash = new Uint8Array(passwordHashBuffer)
+        if (parsedHash === null) {
+          return false
+        }
 
-        return computedHash.every((byte, index) => byte === passwordHash[index])
+        const computedHash = crypto.argon2Sync("argon2id", {
+          message: textEncoder.encode(password),
+          nonce: parsedHash.nonce,
+          parallelism: parsedHash.parallelism,
+          tagLength: parsedHash.hash.length,
+          memory: parsedHash.memory,
+          passes: parsedHash.passes,
+        })
+
+        return crypto.timingSafeEqual(computedHash, parsedHash.hash)
       }),
     }
   })

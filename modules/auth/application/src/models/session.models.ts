@@ -1,10 +1,10 @@
-import { DateTime, Effect, Equivalence, Schema } from "effect"
+import { DateTime, Effect, Schema } from "effect"
 
-import { SecureRandomString } from "./identity.models"
 import { Role, UserId } from "./user.models"
+import { NonEmptyString } from "effect/Schema"
 
 export type SessionId = typeof SessionId.Type
-export const SessionId = SecureRandomString.pipe(Schema.brand("SessionId"))
+export const SessionId = NonEmptyString.pipe(Schema.brand("SessionId"))
 
 export type SessionSecretHash = typeof SessionSecretHash.Type
 export const SessionSecretHash = Schema.Uint8Array.pipe(
@@ -12,9 +12,7 @@ export const SessionSecretHash = Schema.Uint8Array.pipe(
 )
 
 export type SessionSecret = typeof SessionSecret.Type
-export const SessionSecret = SecureRandomString.pipe(
-  Schema.brand("SessionSecret")
-)
+export const SessionSecret = NonEmptyString.pipe(Schema.brand("SessionSecret"))
 
 export type SessionToken = typeof SessionToken.Type
 const SessionTokenParts = [SessionId, ".", SessionSecret] as const
@@ -51,21 +49,6 @@ export class Session extends Schema.Class<Session>("Session")({
       now.getTime() - this.lastVerifiedAt.getTime() >=
       this.ACTIVITY_CHECK_INTERVAL_SECONDS * 1000
     )
-  })
-
-  hasSecretHash(secretHash: SessionSecretHash) {
-    return this.isEqual(secretHash, this.secretHash)
-  }
-
-  isEqual = Equivalence.make<SessionSecretHash>((a, b) => {
-    if (a.byteLength !== b.byteLength) {
-      return false
-    }
-    let c = 0
-    for (let i = 0; i < a.byteLength; i++) {
-      c |= a[i] ^ b[i]
-    }
-    return c === 0
   })
 }
 

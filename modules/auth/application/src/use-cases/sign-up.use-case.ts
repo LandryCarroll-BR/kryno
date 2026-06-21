@@ -3,8 +3,7 @@ import { Service } from "effect/Context"
 
 import type { SessionWithToken } from "../models/session.models"
 import { CreateSessionFactory } from "../factories/create-session.factory"
-import { User, UserId } from "../models/user.models"
-import { IdentityService } from "../services/identity.service"
+import { User } from "../models/user.models"
 import { UserRepository } from "../repositories/user.repository"
 import { UserService } from "../services/user.service"
 
@@ -35,7 +34,6 @@ export class SignUpUseCase extends Service<
   static Live = Layer.effect(
     SignUpUseCase,
     Effect.gen(function* () {
-      const identityService = yield* IdentityService
       const userRepository = yield* UserRepository
       const userService = yield* UserService
       const createSession = yield* CreateSessionFactory
@@ -61,9 +59,7 @@ export class SignUpUseCase extends Service<
           }
 
           // Generate a secure random string to use as the user ID
-          const secureRandomString =
-            yield* identityService.generateSecureRandomString()
-          const userId = UserId.make(secureRandomString)
+          const userId = yield* userService.generateUserId()
 
           // Hash the password before storing it in the database
           const passwordHash = yield* userService.hashPassword(input.password)

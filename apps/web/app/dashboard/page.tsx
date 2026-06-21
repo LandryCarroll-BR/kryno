@@ -1,8 +1,9 @@
-import { CurrentUserView } from "@/components/current-user/current-user.view"
-import { signOut } from "@/components/sign-out/sign-out.action"
-import { SignOutView } from "@/components/sign-out/sign-out.view"
+import { CurrentUserView } from "@/features/auth/components/current-user/current-user.view"
+import { signOut } from "@/features/auth/components/sign-out/sign-out.action"
+import { SignOutView } from "@/features/auth/components/sign-out/sign-out.view"
+import { withAuthentication } from "@/features/auth/utils/with-authentication"
 
-export default async function Dashboard() {
+function Dashboard() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main>
@@ -14,3 +15,5 @@ export default async function Dashboard() {
     </div>
   )
 }
+
+export default withAuthentication(Dashboard)

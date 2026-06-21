@@ -1,5 +1,5 @@
-import { signIn } from "@/components/sign-in/sign-in.action"
-import { SignInView } from "@/components/sign-in/sign-in.view"
+import { signIn } from "@/features/auth/components/sign-in/sign-in.action"
+import { SignInView } from "@/features/auth/components/sign-in/sign-in.view"
 
 export default function SignIn() {
   return (

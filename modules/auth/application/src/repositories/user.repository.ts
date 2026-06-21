@@ -7,11 +7,7 @@ export class UserRepository extends Service<
   {
     readonly createUser: (user: User) => Effect.Effect<User>
     readonly findById: (id: UserId) => Effect.Effect<Option.Option<User>>
-    readonly findByUsername: (
-      username: string
-    ) => Effect.Effect<Option.Option<User>>
-    readonly findByEmail: (
-      email: string
-    ) => Effect.Effect<Option.Option<User>>
+    readonly findByUsername: (username: string) => Effect.Effect<Option.Option<User>>
+    readonly findByEmail: (email: string) => Effect.Effect<Option.Option<User>>
   }
 >()("@auth/application/UserRepository") {}

@@ -1,5 +1,6 @@
 "use server"
 
+import "server-only"
 import { Effect } from "effect"
 import { SignOutController } from "@auth/adapters-next"
 import { AuthAdapterRuntime } from "@auth/adapters-next"

@@ -1,23 +1,15 @@
-import { signOut } from "@/components/sign-out/sign-out.action"
-import { SignOutView } from "@/components/sign-out/sign-out.view"
-import { getCurrentUser } from "@/components/current-user/current-user.query"
+import { CurrentUserView } from "@/features/auth/components/current-user/current-user.view"
+import { signOut } from "@/features/auth/components/sign-out/sign-out.action"
+import { SignOutView } from "@/features/auth/components/sign-out/sign-out.view"
 
 export default async function Home() {
-  const currentUser = await getCurrentUser()
-
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main>
-        HOME
-        {currentUser ? (
-          <>
-            <p>{currentUser.username}</p>
-            <p>{currentUser.email}</p>
-            <SignOutView action={signOut} />
-          </>
-        ) : (
-          <p>Not signed in</p>
-        )}
+        <div className="flex gap-4">
+          <CurrentUserView />
+          <SignOutView action={signOut} />
+        </div>
       </main>
     </div>
   )

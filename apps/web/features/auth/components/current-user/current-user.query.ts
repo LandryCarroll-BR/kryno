@@ -1,4 +1,6 @@
+import "server-only"
 import { Effect, Option } from "effect"
+import { redirect } from "next/navigation"
 
 import {
   AuthAdapterRuntime,
@@ -10,5 +12,9 @@ export async function getCurrentUser() {
     GetCurrentUserController().pipe(Effect.flatMap(({ handle }) => handle()))
   )
 
-  return Option.getOrNull(currentUser)
+  if (Option.isNone(currentUser)) {
+    redirect("/sign-in")
+  }
+
+  return currentUser.value
 }
