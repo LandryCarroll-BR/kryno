@@ -90,24 +90,15 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
           return yield* Navigation.Redirect(from)
         }
 
-        return signInPresenter.presentSuccess(submittedState)
+        return yield* signInPresenter.presentSuccess(submittedState)
       },
       Effect.catchTags({
-        SchemaError: (error) => {
-          return Effect.succeed(
-            signInPresenter.presentInputParseError(submittedState, error)
-          )
-        },
-        UserEmailNotFoundError: (error) => {
-          return Effect.succeed(
-            signInPresenter.presentError(submittedState, error)
-          )
-        },
-        UserPasswordInvalidError: (error) => {
-          return Effect.succeed(
-            signInPresenter.presentError(submittedState, error)
-          )
-        },
+        SchemaError: (error) =>
+          signInPresenter.presentInputParseError(submittedState, error),
+        UserEmailNotFoundError: (error) =>
+          signInPresenter.presentError(submittedState, error),
+        UserPasswordInvalidError: (error) =>
+          signInPresenter.presentError(submittedState, error),
       })
     ),
   }

@@ -9,64 +9,76 @@ import type { SchemaError } from "effect/Schema"
 export class SignInPresenter extends Service<
   SignInPresenter,
   {
-    readonly presentSuccess: (prev: SignInViewModel) => SignInViewModel
+    readonly presentSuccess: (
+      prev: SignInViewModel
+    ) => Effect.Effect<SignInViewModel>
+
     readonly presentInputParseError: (
       prev: SignInViewModel,
       error: SchemaError
-    ) => SignInViewModel
+    ) => Effect.Effect<SignInViewModel>
+
     readonly presentError: (
       prev: SignInViewModel,
       error: UserEmailNotFoundError | UserPasswordInvalidError
-    ) => SignInViewModel
+    ) => Effect.Effect<SignInViewModel>
+
     readonly presentUnexpectedError: (
       prev: SignInViewModel
-    ) => SignInViewModel
+    ) => Effect.Effect<SignInViewModel>
   }
 >()("@auth/adapters/next/SignInPresenter") {
   static Live = Layer.effect(
     SignInPresenter,
     Effect.gen(function* () {
       return {
-        presentSuccess: (prev) => ({
-          status: "success",
-          fields: {
-            email: { value: prev.fields.email.value },
-            password: {
-              value: prev.fields.password.value,
+        presentSuccess: (prev) =>
+          Effect.succeed({
+            status: "success",
+            fields: {
+              email: { value: prev.fields.email.value },
+              password: {
+                value: prev.fields.password.value,
+              },
             },
-          },
-        }),
-        presentError: (prev, error) => ({
-          status: "error",
-          error: error.message,
-          fields: {
-            ...prev.fields,
-          },
-        }),
-        presentInputParseError: (prev, error) => ({
-          status: "error",
-          error: "Invalid input. Please check your data and try again.",
-          fields: {
-            email: {
-              value: prev.fields.email.value,
-              ...fieldError("email", error),
+          }),
+
+        presentError: (prev, error) =>
+          Effect.succeed({
+            status: "error",
+            error: error.message,
+            fields: {
+              ...prev.fields,
             },
-            password: {
-              value: prev.fields.password.value,
-              ...fieldError("password", error),
+          }),
+
+        presentInputParseError: (prev, error) =>
+          Effect.succeed({
+            status: "error",
+            error: "Invalid input. Please check your data and try again.",
+            fields: {
+              email: {
+                value: prev.fields.email.value,
+                ...fieldError("email", error),
+              },
+              password: {
+                value: prev.fields.password.value,
+                ...fieldError("password", error),
+              },
             },
-          },
-        }),
-        presentUnexpectedError: (prev) => ({
-          status: "error",
-          error: "An unexpected error occurred. Please try again.",
-          fields: {
-            email: { value: prev.fields.email.value },
-            password: {
-              value: prev.fields.password.value,
+          }),
+
+        presentUnexpectedError: (prev) =>
+          Effect.succeed({
+            status: "error",
+            error: "An unexpected error occurred. Please try again.",
+            fields: {
+              email: { value: prev.fields.email.value },
+              password: {
+                value: prev.fields.password.value,
+              },
             },
-          },
-        }),
+          }),
       }
     })
   )

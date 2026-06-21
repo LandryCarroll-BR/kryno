@@ -118,24 +118,17 @@ export const SignUpController = Effect.fn("SignUpController.make")(function* ({
           return yield* Navigation.Redirect(from)
         }
 
-        return signUpPresenter.presentSuccess(submittedState)
+        return yield* signUpPresenter.presentSuccess(submittedState)
       },
       Effect.catchTags({
-        SchemaError: (error) => {
-          return Effect.succeed(
-            signUpPresenter.presentInputParseError(submittedState, error)
-          )
-        },
-        UsernameAlreadyExistsError: (error) => {
-          return Effect.succeed(
-            signUpPresenter.presentError(submittedState, error)
-          )
-        },
-        UserEmailAlreadyExistsError: (error) => {
-          return Effect.succeed(
-            signUpPresenter.presentError(submittedState, error)
-          )
-        },
+        SchemaError: (error) =>
+          signUpPresenter.presentInputParseError(submittedState, error),
+
+        UsernameAlreadyExistsError: (error) =>
+          signUpPresenter.presentError(submittedState, error),
+
+        UserEmailAlreadyExistsError: (error) =>
+          signUpPresenter.presentError(submittedState, error),
       })
     ),
   }

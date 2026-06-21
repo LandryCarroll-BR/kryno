@@ -9,7 +9,7 @@ export async function signUp(
   redirectUrl: string | undefined,
   previousState: SignUpViewModel,
   formData: FormData
-): Promise<SignUpViewModel> {
+) {
   return AuthAdapterRuntime.runPromise(
     SignUpController({
       previousState,

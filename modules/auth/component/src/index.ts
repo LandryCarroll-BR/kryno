@@ -5,6 +5,7 @@ import { InfrastructureLayer } from "@auth/infrastructure"
 import {
   SignUpUseCase,
   SignInUseCase,
+  SignOutUseCase,
   ValidateSessionUseCase,
   ApplicationLayer,
 } from "@auth/application"
@@ -14,6 +15,7 @@ export class Auth extends Service<
   {
     readonly signUp: SignUpUseCase["Service"]["execute"]
     readonly signIn: SignInUseCase["Service"]["execute"]
+    readonly signOut: SignOutUseCase["Service"]["execute"]
     readonly validateSession: ValidateSessionUseCase["Service"]["execute"]
   }
 >()("@auth/component/Auth") {
@@ -22,11 +24,13 @@ export class Auth extends Service<
     Effect.gen(function* () {
       const signUp = yield* SignUpUseCase
       const signIn = yield* SignInUseCase
+      const signOut = yield* SignOutUseCase
       const validateSession = yield* ValidateSessionUseCase
 
       return {
         signUp: signUp.execute,
         signIn: signIn.execute,
+        signOut: signOut.execute,
         validateSession: validateSession.execute,
       }
     })

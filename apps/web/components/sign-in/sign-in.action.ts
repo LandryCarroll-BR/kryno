@@ -9,7 +9,7 @@ export async function signIn(
   redirectUrl: string | undefined,
   previousState: SignInViewModel,
   formData: FormData
-): Promise<SignInViewModel> {
+) {
   return AuthAdapterRuntime.runPromise(
     SignInController({
       previousState,
