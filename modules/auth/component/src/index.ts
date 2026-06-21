@@ -7,6 +7,7 @@ import {
   SignInUseCase,
   SignOutUseCase,
   ValidateSessionUseCase,
+  GetCurrentUserUseCase,
   ApplicationLayer,
 } from "@auth/application"
 
@@ -17,6 +18,7 @@ export class Auth extends Service<
     readonly signIn: SignInUseCase["Service"]["execute"]
     readonly signOut: SignOutUseCase["Service"]["execute"]
     readonly validateSession: ValidateSessionUseCase["Service"]["execute"]
+    readonly getCurrentUser: GetCurrentUserUseCase["Service"]["execute"]
   }
 >()("@auth/component/Auth") {
   static Live = Layer.effect(
@@ -26,12 +28,14 @@ export class Auth extends Service<
       const signIn = yield* SignInUseCase
       const signOut = yield* SignOutUseCase
       const validateSession = yield* ValidateSessionUseCase
+      const getCurrentUser = yield* GetCurrentUserUseCase
 
       return {
         signUp: signUp.execute,
         signIn: signIn.execute,
         signOut: signOut.execute,
         validateSession: validateSession.execute,
+        getCurrentUser: getCurrentUser.execute,
       }
     })
   )

@@ -29,6 +29,19 @@ export const UserDBRepository = Layer.effect(
         return user
       }),
 
+      findById: Effect.fn("UserRepository.findById")(function* (id) {
+        const [user] = yield* db
+          .select()
+          .from(usersTable)
+          .where(eq(usersTable.id, id))
+          .limit(1)
+          .pipe(Effect.orDie)
+
+        return Option.fromNullishOr(user).pipe(
+          Option.map((user) => User.make(user))
+        )
+      }),
+
       findByUsername: Effect.fn("UserRepository.findByUsername")(function* (
         username: string
       ) {

@@ -17,6 +17,10 @@ export const UserInMemoryRepository = Layer.effect(
           return [user, next]
         })
       }),
+      findById: Effect.fn("UserRepository.findById")(function* (id) {
+        const current = yield* Ref.get(store)
+        return Option.fromNullishOr(current.get(id))
+      }),
       findByUsername: Effect.fn("UserRepository.findByUsername")(
         function* (username: string) {
           const current = yield* Ref.get(store)

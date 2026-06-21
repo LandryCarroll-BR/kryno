@@ -7,6 +7,7 @@ import { SignInPresenter } from "./presenters/sign-in.presenter"
 export * from "./controllers/sign-in.controller"
 export * from "./controllers/sign-up.controller"
 export * from "./controllers/sign-out.controller"
+export * from "./controllers/get-current-user.controller"
 
 export * from "./presenters/sign-in.presenter"
 export * from "./presenters/sign-up.presenter"
