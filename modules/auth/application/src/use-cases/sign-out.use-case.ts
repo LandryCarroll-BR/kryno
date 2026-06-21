@@ -1,10 +1,10 @@
-import { Layer, Effect, Schema } from "effect"
+import { Layer, Effect, Option, Schema } from "effect"
 import { Service } from "effect/Context"
-import { SessionId } from "../models/session.models"
 import { SessionRepository } from "../repositories/session.repository"
+import { ValidateSessionFactory } from "../factories/validate-session.factory"
 
 export const SignOutInputSchema = Schema.Struct({
-  sessionId: Schema.NonEmptyString,
+  token: Schema.String,
 }).annotate({ identifier: "SignOutInput" })
 
 export type SignOutInput = typeof SignOutInputSchema.Type
@@ -19,11 +19,25 @@ export class SignOutUseCase extends Service<
     SignOutUseCase,
     Effect.gen(function* () {
       const sessionRepository = yield* SessionRepository
+      const validateSession = yield* ValidateSessionFactory
+
       return {
-        execute: Effect.fn("SignOutUseCase.execute")(function* (input) {
-          const sessionId = SessionId.make(input.sessionId)
-          return yield* sessionRepository.delete(sessionId)
-        }),
+        execute: Effect.fn("SignOutUseCase.execute")(
+          function* (input) {
+            const session = yield* validateSession(input)
+
+            if (Option.isNone(session)) {
+              return yield* Effect.void
+            }
+
+            yield* sessionRepository.delete(session.value.id)
+          },
+          Effect.catchTags({
+            InvalidSessionSecretHashError: () => Effect.void,
+            InvalidSessionTokenError: () => Effect.void,
+            SessionNotFoundError: () => Effect.void,
+          })
+        ),
       }
     })
   )

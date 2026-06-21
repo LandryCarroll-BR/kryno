@@ -5,6 +5,7 @@ import { PresenterLayer } from "../src/index"
 
 export * from "../src/controllers/sign-in.controller"
 export * from "../src/controllers/sign-up.controller"
+export * from "../src/controllers/sign-out.controller"
 
 export * from "../src/presenters/sign-in.presenter"
 export * from "../src/presenters/sign-up.presenter"

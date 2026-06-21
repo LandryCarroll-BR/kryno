@@ -3,7 +3,6 @@ import { AuthLayer } from "@auth/component"
 
 import { SignUpPresenter } from "./presenters/sign-up.presenter"
 import { SignInPresenter } from "./presenters/sign-in.presenter"
-import { SignOutPresenter } from "./presenters/sign-out.presenter"
 
 export * from "./controllers/sign-in.controller"
 export * from "./controllers/sign-up.controller"
@@ -11,12 +10,10 @@ export * from "./controllers/sign-out.controller"
 
 export * from "./presenters/sign-in.presenter"
 export * from "./presenters/sign-up.presenter"
-export * from "./presenters/sign-out.presenter"
 
 export const PresenterLayer = Layer.mergeAll(
   SignUpPresenter.Live,
-  SignInPresenter.Live,
-  SignOutPresenter.Live
+  SignInPresenter.Live
 )
 
 export const AdapterLayer = Layer.mergeAll(AuthLayer, PresenterLayer)

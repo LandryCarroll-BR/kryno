@@ -43,7 +43,6 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
   const auth = yield* Auth
   const signInPresenter = yield* SignInPresenter
   const cookies = yield* Headers.Cookies
-  const headers = yield* Headers.Headers
 
   const submittedState: SignInViewModel = {
     ...previousState,
@@ -56,9 +55,6 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
   return {
     handle: Effect.fn("SignInController.handle")(
       function* () {
-        const from = headers.get("Referer")
-          ? new URL(headers.get("Referer")!).pathname
-          : undefined
         const parsedInput = yield* Schema.decodeUnknownEffect(
           SignInControllerInputSchema
         )({
@@ -77,6 +73,7 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
+          path: "/",
           expires: new Date(
             session.lastVerifiedAt.getTime() + 7 * 24 * 60 * 60 * 1000
           ), // 7 days
@@ -84,10 +81,6 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
 
         if (redirectUrl) {
           return yield* Navigation.Redirect(redirectUrl)
-        }
-
-        if (from) {
-          return yield* Navigation.Redirect(from)
         }
 
         return yield* signInPresenter.presentSuccess(submittedState)

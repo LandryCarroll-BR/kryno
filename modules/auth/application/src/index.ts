@@ -24,9 +24,12 @@ export * from "./use-cases/sign-in.use-case"
 export * from "./use-cases/sign-out.use-case"
 export * from "./use-cases/validate-session.use-case"
 
+const SignOutLayer = SignOutUseCase.Live.pipe(
+  Layer.provideMerge(ValidateSessionUseCase.Live)
+)
+
 export const ApplicationLayer = Layer.mergeAll(
   SignUpUseCase.Live,
   SignInUseCase.Live,
-  SignOutUseCase.Live,
-  ValidateSessionUseCase.Live
+  SignOutLayer
 )
