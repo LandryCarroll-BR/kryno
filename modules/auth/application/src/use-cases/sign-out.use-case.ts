@@ -1,10 +1,11 @@
 import { Layer, Effect, Option, Schema } from "effect"
 import { Service } from "effect/Context"
+import { SessionToken } from "../models/session.models"
 import { SessionRepository } from "../repositories/session.repository"
 import { ValidateSessionFactory } from "../factories/validate-session.factory"
 
 export const SignOutInputSchema = Schema.Struct({
-  token: Schema.String,
+  token: SessionToken,
 }).annotate({ identifier: "SignOutInput" })
 
 export type SignOutInput = typeof SignOutInputSchema.Type
@@ -24,7 +25,11 @@ export class SignOutUseCase extends Service<
       return {
         execute: Effect.fn("SignOutUseCase.execute")(
           function* (input) {
-            const session = yield* validateSession(input)
+            const parsedInput = yield* Schema.decodeUnknownEffect(
+              SignOutInputSchema
+            )(input, { errors: "all" })
+
+            const session = yield* validateSession(parsedInput)
 
             if (Option.isNone(session)) {
               return yield* Effect.void
@@ -33,6 +38,7 @@ export class SignOutUseCase extends Service<
             yield* sessionRepository.delete(session.value.id)
           },
           Effect.catchTags({
+            SchemaError: () => Effect.void,
             InvalidSessionSecretHashError: () => Effect.void,
             InvalidSessionTokenError: () => Effect.void,
             SessionNotFoundError: () => Effect.void,
