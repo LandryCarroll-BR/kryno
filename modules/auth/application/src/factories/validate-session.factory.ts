@@ -33,12 +33,9 @@ export const ValidateSessionFactory = Effect.gen(function* () {
       return Option.none()
     }
 
-    const tokenSecretHash =
-      yield* sessionService.hashSessionSecret(sessionSecret)
-
     const isValidSessionHash = yield* sessionService.verifySessionSecret({
       secret: sessionSecret,
-      secretHash: tokenSecretHash,
+      secretHash: session.secretHash,
     })
 
     if (!isValidSessionHash) {

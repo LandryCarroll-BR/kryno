@@ -34,8 +34,8 @@ export const SessionServiceLive = Layer.effect(
           return SessionSecretHash.make(new Uint8Array(secretHashBuffer))
         }
       ),
-      verifySessionSecret(params) {
-        return Effect.gen(function* () {
+      verifySessionSecret: Effect.fn("SessionService.verifySessionSecret")(
+        function* (params) {
           const secretBytes = textEncoder.encode(params.secret)
           const secretHashBuffer = yield* Effect.promise(() =>
             crypto.subtle.digest("SHA-256", secretBytes)
@@ -43,11 +43,13 @@ export const SessionServiceLive = Layer.effect(
 
           const computedHash = new Uint8Array(secretHashBuffer)
 
-          return computedHash.every(
-            (byte, index) => byte === params.secretHash[index]
-          )
-        })
-      },
+          if (computedHash.byteLength !== params.secretHash.byteLength) {
+            return false
+          }
+
+          return crypto.timingSafeEqual(computedHash, params.secretHash)
+        }
+      ),
     }
   })
 )

@@ -72,9 +72,7 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
           path: "/",
-          expires: new Date(
-            session.lastVerifiedAt.getTime() + 7 * 24 * 60 * 60 * 1000
-          ), // 7 days
+          maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
         })
 
         return yield* Navigation.Redirect("/dashboard")

@@ -16,7 +16,9 @@ export const GetCurrentUserController = Effect.fn(
         return Option.none()
       }
 
-      return yield* auth.getCurrentUser({ token: authToken.value })
+      const currentUser = yield* auth.getCurrentUser({ token: authToken.value })
+
+      return currentUser
     }),
   }
 })

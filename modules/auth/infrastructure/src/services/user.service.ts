@@ -2,6 +2,9 @@ import { Effect, Layer } from "effect"
 import { PasswordHash, UserId, UserService } from "@auth/application"
 import crypto from "node:crypto"
 
+// Password hashing policy: Argon2id with 64 MiB memory, 3 passes, and one
+// degree of parallelism. Reassess these production parameters as deployment
+// hardware and authentication traffic become known.
 const ARGON2_MEMORY_COST = 65_536
 const ARGON2_PASSES = 3
 const ARGON2_PARALLELISM = 1

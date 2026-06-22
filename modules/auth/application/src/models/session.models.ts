@@ -34,13 +34,19 @@ export class Session extends Schema.Class<Session>("Session")({
 }) {
   readonly ACTIVITY_CHECK_INTERVAL_SECONDS = 60 * 60 // 1 hour
   readonly INACTIVITY_TIMEOUT_SECONDS = 60 * 60 * 24 * 10 // 10 days
+  readonly EXPIRATION_TIMEOUT_SECONDS = 60 * 60 * 24 * 30 // 30 days
 
   isExpired = Effect.fn("Session.isExpired")(function* (this: Session) {
     const now = yield* DateTime.nowAsDate
-    return (
+    const isExpiredByInactivity =
       now.getTime() - this.lastVerifiedAt.getTime() >=
       this.INACTIVITY_TIMEOUT_SECONDS * 1000
-    )
+
+    const isExpiredByExpirationTime =
+      now.getTime() - this.createdAt.getTime() >=
+      this.EXPIRATION_TIMEOUT_SECONDS * 1000
+
+    return isExpiredByInactivity || isExpiredByExpirationTime
   })
 
   isInactive = Effect.fn("Session.isInactive")(function* (this: Session) {

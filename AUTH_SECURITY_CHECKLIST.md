@@ -3,20 +3,23 @@
 Work from top to bottom. The first two items should be completed before the
 authentication system is used in production.
 
+Last audited against the repository on 2026-06-22. Items are checked only when
+the implementation is complete and supported by the current code or tests.
+
 ## Critical
 
 ### Replace SHA-256 password hashing with Argon2id
 
-- [ ] Select an actively maintained Argon2id implementation.
-- [ ] Store encoded hashes containing the algorithm, parameters, salt, and hash.
-- [ ] Replace `UserService.hashPassword` with Argon2id hashing.
-- [ ] Replace `UserService.validatePasswords` with the library's verification
-      function.
-- [ ] Choose and document memory, time, and parallelism parameters appropriate
+- [x] Select an actively maintained Argon2id implementation.
+- [x] Store encoded hashes containing the algorithm, parameters, salt, and hash.
+- [x] Replace `UserService.hashPassword` with Argon2id hashing.
+- [x] Replace `UserService.validatePasswords` with Argon2id verification using
+      the stored parameters and a timing-safe hash comparison.
+- [x] Choose and document memory, time, and parallelism parameters appropriate
       for the production environment.
-- [ ] Design a migration strategy for existing SHA-256 hashes, such as
-      rehashing after a successful login.
-- [ ] Ensure passwords and password hashes never appear in logs or errors.
+- [x] Design a migration strategy for existing SHA-256 hashes. No user
+      migration is required before launch; reset the development database.
+- [x] Ensure passwords and password hashes never appear in logs or errors.
 - [ ] Add tests for correct passwords, incorrect passwords, unique salts, and
       malformed stored hashes.
 
@@ -25,8 +28,8 @@ Relevant file:
 
 ### Enforce authentication at every protected server boundary
 
-- [ ] Stop treating the presence of `authToken` as proof of authentication.
-- [ ] Add a reusable server-side guard that validates the session and loads the
+- [x] Stop treating the presence of `authToken` as proof of authentication.
+- [x] Add a reusable server-side guard that validates the session and loads the
       current user.
 - [ ] Use the guard in every protected page, route handler, server action, and
       data query.
@@ -34,7 +37,7 @@ Relevant file:
 - [ ] Reject unauthorized server actions and API requests rather than merely
       hiding UI.
 - [ ] Delete invalid, expired, or revoked authentication cookies when possible.
-- [ ] Keep the proxy cookie check only as an optional early redirect.
+- [x] Keep the proxy cookie check only as an optional early redirect.
 - [ ] Add tests showing that forged, malformed, expired, and revoked cookies
       cannot access protected resources.
 
@@ -80,10 +83,10 @@ Relevant files:
 
 ### Add an absolute session lifetime
 
-- [ ] Define and document inactivity and absolute expiration periods.
-- [ ] Reject sessions whose `createdAt` exceeds the absolute lifetime.
-- [ ] Keep activity refreshes from extending the absolute expiration time.
-- [ ] Align cookie expiration with server-side session expiration.
+- [x] Define and document inactivity and absolute expiration periods.
+- [x] Reject sessions whose `createdAt` exceeds the absolute lifetime.
+- [x] Keep activity refreshes from extending the absolute expiration time.
+- [x] Align cookie expiration with server-side session expiration.
 - [ ] Consider rotating session tokens after login and sensitive account
       changes.
 - [ ] Add tests for inactivity expiry, absolute expiry, refresh behavior, and
@@ -124,9 +127,9 @@ Relevant files:
 ### Harden the authentication cookie
 
 - [ ] Consider using a `__Host-` prefixed cookie name in production.
-- [ ] Keep `HttpOnly`, `Secure`, `SameSite`, and `Path=/` explicitly configured.
+- [x] Keep `HttpOnly`, `Secure`, `SameSite`, and `Path=/` explicitly configured.
 - [ ] Centralize cookie creation and deletion so their options cannot drift.
-- [ ] Verify that cookie lifetime matches the server-side session policy.
+- [x] Verify that cookie lifetime matches the server-side session policy.
 - [ ] Confirm the desired CSRF policy for every state-changing server action.
 
 ### Review database credentials and privileges
