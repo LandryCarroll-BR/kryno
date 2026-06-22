@@ -1,5 +1,6 @@
 import { Effect, Schema } from "effect"
 import { Headers, Navigation } from "@packages/effect-next"
+import { Password, SignUpInputSchema } from "@auth/application"
 import { Auth } from "@auth/component"
 
 import {
@@ -7,41 +8,9 @@ import {
   type SignUpViewModel,
 } from "../presenters/sign-up.presenter"
 
-const UsernameSchema = Schema.Trim.pipe(
-  Schema.check(
-    Schema.isLengthBetween(3, 32, {
-      message: "Username must be between 3 and 32 characters.",
-    }),
-    Schema.isPattern(/^[a-zA-Z0-9_]+$/, {
-      message: "Username may only contain letters, numbers, and underscores.",
-    })
-  )
-)
-
-const EmailSchema = Schema.Trim.pipe(
-  Schema.check(
-    Schema.isMaxLength(254, {
-      message: "Email must be at most 254 characters.",
-    }),
-    Schema.isPattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {
-      message: "Email must be a valid email address.",
-    })
-  )
-)
-
-const PasswordSchema = Schema.String.pipe(
-  Schema.check(
-    Schema.isLengthBetween(8, 128, {
-      message: "Password must be between 8 and 128 characters.",
-    })
-  )
-)
-
 export const SignUpControllerInputSchema = Schema.Struct({
-  username: UsernameSchema,
-  email: EmailSchema,
-  password: PasswordSchema,
-  confirmPassword: PasswordSchema,
+  ...SignUpInputSchema.fields,
+  confirmPassword: Password,
 }).pipe(
   Schema.check(
     Schema.makeFilter((input) =>

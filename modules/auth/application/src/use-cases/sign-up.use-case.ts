@@ -1,9 +1,10 @@
 import { Effect, Layer, Schema, Option } from "effect"
 import { Service } from "effect/Context"
+import type { SchemaError } from "effect/Schema"
 
 import type { SessionWithToken } from "../models/session.models"
 import { CreateSessionFactory } from "../factories/create-session.factory"
-import { User } from "../models/user.models"
+import { Email, Password, User, Username } from "../models/user.models"
 import { UserRepository } from "../repositories/user.repository"
 import { UserService } from "../services/user.service"
 
@@ -13,9 +14,9 @@ import {
 } from "../errors/user.errors"
 
 export const SignUpInputSchema = Schema.Struct({
-  email: Schema.NonEmptyString,
-  username: Schema.NonEmptyString,
-  password: Schema.NonEmptyString,
+  email: Email,
+  username: Username,
+  password: Password,
 }).annotate({ identifier: "SignUpInput" })
 
 export type SignUpInput = typeof SignUpInputSchema.Type
@@ -27,7 +28,9 @@ export class SignUpUseCase extends Service<
       input: SignUpInput
     ) => Effect.Effect<
       SessionWithToken,
-      UserEmailAlreadyExistsError | UsernameAlreadyExistsError
+      | SchemaError
+      | UserEmailAlreadyExistsError
+      | UsernameAlreadyExistsError
     >
   }
 >()("@auth/application/SignUpUseCase") {
@@ -40,21 +43,27 @@ export class SignUpUseCase extends Service<
 
       return {
         execute: Effect.fn("SignUpUseCase.execute")(function* (input) {
+          const parsedInput = yield* Schema.decodeUnknownEffect(
+            SignUpInputSchema
+          )(input, { errors: "all" })
+
           // Check if the username already exists
           const existingUser = yield* userRepository.findByUsername(
-            input.username
+            parsedInput.username
           )
           if (Option.isSome(existingUser)) {
             return yield* new UsernameAlreadyExistsError({
-              username: input.username,
+              username: parsedInput.username,
             })
           }
 
           // Check if the email already exists
-          const existingEmail = yield* userRepository.findByEmail(input.email)
+          const existingEmail = yield* userRepository.findByEmail(
+            parsedInput.email
+          )
           if (Option.isSome(existingEmail)) {
             return yield* new UserEmailAlreadyExistsError({
-              email: input.email,
+              email: parsedInput.email,
             })
           }
 
@@ -62,13 +71,15 @@ export class SignUpUseCase extends Service<
           const userId = yield* userService.generateUserId()
 
           // Hash the password before storing it in the database
-          const passwordHash = yield* userService.hashPassword(input.password)
+          const passwordHash = yield* userService.hashPassword(
+            parsedInput.password
+          )
 
           // Create a new user object and save it to the database
           const newUser = User.make({
             id: userId,
-            username: input.username,
-            email: input.email,
+            username: parsedInput.username,
+            email: parsedInput.email,
             passwordHash: passwordHash,
             createdAt: new Date(),
           })
