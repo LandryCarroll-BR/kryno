@@ -99,19 +99,28 @@ Relevant files:
 - `modules/auth/adapters/next/src/controllers/sign-in.controller.ts`
 - `modules/auth/adapters/next/src/controllers/sign-up.controller.ts`
 
-### Do not expose credential fields through current-user responses
+### Do not expose credential fields through authentication responses
 
 - [x] Introduce a public/current-user model that excludes `passwordHash`.
 - [x] Map the persisted `User` entity to that safe model in the use case.
+- [x] Separate safe `Session` data from credential-bearing `PersistedSession`
+      data.
+- [x] Return only safe session data and the client token from sign-in and
+      sign-up.
+- [x] Return only safe session data from session validation.
 - [x] Review all module exports to ensure credential-bearing models do not cross
       presentation or API boundaries unnecessarily.
-- [x] Add a test asserting that current-user results contain no password hash or
-      other credential material.
+- [x] Add tests asserting that current-user and session results contain no
+      password hash, session-secret hash, or other credential material.
 
 Relevant files:
 
 - `modules/auth/application/src/models/user.models.ts`
+- `modules/auth/application/src/models/session.models.ts`
 - `modules/auth/application/src/use-cases/get-current-user.use-case.ts`
+- `modules/auth/application/src/use-cases/sign-in.use-case.ts`
+- `modules/auth/application/src/use-cases/sign-up.use-case.ts`
+- `modules/auth/application/src/use-cases/validate-session.use-case.ts`
 
 ## Hardening
 

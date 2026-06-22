@@ -1,10 +1,10 @@
-import { Session, SessionRepository } from "@auth/application"
+import { PersistedSession, SessionRepository } from "@auth/application"
 import { Effect, Layer, Option, Ref } from "effect"
 
 export const SessionInMemoryRepository = Layer.effect(
   SessionRepository,
   Effect.gen(function* () {
-    const store = yield* Ref.make(new Map<string, Session>())
+    const store = yield* Ref.make(new Map<string, PersistedSession>())
 
     return {
       create: Effect.fn("SessionRepository.create")(

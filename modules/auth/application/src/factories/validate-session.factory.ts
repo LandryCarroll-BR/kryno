@@ -1,7 +1,11 @@
 import { DateTime, Effect, Option } from "effect"
 import { SessionService } from "../services/session.service"
 import { SessionRepository } from "../repositories/session.repository"
-import { ParsedSessionToken, Session } from "../models/session.models"
+import {
+  ParsedSessionToken,
+  PersistedSession,
+  Session,
+} from "../models/session.models"
 
 import {
   InvalidSessionSecretHashError,
@@ -44,13 +48,20 @@ export const ValidateSessionFactory = Effect.gen(function* () {
 
     const isInactive = yield* session.isInactive()
     if (isInactive) {
-      const updatedSession = Session.make({
+      const updatedSession = PersistedSession.make({
         ...session,
         lastVerifiedAt: yield* DateTime.nowAsDate,
       })
       yield* sessionRepository.update(updatedSession)
     }
 
-    return Option.some(session)
+    return Option.some(
+      Session.make({
+        id: session.id,
+        userId: session.userId,
+        lastVerifiedAt: session.lastVerifiedAt,
+        createdAt: session.createdAt,
+      })
+    )
   })
 })

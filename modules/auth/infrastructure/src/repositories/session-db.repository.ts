@@ -1,6 +1,10 @@
 import { Effect, Layer, Option } from "effect"
 import { eq } from "drizzle-orm"
-import { Session, type SessionId, SessionRepository } from "@auth/application"
+import {
+  PersistedSession,
+  type SessionId,
+  SessionRepository,
+} from "@auth/application"
 
 import { AuthDB } from "../db/context"
 import { sessionsTable } from "../schemas/session.schema"
@@ -12,14 +16,13 @@ export const SessionDBRepository = Layer.effect(
 
     return {
       create: Effect.fn("SessionRepository.create")(function* (
-        session: Session
+        session: PersistedSession
       ) {
         yield* db
           .insert(sessionsTable)
           .values({
             id: session.id,
             userId: session.userId,
-            role: session.role,
             secretHash: session.secretHash,
             lastVerifiedAt: session.lastVerifiedAt,
             createdAt: session.createdAt,
@@ -30,13 +33,12 @@ export const SessionDBRepository = Layer.effect(
       }),
 
       update: Effect.fn("SessionRepository.update")(function* (
-        session: Session
+        session: PersistedSession
       ) {
         yield* db
           .update(sessionsTable)
           .set({
             userId: session.userId,
-            role: session.role,
             secretHash: session.secretHash,
             lastVerifiedAt: session.lastVerifiedAt,
             createdAt: session.createdAt,
@@ -58,7 +60,7 @@ export const SessionDBRepository = Layer.effect(
           .pipe(Effect.orDie)
 
         return Option.fromNullishOr(session).pipe(
-          Option.map((session) => Session.make(session))
+          Option.map((session) => PersistedSession.make(session))
         )
       }),
 

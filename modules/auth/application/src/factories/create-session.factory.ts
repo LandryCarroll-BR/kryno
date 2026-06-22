@@ -5,7 +5,7 @@ import { UserId } from "../models/user.models"
 
 import {
   ParsedSessionToken,
-  Session,
+  PersistedSession,
   SessionWithToken,
 } from "../models/session.models"
 
@@ -24,7 +24,7 @@ export const CreateSessionFactory = Effect.gen(function* () {
     const secretHash = yield* sessionService.hashSessionSecret(secret)
     const token = ParsedSessionToken.make({ id, secret }).token
 
-    const session = Session.make({
+    const session = PersistedSession.make({
       id,
       userId,
       secretHash,
@@ -35,7 +35,10 @@ export const CreateSessionFactory = Effect.gen(function* () {
     const persistedSession = yield* sessionRepository.create(session)
 
     const sessionWithToken = SessionWithToken.make({
-      ...persistedSession,
+      id: persistedSession.id,
+      userId: persistedSession.userId,
+      lastVerifiedAt: persistedSession.lastVerifiedAt,
+      createdAt: persistedSession.createdAt,
       token,
     })
 
