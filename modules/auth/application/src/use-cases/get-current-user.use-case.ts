@@ -1,9 +1,9 @@
 import { Effect, Layer, Option, Schema } from "effect"
 import { Service } from "effect/Context"
 
-import type { User } from "../models/user.models"
-import { ValidateSessionFactory } from "../factories/validate-session.factory"
+import { CurrentUser } from "../models/user.models"
 import { UserRepository } from "../repositories/user.repository"
+import { ValidateSessionFactory } from "../factories/validate-session.factory"
 
 export const GetCurrentUserInputSchema = Schema.Struct({
   token: Schema.NonEmptyString,
@@ -16,7 +16,7 @@ export class GetCurrentUserUseCase extends Service<
   {
     readonly execute: (
       input: GetCurrentUserInput
-    ) => Effect.Effect<Option.Option<User>>
+    ) => Effect.Effect<Option.Option<CurrentUser>>
   }
 >()("@auth/application/GetCurrentUserUseCase") {
   static Live = Layer.effect(
@@ -34,7 +34,19 @@ export class GetCurrentUserUseCase extends Service<
               return Option.none()
             }
 
-            return yield* userRepository.findById(session.value.userId)
+            const user = yield* userRepository.findById(session.value.userId)
+
+            return Option.map(
+              user,
+              (user) =>
+                new CurrentUser({
+                  id: user.id,
+                  username: user.username,
+                  email: user.email,
+                  createdAt: user.createdAt,
+                  role: user.role,
+                })
+            )
           },
           Effect.catchTags({
             InvalidSessionSecretHashError: () => Effect.succeed(Option.none()),

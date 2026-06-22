@@ -101,11 +101,11 @@ Relevant files:
 
 ### Do not expose credential fields through current-user responses
 
-- [ ] Introduce a public/current-user model that excludes `passwordHash`.
-- [ ] Map the persisted `User` entity to that safe model in the use case.
-- [ ] Review all module exports to ensure credential-bearing models do not cross
+- [x] Introduce a public/current-user model that excludes `passwordHash`.
+- [x] Map the persisted `User` entity to that safe model in the use case.
+- [x] Review all module exports to ensure credential-bearing models do not cross
       presentation or API boundaries unnecessarily.
-- [ ] Add a test asserting that current-user results contain no password hash or
+- [x] Add a test asserting that current-user results contain no password hash or
       other credential material.
 
 Relevant files:

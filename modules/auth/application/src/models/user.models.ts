@@ -20,3 +20,11 @@ export class User extends Schema.Class<User>("User")({
   createdAt: Schema.Date,
   role: Role,
 }) {}
+
+export class CurrentUser extends Schema.Class<CurrentUser>("CurrentUser")({
+  id: UserId,
+  username: Schema.String,
+  email: Schema.String,
+  createdAt: Schema.Date,
+  role: Role,
+}) {}
