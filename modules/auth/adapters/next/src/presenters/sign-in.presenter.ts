@@ -1,10 +1,8 @@
-import type {
-  UserEmailNotFoundError,
-  UserPasswordInvalidError,
-} from "@auth/application"
-import { Effect, Layer } from "effect"
+import { Effect, Layer, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
 import type { SchemaError } from "effect/Schema"
+
+const formatSchemaIssue = SchemaIssue.makeFormatterStandardSchemaV1()
 
 export class SignInPresenter extends Service<
   SignInPresenter,
@@ -18,9 +16,12 @@ export class SignInPresenter extends Service<
       error: SchemaError
     ) => Effect.Effect<SignInViewModel>
 
-    readonly presentError: (
-      prev: SignInViewModel,
-      error: UserEmailNotFoundError | UserPasswordInvalidError
+    readonly presentEmailNotFound: (
+      prev: SignInViewModel
+    ) => Effect.Effect<SignInViewModel>
+
+    readonly presentPasswordInvalid: (
+      prev: SignInViewModel
     ) => Effect.Effect<SignInViewModel>
 
     readonly presentUnexpectedError: (
@@ -43,30 +44,49 @@ export class SignInPresenter extends Service<
             },
           }),
 
-        presentError: (prev, error) =>
+        presentEmailNotFound: (prev) =>
           Effect.succeed({
             status: "error",
-            error: error.message,
+            error: "Invalid email or password.",
             fields: {
               ...prev.fields,
             },
           }),
 
-        presentInputParseError: (prev, error) =>
+        presentPasswordInvalid: (prev) =>
           Effect.succeed({
+            status: "error",
+            error: "Invalid email or password.",
+            fields: {
+              ...prev.fields,
+            },
+          }),
+
+        presentInputParseError: (prev, error) => {
+          const { issues } = formatSchemaIssue(error.issue)
+          const errorFor = (field: keyof SignInViewModel["fields"]) => {
+            const message = issues.find(
+              (issue) => issue.path?.[0] === field
+            )?.message
+
+            return message === undefined ? {} : { error: message }
+          }
+
+          return Effect.succeed({
             status: "error",
             error: "Invalid input. Please check your data and try again.",
             fields: {
               email: {
                 value: prev.fields.email.value,
-                ...fieldError("email", error),
+                ...errorFor("email"),
               },
               password: {
                 value: prev.fields.password.value,
-                ...fieldError("password", error),
+                ...errorFor("password"),
               },
             },
-          }),
+          })
+        },
 
         presentUnexpectedError: (prev) =>
           Effect.succeed({
@@ -98,8 +118,3 @@ export type SignInViewModel = {
     }
   }
 }
-
-const fieldError = (key: string, error: SchemaError) =>
-  error.message.includes(key)
-    ? { error: error.message.split(`at ["${key}"]`)[0] }
-    : {}

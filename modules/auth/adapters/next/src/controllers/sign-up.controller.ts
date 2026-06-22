@@ -10,10 +10,10 @@ import {
 const UsernameSchema = Schema.Trim.pipe(
   Schema.check(
     Schema.isLengthBetween(3, 32, {
-      message: "username must be between 3 and 32 characters",
+      message: "Username must be between 3 and 32 characters.",
     }),
     Schema.isPattern(/^[a-zA-Z0-9_]+$/, {
-      message: "username may only contain letters, numbers, and underscores",
+      message: "Username may only contain letters, numbers, and underscores.",
     })
   )
 )
@@ -21,10 +21,10 @@ const UsernameSchema = Schema.Trim.pipe(
 const EmailSchema = Schema.Trim.pipe(
   Schema.check(
     Schema.isMaxLength(254, {
-      message: "email must be at most 254 characters",
+      message: "Email must be at most 254 characters.",
     }),
     Schema.isPattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {
-      message: "email must be a valid email address",
+      message: "Email must be a valid email address.",
     })
   )
 )
@@ -32,7 +32,7 @@ const EmailSchema = Schema.Trim.pipe(
 const PasswordSchema = Schema.String.pipe(
   Schema.check(
     Schema.isLengthBetween(8, 128, {
-      message: "password must be between 8 and 128 characters",
+      message: "Password must be between 8 and 128 characters.",
     })
   )
 )
@@ -49,7 +49,7 @@ export const SignUpControllerInputSchema = Schema.Struct({
         ? undefined
         : {
             path: ["confirmPassword"],
-            issue: "confirmPassword must match password",
+            issue: "Passwords must match.",
           }
     )
   ),
@@ -82,12 +82,15 @@ export const SignUpController = Effect.fn("SignUpController.make")(function* ({
       function* () {
         const parsedInput = yield* Schema.decodeUnknownEffect(
           SignUpControllerInputSchema
-        )({
-          email: formData.get("email"),
-          password: formData.get("password"),
-          username: formData.get("username"),
-          confirmPassword: formData.get("confirmPassword"),
-        })
+        )(
+          {
+            email: formData.get("email"),
+            password: formData.get("password"),
+            username: formData.get("username"),
+            confirmPassword: formData.get("confirmPassword"),
+          },
+          { errors: "all" }
+        )
 
         const session = yield* auth.signUp({
           email: parsedInput.email,
@@ -109,11 +112,11 @@ export const SignUpController = Effect.fn("SignUpController.make")(function* ({
         SchemaError: (error) =>
           signUpPresenter.presentInputParseError(submittedState, error),
 
-        UsernameAlreadyExistsError: (error) =>
-          signUpPresenter.presentError(submittedState, error),
+        UsernameAlreadyExistsError: () =>
+          signUpPresenter.presentUsernameAlreadyExists(submittedState),
 
-        UserEmailAlreadyExistsError: (error) =>
-          signUpPresenter.presentError(submittedState, error),
+        UserEmailAlreadyExistsError: () =>
+          signUpPresenter.presentEmailAlreadyExists(submittedState),
       })
     ),
   }

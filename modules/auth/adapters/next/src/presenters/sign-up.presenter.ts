@@ -1,11 +1,8 @@
-import type {
-  UserEmailAlreadyExistsError,
-  UsernameAlreadyExistsError,
-} from "@auth/application"
-
-import { Effect, Layer } from "effect"
+import { Effect, Layer, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
 import type { SchemaError } from "effect/Schema"
+
+const formatSchemaIssue = SchemaIssue.makeFormatterStandardSchemaV1()
 
 export class SignUpPresenter extends Service<
   SignUpPresenter,
@@ -19,9 +16,12 @@ export class SignUpPresenter extends Service<
       error: SchemaError
     ) => Effect.Effect<SignUpViewModel>
 
-    readonly presentError: (
-      prev: SignUpViewModel,
-      error: UsernameAlreadyExistsError | UserEmailAlreadyExistsError
+    readonly presentUsernameAlreadyExists: (
+      prev: SignUpViewModel
+    ) => Effect.Effect<SignUpViewModel>
+
+    readonly presentEmailAlreadyExists: (
+      prev: SignUpViewModel
     ) => Effect.Effect<SignUpViewModel>
 
     readonly presentUnexpectedError: (
@@ -40,7 +40,9 @@ export class SignUpPresenter extends Service<
               username: {
                 value: prev.fields.username.value,
               },
-              email: { value: prev.fields.email.value },
+              email: {
+                value: prev.fields.email.value,
+              },
               password: {
                 value: prev.fields.password.value,
               },
@@ -50,38 +52,57 @@ export class SignUpPresenter extends Service<
             },
           }),
 
-        presentError: (prev, error) =>
+        presentUsernameAlreadyExists: (prev) =>
           Effect.succeed({
             status: "error",
-            error: error.message,
+            error: "That username is already taken.",
             fields: {
               ...prev.fields,
             },
           }),
 
-        presentInputParseError: (prev, error) =>
+        presentEmailAlreadyExists: (prev) =>
           Effect.succeed({
+            status: "error",
+            error: "An account with that email already exists.",
+            fields: {
+              ...prev.fields,
+            },
+          }),
+
+        presentInputParseError: (prev, error) => {
+          const { issues } = formatSchemaIssue(error.issue)
+          const errorFor = (field: keyof SignUpViewModel["fields"]) => {
+            const message = issues.find(
+              (issue) => issue.path?.[0] === field
+            )?.message
+
+            return message === undefined ? {} : { error: message }
+          }
+
+          return Effect.succeed({
             status: "error",
             error: "Invalid input. Please check your data and try again.",
             fields: {
               username: {
                 value: prev.fields.username.value,
-                ...fieldError("username", error),
+                ...errorFor("username"),
               },
               email: {
                 value: prev.fields.email.value,
-                ...fieldError("email", error),
+                ...errorFor("email"),
               },
               password: {
                 value: prev.fields.password.value,
-                ...fieldError("password", error),
+                ...errorFor("password"),
               },
               confirmPassword: {
                 value: prev.fields.confirmPassword.value,
-                ...fieldError("confirmPassword", error),
+                ...errorFor("confirmPassword"),
               },
             },
-          }),
+          })
+        },
 
         presentUnexpectedError: (prev) =>
           Effect.succeed({
@@ -91,7 +112,9 @@ export class SignUpPresenter extends Service<
               username: {
                 value: prev.fields.username.value,
               },
-              email: { value: prev.fields.email.value },
+              email: {
+                value: prev.fields.email.value,
+              },
               password: {
                 value: prev.fields.password.value,
               },
@@ -127,8 +150,3 @@ export type SignUpViewModel = {
     }
   }
 }
-
-const fieldError = (key: string, error: SchemaError) =>
-  error.message.includes(key)
-    ? { error: error.message.split(`at ["${key}"]`)[0] }
-    : {}

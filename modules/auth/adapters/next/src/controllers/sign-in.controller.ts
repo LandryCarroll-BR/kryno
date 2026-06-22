@@ -10,10 +10,10 @@ import {
 const EmailSchema = Schema.Trim.pipe(
   Schema.check(
     Schema.isMaxLength(254, {
-      message: "email must be at most 254 characters",
+      message: "Email must be at most 254 characters.",
     }),
     Schema.isPattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {
-      message: "email must be a valid email address",
+      message: "Email must be a valid email address.",
     })
   )
 )
@@ -21,7 +21,7 @@ const EmailSchema = Schema.Trim.pipe(
 const PasswordSchema = Schema.String.pipe(
   Schema.check(
     Schema.isLengthBetween(8, 128, {
-      message: "password must be between 8 and 128 characters",
+      message: "Password must be between 8 and 128 characters.",
     })
   )
 )
@@ -55,12 +55,15 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
       function* () {
         const parsedInput = yield* Schema.decodeUnknownEffect(
           SignInControllerInputSchema
-        )({
-          email: formData.get("email"),
-          password: formData.get("password"),
-          username: formData.get("username"),
-          confirmPassword: formData.get("confirmPassword"),
-        })
+        )(
+          {
+            email: formData.get("email"),
+            password: formData.get("password"),
+            username: formData.get("username"),
+            confirmPassword: formData.get("confirmPassword"),
+          },
+          { errors: "all" }
+        )
 
         const session = yield* auth.signIn({
           email: parsedInput.email,
@@ -80,10 +83,10 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
       Effect.catchTags({
         SchemaError: (error) =>
           signInPresenter.presentInputParseError(submittedState, error),
-        UserEmailNotFoundError: (error) =>
-          signInPresenter.presentError(submittedState, error),
-        UserPasswordInvalidError: (error) =>
-          signInPresenter.presentError(submittedState, error),
+        UserEmailNotFoundError: () =>
+          signInPresenter.presentEmailNotFound(submittedState),
+        UserPasswordInvalidError: () =>
+          signInPresenter.presentPasswordInvalid(submittedState),
       })
     ),
   }
