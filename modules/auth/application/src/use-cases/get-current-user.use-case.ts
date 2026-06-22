@@ -1,12 +1,13 @@
 import { Effect, Layer, Option, Schema } from "effect"
 import { Service } from "effect/Context"
 
+import { SessionToken } from "../models/session.models"
 import { CurrentUser } from "../models/user.models"
 import { UserRepository } from "../repositories/user.repository"
 import { ValidateSessionFactory } from "../factories/validate-session.factory"
 
 export const GetCurrentUserInputSchema = Schema.Struct({
-  token: Schema.NonEmptyString,
+  token: SessionToken,
 }).annotate({ identifier: "GetCurrentUserInput" })
 
 export type GetCurrentUserInput = typeof GetCurrentUserInputSchema.Type
@@ -28,7 +29,11 @@ export class GetCurrentUserUseCase extends Service<
       return {
         execute: Effect.fn("GetCurrentUserUseCase.execute")(
           function* (input) {
-            const session = yield* validateSession(input)
+            const parsedInput = yield* Schema.decodeUnknownEffect(
+              GetCurrentUserInputSchema
+            )(input, { errors: "all" })
+
+            const session = yield* validateSession(parsedInput)
 
             if (Option.isNone(session)) {
               return Option.none()
@@ -49,6 +54,7 @@ export class GetCurrentUserUseCase extends Service<
             )
           },
           Effect.catchTags({
+            SchemaError: () => Effect.succeed(Option.none()),
             InvalidSessionSecretHashError: () => Effect.succeed(Option.none()),
             InvalidSessionTokenError: () => Effect.succeed(Option.none()),
             SessionNotFoundError: () => Effect.succeed(Option.none()),
