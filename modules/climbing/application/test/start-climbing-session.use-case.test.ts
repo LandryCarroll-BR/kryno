@@ -6,6 +6,9 @@ import {
   ClimbingSessionId,
   ClimbingSessionIdService,
   ClimbingSessionRepository,
+  CompletedClimbingSession,
+  EndClimbingSessionUseCase,
+  NoActiveClimbingSessionError,
   type ActiveClimbingSession,
   StartClimbingSessionUseCase,
   UnauthenticatedClimberError,
@@ -47,6 +50,28 @@ const TestInfrastructureLayer = Layer.mergeAll(
             next.set(session.climberId, session)
             return [Option.some(session), next]
           }),
+        endActiveByClimberId: (climberId: ClimberId, endedAt: Date) =>
+          Ref.modify(store, (sessions) => {
+            const activeSession = sessions.get(climberId)
+            if (activeSession === undefined) {
+              return [Option.none(), sessions]
+            }
+
+            const next = new Map(sessions)
+            next.delete(climberId)
+            return [
+              Option.some(
+                CompletedClimbingSession.make({
+                  id: activeSession.id,
+                  climberId: activeSession.climberId,
+                  attempts: activeSession.attempts,
+                  startedAt: activeSession.startedAt,
+                  endedAt,
+                })
+              ),
+              next,
+            ]
+          }),
       }
     })
   )
@@ -81,6 +106,49 @@ describe("StartClimbingSessionUseCase", () => {
   it.effect("fails when the climber is not authenticated", () =>
     Effect.gen(function* () {
       const useCase = yield* StartClimbingSessionUseCase
+      const error = yield* Effect.flip(
+        useCase.execute({ token: "invalid-token" })
+      )
+
+      expect(error._tag).toBe("UnauthenticatedClimberError")
+    }).pipe(Effect.provide(TestLayer))
+  )
+})
+
+describe("EndClimbingSessionUseCase", () => {
+  it.effect("ends the active session for the authenticated climber", () =>
+    Effect.gen(function* () {
+      const startUseCase = yield* StartClimbingSessionUseCase
+      const endUseCase = yield* EndClimbingSessionUseCase
+
+      const activeSession = yield* startUseCase.execute({
+        token: "valid-token",
+      })
+      const completedSession = yield* endUseCase.execute({
+        token: "valid-token",
+      })
+
+      expect(completedSession.id).toBe(activeSession.id)
+      expect(completedSession.climberId).toBe("climber-1")
+      expect(completedSession.endedAt).toBeInstanceOf(Date)
+    }).pipe(Effect.provide(TestLayer))
+  )
+
+  it.effect("fails when there is no active climbing session", () =>
+    Effect.gen(function* () {
+      const useCase = yield* EndClimbingSessionUseCase
+      const error = yield* Effect.flip(
+        useCase.execute({ token: "valid-token" })
+      )
+
+      expect(error).toBeInstanceOf(NoActiveClimbingSessionError)
+      expect(error._tag).toBe("NoActiveClimbingSessionError")
+    }).pipe(Effect.provide(TestLayer))
+  )
+
+  it.effect("fails when the climber is not authenticated", () =>
+    Effect.gen(function* () {
+      const useCase = yield* EndClimbingSessionUseCase
       const error = yield* Effect.flip(
         useCase.execute({ token: "invalid-token" })
       )

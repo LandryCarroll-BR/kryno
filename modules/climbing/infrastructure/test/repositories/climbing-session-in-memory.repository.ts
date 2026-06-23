@@ -1,6 +1,7 @@
 import {
   ClimbingSessionRepository,
   type ActiveClimbingSession,
+  CompletedClimbingSession,
 } from "@climbing/application"
 import { Effect, Layer, Option, Ref } from "effect"
 
@@ -31,6 +32,33 @@ export const ClimbingSessionInMemoryRepository = Layer.effect(
           })
         }
       ),
+
+      endActiveByClimberId: Effect.fn(
+        "ClimbingSessionRepository.endActiveByClimberId"
+      )(function* (climberId, endedAt) {
+        return yield* Ref.modify(store, (sessions) => {
+          const activeSession = sessions.get(climberId)
+          if (activeSession === undefined) {
+            return [Option.none(), sessions]
+          }
+
+          const next = new Map(sessions)
+          next.delete(climberId)
+
+          return [
+            Option.some(
+              CompletedClimbingSession.make({
+                id: activeSession.id,
+                climberId: activeSession.climberId,
+                attempts: activeSession.attempts,
+                startedAt: activeSession.startedAt,
+                endedAt,
+              })
+            ),
+            next,
+          ]
+        })
+      }),
     }
   })
 )

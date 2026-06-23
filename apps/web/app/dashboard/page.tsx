@@ -2,6 +2,8 @@ import { CurrentUserView } from "@/features/auth/components/current-user/current
 import { signOut } from "@/features/auth/components/sign-out/sign-out.action"
 import { SignOutView } from "@/features/auth/components/sign-out/sign-out.view"
 import { withAuthentication } from "@/features/auth/utils/with-authentication"
+import { endClimbingSession } from "@/features/climbing/components/end-climbing-session/end-climbing-session.action"
+import { EndClimbingSessionView } from "@/features/climbing/components/end-climbing-session/end-climbing-session.view"
 import { startClimbingSession } from "@/features/climbing/components/start-climbing-session/start-climbing-session.action"
 import { StartClimbingSessionView } from "@/features/climbing/components/start-climbing-session/start-climbing-session.view"
 
@@ -14,6 +16,7 @@ function Dashboard() {
           <SignOutView action={signOut} />
         </div>
         <StartClimbingSessionView action={startClimbingSession} />
+        <EndClimbingSessionView action={endClimbingSession} />
       </main>
     </div>
   )

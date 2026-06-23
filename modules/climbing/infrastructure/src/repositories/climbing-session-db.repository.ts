@@ -4,6 +4,7 @@ import { Effect, Layer, Option } from "effect"
 import {
   ActiveClimbingSession,
   ClimbingSessionRepository,
+  CompletedClimbingSession,
 } from "@climbing/application"
 
 import { ClimbingDB } from "../db/context"
@@ -17,6 +18,17 @@ const toActiveSession = (
     climberId: row.climberId,
     attempts: [],
     startedAt: row.startedAt,
+  })
+
+const toCompletedSession = (
+  row: typeof climbingSessionsTable.$inferSelect & { endedAt: Date }
+): CompletedClimbingSession =>
+  CompletedClimbingSession.make({
+    id: row.id,
+    climberId: row.climberId,
+    attempts: [],
+    startedAt: row.startedAt,
+    endedAt: row.endedAt,
   })
 
 export const ClimbingSessionDBRepository = Layer.effect(
@@ -60,6 +72,36 @@ export const ClimbingSessionDBRepository = Layer.effect(
           return Option.fromNullishOr(created).pipe(Option.map(toActiveSession))
         }
       ),
+
+      endActiveByClimberId: Effect.fn(
+        "ClimbingSessionRepository.endActiveByClimberId"
+      )(function* (climberId, endedAt) {
+        const [ended] = yield* db
+          .update(climbingSessionsTable)
+          .set({ endedAt })
+          .where(
+            and(
+              eq(climbingSessionsTable.climberId, climberId),
+              isNull(climbingSessionsTable.endedAt)
+            )
+          )
+          .returning()
+          .pipe(Effect.orDie)
+
+        if (ended === undefined) {
+          return Option.none()
+        }
+
+        if (ended.endedAt === null) {
+          return yield* Effect.die(
+            new Error("Ended climbing session update returned a null endedAt.")
+          )
+        }
+
+        return Option.some(
+          toCompletedSession({ ...ended, endedAt: ended.endedAt })
+        )
+      }),
     }
   })
 )
