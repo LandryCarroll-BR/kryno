@@ -1,5 +1,5 @@
-import { asc, desc, eq } from "drizzle-orm"
-import { Effect, Layer, Schema } from "effect"
+import { and, asc, desc, eq } from "drizzle-orm"
+import { Effect, Layer, Option, Schema } from "effect"
 
 import { Boulder, BoulderRepository } from "@climbing/application"
 
@@ -36,6 +36,24 @@ export const BoulderDBRepository = Layer.effect(
 
         return boulders.map(toBoulder)
       }),
+
+      findSavedById: Effect.fn("BoulderRepository.findSavedById")(
+        function* (climberId, boulderId) {
+          const [boulder] = yield* db
+            .select()
+            .from(bouldersTable)
+            .where(
+              and(
+                eq(bouldersTable.creatorClimberId, climberId),
+                eq(bouldersTable.id, boulderId)
+              )
+            )
+            .limit(1)
+            .pipe(Effect.orDie)
+
+          return Option.fromNullishOr(boulder).pipe(Option.map(toBoulder))
+        }
+      ),
 
       insert: Effect.fn("BoulderRepository.insert")(function* (boulder) {
         const [created] = yield* db

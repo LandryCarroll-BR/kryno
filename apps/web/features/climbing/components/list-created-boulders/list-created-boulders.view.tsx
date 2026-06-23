@@ -8,6 +8,8 @@ import {
 } from "@packages/ui/components/card"
 
 import { listCreatedBoulders } from "./list-created-boulders.query"
+import { logBoulderAttempt } from "../log-boulder-attempt/log-boulder-attempt.action"
+import { LogBoulderAttemptView } from "../log-boulder-attempt/log-boulder-attempt.view"
 
 const wallAngleLabels: Record<string, string> = {
   SLAB: "Slab",
@@ -34,7 +36,7 @@ export async function ListCreatedBouldersView() {
   const createdBoulders = await listCreatedBoulders()
 
   return (
-    <Card className="w-[min(40rem,calc(100vw-2rem))]">
+    <Card>
       <CardHeader>
         <CardTitle>Your boulders</CardTitle>
         <CardDescription>
@@ -65,9 +67,15 @@ export async function ListCreatedBouldersView() {
                     <span>{movementStyleLabels[boulder.movementStyle]}</span>
                   </div>
                 </div>
-                <p className="shrink-0 text-sm text-muted-foreground">
-                  Updated {formatDate(boulder.updatedAt)}
-                </p>
+                <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
+                  <p className="text-sm text-muted-foreground">
+                    Updated {formatDate(boulder.updatedAt)}
+                  </p>
+                  <LogBoulderAttemptView
+                    action={logBoulderAttempt}
+                    boulderId={boulder.id}
+                  />
+                </div>
               </article>
             ))}
           </div>

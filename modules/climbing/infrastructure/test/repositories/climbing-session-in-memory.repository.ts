@@ -1,4 +1,6 @@
 import {
+  AttemptOrdinal,
+  ClimbingAttempt,
   ClimbingSessionRepository,
   type ActiveClimbingSession,
   CompletedClimbingSession,
@@ -32,6 +34,38 @@ export const ClimbingSessionInMemoryRepository = Layer.effect(
           })
         }
       ),
+
+      insertAttemptIntoActiveSession: Effect.fn(
+        "ClimbingSessionRepository.insertAttemptIntoActiveSession"
+      )(function* ({ climberId, id, boulderId, outcome, occurredAt }) {
+        return yield* Ref.modify(store, (sessions) => {
+          const activeSession = sessions.get(climberId)
+          if (activeSession === undefined) {
+            return [Option.none(), sessions]
+          }
+
+          const ordinal = AttemptOrdinal.make(
+            activeSession.attempts.filter(
+              (attempt) => attempt.boulderId === boulderId
+            ).length + 1
+          )
+          const attempt = ClimbingAttempt.make({
+            id,
+            boulderId,
+            ordinal,
+            outcome,
+            occurredAt,
+          })
+          const updatedSession: ActiveClimbingSession = {
+            ...activeSession,
+            attempts: [...activeSession.attempts, attempt],
+          }
+          const next = new Map(sessions)
+          next.set(climberId, updatedSession)
+
+          return [Option.some(attempt), next]
+        })
+      }),
 
       endActiveByClimberId: Effect.fn(
         "ClimbingSessionRepository.endActiveByClimberId"

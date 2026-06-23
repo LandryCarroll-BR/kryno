@@ -68,7 +68,7 @@ export function CreateBoulderView({
   const [state, formAction, pending] = useActionState(action, initialState)
 
   return (
-    <Card className="w-[min(28rem,calc(100vw-2rem))]">
+    <Card>
       <CardHeader>
         <CardTitle>Create boulder</CardTitle>
         <CardDescription>Add a problem to climb later.</CardDescription>

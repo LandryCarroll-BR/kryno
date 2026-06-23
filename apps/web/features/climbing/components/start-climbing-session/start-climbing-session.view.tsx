@@ -47,7 +47,7 @@ export function StartClimbingSessionView({
   }
 
   return (
-    <Card className="w-[min(28rem,calc(100vw-2rem))]">
+    <Card>
       <CardHeader>
         <CardTitle>Ready to climb?</CardTitle>
         <CardDescription>

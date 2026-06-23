@@ -8,6 +8,7 @@ import {
   EndClimbingSessionUseCase,
   GetCurrentClimbingSessionUseCase,
   ListCreatedBouldersUseCase,
+  LogBoulderAttemptUseCase,
   StartClimbingSessionUseCase,
 } from "@climbing/application"
 
@@ -18,6 +19,7 @@ export class Climbing extends Service<
     readonly endClimbingSession: EndClimbingSessionUseCase["Service"]["execute"]
     readonly getCurrentClimbingSession: GetCurrentClimbingSessionUseCase["Service"]["execute"]
     readonly listCreatedBoulders: ListCreatedBouldersUseCase["Service"]["execute"]
+    readonly logBoulderAttempt: LogBoulderAttemptUseCase["Service"]["execute"]
     readonly startClimbingSession: StartClimbingSessionUseCase["Service"]["execute"]
   }
 >()("@climbing/component/Climbing") {
@@ -28,12 +30,15 @@ export class Climbing extends Service<
       const endClimbingSession = yield* EndClimbingSessionUseCase
       const getCurrentClimbingSession = yield* GetCurrentClimbingSessionUseCase
       const listCreatedBoulders = yield* ListCreatedBouldersUseCase
+      const logBoulderAttempt = yield* LogBoulderAttemptUseCase
       const startClimbingSession = yield* StartClimbingSessionUseCase
+
       return {
         createBoulder: createBoulder.execute,
         endClimbingSession: endClimbingSession.execute,
         getCurrentClimbingSession: getCurrentClimbingSession.execute,
         listCreatedBoulders: listCreatedBoulders.execute,
+        logBoulderAttempt: logBoulderAttempt.execute,
         startClimbingSession: startClimbingSession.execute,
       }
     })

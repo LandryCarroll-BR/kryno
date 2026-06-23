@@ -11,7 +11,7 @@ import { Suspense } from "react"
 async function Dashboard() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-col items-center gap-8">
+      <main className="grid grid-cols-2 gap-8 p-24">
         <div className="flex items-center gap-4">
           <Suspense>
             <CurrentUserView />

@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref } from "effect"
+import { Effect, Layer, Option, Ref } from "effect"
 import { BoulderRepository, type Boulder } from "@climbing/application"
 
 export const BoulderInMemoryRepository = Layer.effect(
@@ -24,6 +24,19 @@ export const BoulderInMemoryRepository = Layer.effect(
             return left.name.localeCompare(right.name)
           })
       }),
+
+      findSavedById: Effect.fn("BoulderRepository.findSavedById")(
+        function* (climberId, boulderId) {
+          const boulders = yield* Ref.get(store)
+          const boulder = boulders.get(boulderId)
+
+          if (boulder?.creatorClimberId !== climberId) {
+            return Option.none()
+          }
+
+          return Option.some(boulder)
+        }
+      ),
 
       insert: Effect.fn("BoulderRepository.insert")(function* (boulder) {
         return yield* Ref.update(store, (boulders) => {

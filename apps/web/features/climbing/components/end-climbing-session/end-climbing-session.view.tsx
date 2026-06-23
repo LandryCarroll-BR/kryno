@@ -40,7 +40,7 @@ export function EndClimbingSessionView({
 
   if (state.status === "ended") {
     return (
-      <Card className="w-[min(28rem,calc(100vw-2rem))]">
+      <Card>
         <CardHeader>
           <CardTitle>Session ended</CardTitle>
           <CardDescription>Your climbing session has ended.</CardDescription>

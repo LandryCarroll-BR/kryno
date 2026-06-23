@@ -2,6 +2,14 @@ import type { Effect, Option } from "effect"
 import { Service } from "effect/Context"
 
 import type { ClimberId } from "../models/climber.models"
+import type { BoulderId } from "../models/boulder.models"
+
+import type {
+  ClimbingAttempt,
+  ClimbingAttemptId,
+  ClimbingAttemptOutcome,
+} from "../models/climbing-attempt.models"
+
 import type {
   ActiveClimbingSession,
   CompletedClimbingSession,
@@ -17,6 +25,14 @@ export class ClimbingSessionRepository extends Service<
     readonly insertActive: (
       session: ActiveClimbingSession
     ) => Effect.Effect<Option.Option<ActiveClimbingSession>>
+
+    readonly insertAttemptIntoActiveSession: (input: {
+      readonly id: ClimbingAttemptId
+      readonly climberId: ClimberId
+      readonly boulderId: BoulderId
+      readonly outcome: ClimbingAttemptOutcome
+      readonly occurredAt: Date
+    }) => Effect.Effect<Option.Option<ClimbingAttempt>>
 
     readonly endActiveByClimberId: (
       climberId: ClimberId,
