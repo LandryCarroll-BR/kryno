@@ -45,3 +45,7 @@ pnpm run dev
 ```
 
 Open [localhost:3000](http://localhost:3000).
+
+## Auth Resources
+
+The authentication implementation was informed by [Lucia Auth](https://lucia-auth.com/) and [Pilcrow's Auth Book](https://auth.pilcrowonpaper.com/), which were used as educational resources and implementation guides.
