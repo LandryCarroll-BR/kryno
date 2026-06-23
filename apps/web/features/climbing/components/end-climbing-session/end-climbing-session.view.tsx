@@ -1,7 +1,10 @@
 "use client"
 
 import { useActionState } from "react"
-import type { EndClimbingSessionViewModel } from "@climbing/adapters-next"
+import type {
+  EndClimbingSessionViewModel,
+  GetCurrentClimbingSessionViewModel,
+} from "@climbing/adapters-next"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
 import {
@@ -16,15 +19,24 @@ const initialState: EndClimbingSessionViewModel = {
   status: "idle",
 }
 
+export type EndClimbingSessionState =
+  | EndClimbingSessionViewModel
+  | Extract<GetCurrentClimbingSessionViewModel, { status: "active" }>
+
 export function EndClimbingSessionView({
   action,
+  session,
 }: {
   action: (
-    previousState: EndClimbingSessionViewModel,
+    previousState: EndClimbingSessionState,
     formData: FormData
   ) => Promise<EndClimbingSessionViewModel>
+  session?: Extract<GetCurrentClimbingSessionViewModel, { status: "active" }>
 }) {
-  const [state, formAction, pending] = useActionState(action, initialState)
+  const [state, formAction, pending] = useActionState(
+    action,
+    session ?? initialState
+  )
 
   if (state.status === "ended") {
     return (
@@ -41,6 +53,33 @@ export function EndClimbingSessionView({
               timeStyle: "short",
             }).format(new Date(state.endedAt))}
           </p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (state.status === "active") {
+    return (
+      <Card className="w-[min(28rem,calc(100vw-2rem))]">
+        <CardHeader>
+          <CardTitle>Active session</CardTitle>
+          <CardDescription>
+            Your climbing session is in progress.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
+            Started at{" "}
+            {new Intl.DateTimeFormat(undefined, {
+              dateStyle: "medium",
+              timeStyle: "short",
+            }).format(new Date(state.startedAt))}
+          </p>
+          <form action={formAction}>
+            <Button type="submit" disabled={pending} variant="secondary">
+              {pending ? "Ending session..." : "End climbing session"}
+            </Button>
+          </form>
         </CardContent>
       </Card>
     )

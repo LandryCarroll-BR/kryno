@@ -2,6 +2,7 @@
 
 import "server-only"
 import { Effect } from "effect"
+import { revalidatePath } from "next/cache"
 import {
   ClimbingAdapterRuntime,
   StartClimbingSessionController,
@@ -11,10 +12,16 @@ import {
 export async function startClimbingSession(
   previousState: StartClimbingSessionViewModel
 ) {
-  return ClimbingAdapterRuntime.runPromise(
+  const result = await ClimbingAdapterRuntime.runPromise(
     StartClimbingSessionController({
       previousState,
       redirectUrl: "/sign-in",
     }).pipe(Effect.flatMap(({ handle }) => handle()))
   )
+
+  if (result.status === "success") {
+    revalidatePath("/dashboard")
+  }
+
+  return result
 }

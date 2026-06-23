@@ -5,6 +5,7 @@ import { InfrastructureLayer } from "@climbing/infrastructure"
 import {
   ApplicationLayer,
   EndClimbingSessionUseCase,
+  GetCurrentClimbingSessionUseCase,
   StartClimbingSessionUseCase,
 } from "@climbing/application"
 
@@ -12,6 +13,7 @@ export class Climbing extends Service<
   Climbing,
   {
     readonly endClimbingSession: EndClimbingSessionUseCase["Service"]["execute"]
+    readonly getCurrentClimbingSession: GetCurrentClimbingSessionUseCase["Service"]["execute"]
     readonly startClimbingSession: StartClimbingSessionUseCase["Service"]["execute"]
   }
 >()("@climbing/component/Climbing") {
@@ -19,9 +21,12 @@ export class Climbing extends Service<
     Climbing,
     Effect.gen(function* () {
       const endClimbingSession = yield* EndClimbingSessionUseCase
+      const getCurrentClimbingSession =
+        yield* GetCurrentClimbingSessionUseCase
       const startClimbingSession = yield* StartClimbingSessionUseCase
       return {
         endClimbingSession: endClimbingSession.execute,
+        getCurrentClimbingSession: getCurrentClimbingSession.execute,
         startClimbingSession: startClimbingSession.execute,
       }
     })

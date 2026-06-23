@@ -1,6 +1,7 @@
 import { Layer } from "effect"
 
 import { EndClimbingSessionUseCase } from "./use-cases/end-climbing-session.use-case"
+import { GetCurrentClimbingSessionUseCase } from "./use-cases/get-current-climbing-session.use-case"
 import { StartClimbingSessionUseCase } from "./use-cases/start-climbing-session.use-case"
 
 export * from "./errors/climber.errors"
@@ -18,9 +19,11 @@ export * from "./services/authenticated-climber.service"
 export * from "./services/climbing-session-id.service"
 
 export * from "./use-cases/end-climbing-session.use-case"
+export * from "./use-cases/get-current-climbing-session.use-case"
 export * from "./use-cases/start-climbing-session.use-case"
 
 export const ApplicationLayer = Layer.mergeAll(
   EndClimbingSessionUseCase.Live,
+  GetCurrentClimbingSessionUseCase.Live,
   StartClimbingSessionUseCase.Live
 )

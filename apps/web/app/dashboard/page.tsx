@@ -2,21 +2,22 @@ import { CurrentUserView } from "@/features/auth/components/current-user/current
 import { signOut } from "@/features/auth/components/sign-out/sign-out.action"
 import { SignOutView } from "@/features/auth/components/sign-out/sign-out.view"
 import { withAuthentication } from "@/features/auth/utils/with-authentication"
-import { endClimbingSession } from "@/features/climbing/components/end-climbing-session/end-climbing-session.action"
-import { EndClimbingSessionView } from "@/features/climbing/components/end-climbing-session/end-climbing-session.view"
-import { startClimbingSession } from "@/features/climbing/components/start-climbing-session/start-climbing-session.action"
-import { StartClimbingSessionView } from "@/features/climbing/components/start-climbing-session/start-climbing-session.view"
+import { GetCurrentClimbingSessionView } from "../../features/climbing/components/get-current-climbing-session/get-current-climbing-session.view"
+import { Suspense } from "react"
 
-function Dashboard() {
+async function Dashboard() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-col items-center gap-8">
         <div className="flex items-center gap-4">
-          <CurrentUserView />
-          <SignOutView action={signOut} />
+          <Suspense>
+            <CurrentUserView />
+            <SignOutView action={signOut} />
+          </Suspense>
         </div>
-        <StartClimbingSessionView action={startClimbingSession} />
-        <EndClimbingSessionView action={endClimbingSession} />
+        <Suspense>
+          <GetCurrentClimbingSessionView />
+        </Suspense>
       </main>
     </div>
   )
