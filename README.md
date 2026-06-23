@@ -1,52 +1,47 @@
-# shadcn/ui monorepo template
+# Kryno
 
-This is a React Router monorepo template with shadcn/ui.
+A climbing app built with Next.js, Effect, Drizzle, and PostgreSQL.
 
-## Adding components
+## Architecture
 
-To add components to your app, run the following command at the root of your `web` app:
+Kryno is a clean architecture modular monolith. Each domain lives in `modules/` with its application, infrastructure, adapters, and UI kept separate.
 
-```bash
-pnpm dlx shadcn@latest add button -c apps/web
+Create a module with:
+
+```sh
+pnpm turbo gen module
 ```
 
-This will place the ui components in the `packages/ui/src/components` directory.
+## UI
 
-## Using components
+The project uses Tailwind CSS for styling and shadcn/ui for reusable components. Shared components and global styles live in `packages/ui` and are imported through `@packages/ui`.
 
-To use the components in your app, import them from the `ui` package.
+Add shadcn components from the repository root:
 
-```tsx
-import { Button } from "@workspace/ui/components/button";
+```sh
+pnpm dlx shadcn@latest add button -c packages/ui
 ```
 
-## Local Postgres
+## Development
 
-Kryno's local persistence loop uses Docker Compose with non-secret development credentials. Copy `.env.example` into your local environment when you need database-backed development.
+Requires Node.js 24+, pnpm 11, and Docker.
 
-```bash
+Create the required local environment files:
+
+```sh
+cp apps/web/.env.example apps/web/.env
+cp modules/auth/infrastructure/.env.example modules/auth/infrastructure/.env
+cp modules/climbing/infrastructure/.env.example modules/climbing/infrastructure/.env
+```
+
+`AUTH_DATABASE_URL` connects the web app and auth migrations to PostgreSQL. `CLIMBING_DATABASE_URL` connects the climbing migrations. The examples contain the credentials created by `docker-compose.yml`.
+
+```sh
+pnpm install
 pnpm run db:up
+pnpm run db:auth:migrate
+pnpm run db:climbing:migrate
+pnpm run dev
 ```
 
-The local database runs on `localhost:5432` with `DATABASE_URL=postgres://kryno:kryno@localhost:5432/kryno`.
-
-Use the reset command when you want to discard local database state and recreate the `kryno` database:
-
-```bash
-pnpm run db:reset
-```
-
-Drizzle Studio is available as optional inspection tooling:
-
-```bash
-pnpm run db:studio
-```
-
-Migrations are explicit and owned by the database composition module. Generate reviewed migration SQL from the merged Kryno schema, then run migrations deliberately:
-
-```bash
-pnpm run db:generate
-pnpm run db:migrate
-```
-
-The application should not run migrations on app startup.
+Open [localhost:3000](http://localhost:3000).
