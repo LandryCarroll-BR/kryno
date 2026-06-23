@@ -1,11 +1,21 @@
 import { Schema } from "effect"
 
+import { ClimberId } from "./climber.models"
+
 export type BoulderId = typeof BoulderId.Type
 export const BoulderId = Schema.Trim.pipe(
   Schema.check(
     Schema.isMinLength(1, { message: "Boulder id must not be empty." })
   ),
   Schema.brand("BoulderId")
+)
+
+export type BoulderName = typeof BoulderName.Type
+export const BoulderName = Schema.Trim.pipe(
+  Schema.check(
+    Schema.isMinLength(1, { message: "Boulder name must not be empty." })
+  ),
+  Schema.brand("BoulderName")
 )
 
 export const BoulderGrade = Schema.Literals([
@@ -46,17 +56,11 @@ export const MovementStyle = Schema.Enum({
 })
 export type MovementStyle = typeof MovementStyle.Type
 
-export const WallAngles = Schema.NonEmptyArray(WallAngle).check(
-  Schema.isUnique({ message: "Wall angles must be unique." })
-)
-
-export const MovementStyles = Schema.NonEmptyArray(MovementStyle).check(
-  Schema.isUnique({ message: "Movement styles must be unique." })
-)
-
 export class Boulder extends Schema.Class<Boulder>("Boulder")({
   id: BoulderId,
+  creatorClimberId: ClimberId,
+  name: BoulderName,
   grade: BoulderGrade,
-  wallAngles: WallAngles,
-  movementStyles: MovementStyles,
+  wallAngle: WallAngle,
+  movementStyle: MovementStyle,
 }) {}

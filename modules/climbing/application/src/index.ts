@@ -1,5 +1,6 @@
 import { Layer } from "effect"
 
+import { CreateBoulderUseCase } from "./use-cases/create-boulder.use-case"
 import { EndClimbingSessionUseCase } from "./use-cases/end-climbing-session.use-case"
 import { GetCurrentClimbingSessionUseCase } from "./use-cases/get-current-climbing-session.use-case"
 import { StartClimbingSessionUseCase } from "./use-cases/start-climbing-session.use-case"
@@ -13,16 +14,20 @@ export * from "./models/climbing-attempt.models"
 export * from "./models/climbing-moves.models"
 export * from "./models/climbing-session.models"
 
+export * from "./repositories/boulder.repository"
 export * from "./repositories/climbing-session.repository"
 
 export * from "./services/authenticated-climber.service"
+export * from "./services/boulder-id.service"
 export * from "./services/climbing-session-id.service"
 
+export * from "./use-cases/create-boulder.use-case"
 export * from "./use-cases/end-climbing-session.use-case"
 export * from "./use-cases/get-current-climbing-session.use-case"
 export * from "./use-cases/start-climbing-session.use-case"
 
 export const ApplicationLayer = Layer.mergeAll(
+  CreateBoulderUseCase.Live,
   EndClimbingSessionUseCase.Live,
   GetCurrentClimbingSessionUseCase.Live,
   StartClimbingSessionUseCase.Live

@@ -1,0 +1,194 @@
+{
+  "version": "8",
+  "dialect": "postgres",
+  "id": "a451d6c3-8525-4cfd-986d-7c53641f111c",
+  "prevIds": [
+    "6a2b0a1d-d03f-4e0a-8341-5c8faa0d93d4"
+  ],
+  "ddl": [
+    {
+      "isRlsEnabled": false,
+      "name": "boulders",
+      "entityType": "tables",
+      "schema": "climbing"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "climbing_sessions",
+      "entityType": "tables",
+      "schema": "climbing"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 1,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "boulders"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "creator_climber_id",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "boulders"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "boulders"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "grade",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "boulders"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "wall_angles",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "boulders"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 1,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "movement_styles",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "boulders"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "climbing_sessions"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "climber_id",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "climbing_sessions"
+    },
+    {
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "started_at",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "climbing_sessions"
+    },
+    {
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "ended_at",
+      "entityType": "columns",
+      "schema": "climbing",
+      "table": "climbing_sessions"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "climber_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": "\"ended_at\" is null",
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "climbing_sessions_one_active_per_climber",
+      "entityType": "indexes",
+      "schema": "climbing",
+      "table": "climbing_sessions"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "boulders_pkey",
+      "schema": "climbing",
+      "table": "boulders",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "climbing_sessions_pkey",
+      "schema": "climbing",
+      "table": "climbing_sessions",
+      "entityType": "pks"
+    }
+  ],
+  "renames": []
+}

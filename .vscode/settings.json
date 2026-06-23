@@ -110,7 +110,8 @@
     "modules/climbing/adapters/next/.turbo",
     "modules/climbing/adapters/next/node_modules",
     "modules/climbing/component/.turbo",
-    "modules/climbing/component/node_modules"
+    "modules/climbing/component/node_modules",
+    "modules/climbing/component/test/create-boulder.test.ts"
   ],
   "typescript.preferences.importModuleSpecifier": "relative",
   "javascript.preferences.importModuleSpecifier": "relative"
