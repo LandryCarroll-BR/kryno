@@ -51,7 +51,13 @@
     "pnpm-lock.yaml": true,
     "modules/auth/infrastructure/node_modules": true,
     "modules/climbing/infrastructure/.turbo": true,
-    "modules/climbing/infrastructure/node_modules": true
+    "modules/climbing/infrastructure/node_modules": true,
+    "modules/climbing/application/.turbo": true,
+    "modules/climbing/application/node_modules": true,
+    "modules/climbing/adapters/next/.turbo": true,
+    "modules/climbing/adapters/next/node_modules": true,
+    "modules/climbing/component/.turbo": true,
+    "modules/climbing/component/node_modules": true
   },
   "hide-files.files": [
     ".gitignore",
@@ -98,6 +104,14 @@
     "pnpm-lock.yaml",
     "modules/auth/infrastructure/node_modules",
     "modules/climbing/infrastructure/.turbo",
-    "modules/climbing/infrastructure/node_modules"
-  ]
+    "modules/climbing/infrastructure/node_modules",
+    "modules/climbing/application/.turbo",
+    "modules/climbing/application/node_modules",
+    "modules/climbing/adapters/next/.turbo",
+    "modules/climbing/adapters/next/node_modules",
+    "modules/climbing/component/.turbo",
+    "modules/climbing/component/node_modules"
+  ],
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "javascript.preferences.importModuleSpecifier": "relative"
 }
