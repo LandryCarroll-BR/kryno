@@ -1,20 +1,25 @@
 import { Effect, Schema } from "effect"
+import { Headers, Navigation } from "@packages/effect-next"
 import { SignOutInputSchema } from "@auth/application"
 import { Auth } from "@auth/component"
-import { Headers, Navigation } from "@packages/effect-next"
 
 export const SignOutControllerInputSchema = SignOutInputSchema.annotate({
   identifier: "SignOutControllerInput",
 })
 
 export const SignOutController = Effect.fn("SignOutController.make")(
-  function* () {
+  function* ({ redirectUrl }: { redirectUrl: string }) {
     const auth = yield* Auth
     const cookies = yield* Headers.Cookies
 
+    const handleDelete = Effect.gen(function* () {
+      cookies.delete({ name: "authToken", path: "/" })
+      return yield* Navigation.Redirect(redirectUrl)
+    })
+
     return {
       handle: Effect.fn("SignOutController.handle")(
-        function* ({ redirectUrl }: { redirectUrl: string }) {
+        function* () {
           const authToken = cookies.get("authToken")
 
           if (authToken?.value) {
@@ -23,13 +28,9 @@ export const SignOutController = Effect.fn("SignOutController.make")(
             }).pipe(Effect.flatMap((input) => auth.signOut(input)))
           }
 
-          cookies.delete({ name: "authToken", path: "/" })
-          return yield* Navigation.Redirect(redirectUrl)
+          return yield* handleDelete
         },
-        Effect.catchTag("SchemaError", () => Effect.void),
-        Effect.catchCause((cause) =>
-          Effect.logError("Failed to revoke session during sign-out", cause)
-        )
+        Effect.catch(() => handleDelete)
       ),
     }
   }

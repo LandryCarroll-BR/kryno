@@ -7,8 +7,8 @@ import { AuthAdapterRuntime } from "@auth/adapters-next"
 
 export async function signOut() {
   return AuthAdapterRuntime.runPromise(
-    SignOutController().pipe(
-      Effect.flatMap(({ handle }) => handle({ redirectUrl: "/sign-in" }))
+    SignOutController({ redirectUrl: "/sign-in" }).pipe(
+      Effect.flatMap(({ handle }) => handle())
     )
   )
 }
