@@ -53,7 +53,7 @@ export class StartClimbingSessionUseCase extends Service<
             const id = yield* sessionIdService.generate()
             const startedAt = yield* DateTime.nowAsDate
 
-            return yield* sessionRepository.createActive(
+            const insertedSession = yield* sessionRepository.insertActive(
               ActiveClimbingSession.make({
                 id,
                 climberId,
@@ -61,6 +61,23 @@ export class StartClimbingSessionUseCase extends Service<
                 startedAt,
               })
             )
+
+            if (Option.isSome(insertedSession)) {
+              return insertedSession.value
+            }
+
+            const concurrentlyStartedSession =
+              yield* sessionRepository.findActiveByClimberId(climberId)
+
+            return yield* Option.match(concurrentlyStartedSession, {
+              onNone: () =>
+                Effect.die(
+                  new Error(
+                    "Active climbing session insertion conflicted without a persisted active session."
+                  )
+                ),
+              onSome: Effect.succeed,
+            })
           }
         ),
       }

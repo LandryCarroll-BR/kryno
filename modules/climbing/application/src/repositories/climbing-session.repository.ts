@@ -10,8 +10,8 @@ export class ClimbingSessionRepository extends Service<
     readonly findActiveByClimberId: (
       climberId: ClimberId
     ) => Effect.Effect<Option.Option<ActiveClimbingSession>>
-    readonly createActive: (
+    readonly insertActive: (
       session: ActiveClimbingSession
-    ) => Effect.Effect<ActiveClimbingSession>
+    ) => Effect.Effect<Option.Option<ActiveClimbingSession>>
   }
 >()("@climbing/application/ClimbingSessionRepository") {}

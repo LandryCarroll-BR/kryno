@@ -5,7 +5,7 @@ import {
   ClimbingSessionId,
   ClimbingSessionRepository,
 } from "@climbing/application"
-import { Effect } from "effect"
+import { Effect, Option } from "effect"
 
 import { ClimbingSessionInMemoryRepository } from "./repositories/climbing-session-in-memory.repository"
 
@@ -16,12 +16,12 @@ describe("ClimbingSessionInMemoryRepository", () => {
       const climberId = ClimberId.make("climber-1")
       const startedAt = new Date("2026-06-23T12:00:00.000Z")
 
-      const sessions = yield* Effect.all(
+      const insertions = yield* Effect.all(
         [
           ClimbingSessionId.make("climbing-session-1"),
           ClimbingSessionId.make("climbing-session-2"),
         ].map((id) =>
-          repository.createActive(
+          repository.insertActive(
             ActiveClimbingSession.make({
               id,
               climberId,
@@ -33,7 +33,8 @@ describe("ClimbingSessionInMemoryRepository", () => {
         { concurrency: "unbounded" }
       )
 
-      expect(sessions[0]).toEqual(sessions[1])
+      expect(insertions.filter(Option.isSome)).toHaveLength(1)
+      expect(insertions.filter(Option.isNone)).toHaveLength(1)
     }).pipe(Effect.provide(ClimbingSessionInMemoryRepository))
   )
 })

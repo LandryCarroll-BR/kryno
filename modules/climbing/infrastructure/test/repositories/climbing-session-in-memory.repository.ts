@@ -17,17 +17,17 @@ export const ClimbingSessionInMemoryRepository = Layer.effect(
         return Option.fromNullishOr(sessions.get(climberId))
       }),
 
-      createActive: Effect.fn("ClimbingSessionRepository.createActive")(
+      insertActive: Effect.fn("ClimbingSessionRepository.insertActive")(
         function* (session) {
           return yield* Ref.modify(store, (sessions) => {
             const existing = sessions.get(session.climberId)
             if (existing !== undefined) {
-              return [existing, sessions]
+              return [Option.none(), sessions]
             }
 
             const next = new Map(sessions)
             next.set(session.climberId, session)
-            return [session, next]
+            return [Option.some(session), next]
           })
         }
       ),

@@ -37,15 +37,15 @@ const TestInfrastructureLayer = Layer.mergeAll(
               Option.fromNullishOr(sessions.get(climberId))
             )
           ),
-        createActive: (session: ActiveClimbingSession) =>
+        insertActive: (session: ActiveClimbingSession) =>
           Ref.modify(store, (sessions) => {
             const existing = sessions.get(session.climberId)
             if (existing !== undefined) {
-              return [existing, sessions]
+              return [Option.none(), sessions]
             }
             const next = new Map(sessions)
             next.set(session.climberId, session)
-            return [session, next]
+            return [Option.some(session), next]
           }),
       }
     })

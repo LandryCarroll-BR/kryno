@@ -1,9 +1,9 @@
 import { and, eq, isNull } from "drizzle-orm"
 import { Effect, Layer, Option } from "effect"
+
 import {
   ActiveClimbingSession,
   ClimbingSessionRepository,
-  type ClimberId,
 } from "@climbing/application"
 
 import { ClimbingDB } from "../db/context"
@@ -24,9 +24,10 @@ export const ClimbingSessionDBRepository = Layer.effect(
   Effect.gen(function* () {
     const db = yield* ClimbingDB
 
-    const findActiveByClimberId = Effect.fn(
-      "ClimbingSessionRepository.findActiveByClimberId"
-    )(function* (climberId: ClimberId) {
+    return {
+      findActiveByClimberId: Effect.fn(
+        "ClimbingSessionRepository.findActiveByClimberId"
+      )(function* (climberId) {
         const [session] = yield* db
           .select()
           .from(climbingSessionsTable)
@@ -40,11 +41,9 @@ export const ClimbingSessionDBRepository = Layer.effect(
           .pipe(Effect.orDie)
 
         return Option.fromNullishOr(session).pipe(Option.map(toActiveSession))
-    })
+      }),
 
-    return {
-      findActiveByClimberId,
-      createActive: Effect.fn("ClimbingSessionRepository.createActive")(
+      insertActive: Effect.fn("ClimbingSessionRepository.insertActive")(
         function* (session) {
           const [created] = yield* db
             .insert(climbingSessionsTable)
@@ -58,20 +57,7 @@ export const ClimbingSessionDBRepository = Layer.effect(
             .returning()
             .pipe(Effect.orDie)
 
-          if (created !== undefined) {
-            return toActiveSession(created)
-          }
-
-          const existing = yield* findActiveByClimberId(session.climberId)
-          return yield* Option.match(existing, {
-            onNone: () =>
-              Effect.die(
-                new Error(
-                  "Active climbing session conflict occurred without an existing session."
-                )
-              ),
-            onSome: Effect.succeed,
-          })
+          return Option.fromNullishOr(created).pipe(Option.map(toActiveSession))
         }
       ),
     }

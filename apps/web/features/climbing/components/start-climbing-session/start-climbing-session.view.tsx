@@ -31,9 +31,7 @@ export function StartClimbingSessionView({
       <Card className="w-[min(28rem,calc(100vw-2rem))]">
         <CardHeader>
           <CardTitle>Session started</CardTitle>
-          <CardDescription>
-            Your climbing session is active.
-          </CardDescription>
+          <CardDescription>Your climbing session is active.</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
