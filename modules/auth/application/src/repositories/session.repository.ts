@@ -8,12 +8,15 @@ export class SessionRepository extends Service<
     readonly create: (
       session: PersistedSession
     ) => Effect.Effect<PersistedSession>
+
     readonly update: (
       session: PersistedSession
     ) => Effect.Effect<PersistedSession>
+
     readonly findById: (
       id: SessionId
     ) => Effect.Effect<Option.Option<PersistedSession>>
+
     readonly delete: (id: SessionId) => Effect.Effect<SessionId>
   }
 >()("@auth/application/SessionRepository") {}

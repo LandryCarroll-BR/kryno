@@ -1,10 +1,17 @@
 import { Effect, Layer, Option, Schema } from "effect"
 import { Service } from "effect/Context"
+import type { SchemaError } from "effect/Schema"
 
 import { SessionToken } from "../models/session.models"
 import { CurrentUser } from "../models/user.models"
 import { UserRepository } from "../repositories/user.repository"
 import { ValidateSessionFactory } from "../factories/validate-session.factory"
+
+import type {
+  InvalidSessionSecretHashError,
+  InvalidSessionTokenError,
+  SessionNotFoundError,
+} from "../errors/session.errors"
 
 export const GetCurrentUserInputSchema = Schema.Struct({
   token: SessionToken,
@@ -17,7 +24,13 @@ export class GetCurrentUserUseCase extends Service<
   {
     readonly execute: (
       input: GetCurrentUserInput
-    ) => Effect.Effect<Option.Option<CurrentUser>>
+    ) => Effect.Effect<
+      Option.Option<CurrentUser>,
+      | SchemaError
+      | InvalidSessionSecretHashError
+      | InvalidSessionTokenError
+      | SessionNotFoundError
+    >
   }
 >()("@auth/application/GetCurrentUserUseCase") {
   static Live = Layer.effect(
@@ -27,39 +40,31 @@ export class GetCurrentUserUseCase extends Service<
       const userRepository = yield* UserRepository
 
       return {
-        execute: Effect.fn("GetCurrentUserUseCase.execute")(
-          function* (input) {
-            const parsedInput = yield* Schema.decodeUnknownEffect(
-              GetCurrentUserInputSchema
-            )(input, { errors: "all" })
+        execute: Effect.fn("GetCurrentUserUseCase.execute")(function* (input) {
+          const parsedInput = yield* Schema.decodeUnknownEffect(
+            GetCurrentUserInputSchema
+          )(input, { errors: "all" })
 
-            const session = yield* validateSession(parsedInput)
+          const session = yield* validateSession(parsedInput)
 
-            if (Option.isNone(session)) {
-              return Option.none()
-            }
+          if (Option.isNone(session)) {
+            return Option.none()
+          }
 
-            const user = yield* userRepository.findById(session.value.userId)
+          const user = yield* userRepository.findById(session.value.userId)
 
-            return Option.map(
-              user,
-              (user) =>
-                new CurrentUser({
-                  id: user.id,
-                  username: user.username,
-                  email: user.email,
-                  createdAt: user.createdAt,
-                  role: user.role,
-                })
-            )
-          },
-          Effect.catchTags({
-            SchemaError: () => Effect.succeed(Option.none()),
-            InvalidSessionSecretHashError: () => Effect.succeed(Option.none()),
-            InvalidSessionTokenError: () => Effect.succeed(Option.none()),
-            SessionNotFoundError: () => Effect.succeed(Option.none()),
-          })
-        ),
+          return Option.map(
+            user,
+            (user) =>
+              new CurrentUser({
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                createdAt: user.createdAt,
+                role: user.role,
+              })
+          )
+        }),
       }
     })
   )

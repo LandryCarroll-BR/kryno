@@ -31,12 +31,12 @@ Relevant file:
 - [x] Stop treating the presence of `authToken` as proof of authentication.
 - [x] Add a reusable server-side guard that validates the session and loads the
       current user.
-- [ ] Use the guard in every protected page, route handler, server action, and
+- [x] Use the guard in every protected page, route handler, server action, and
       data query.
-- [ ] Redirect browser page requests with invalid sessions to `/sign-in`.
-- [ ] Reject unauthorized server actions and API requests rather than merely
+- [x] Redirect browser page requests with invalid sessions to `/sign-in`.
+- [x] Reject unauthorized server actions and API requests rather than merely
       hiding UI.
-- [ ] Delete invalid, expired, or revoked authentication cookies when possible.
+- [x] Delete invalid, expired, or revoked authentication cookies when possible.
 - [x] Keep the proxy cookie check only as an optional early redirect.
 - [ ] Add tests showing that forged, malformed, expired, and revoked cookies
       cannot access protected resources.

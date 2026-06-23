@@ -13,6 +13,8 @@ export async function signIn(
     SignInController({
       previousState,
       formData,
-    }).pipe(Effect.flatMap(({ handle }) => handle()))
+    }).pipe(
+      Effect.flatMap(({ handle }) => handle({ redirectUrl: "/dashboard" }))
+    )
   )
 }

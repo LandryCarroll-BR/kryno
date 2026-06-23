@@ -1,7 +1,9 @@
 import { Effect, Schema } from "effect"
-import { Headers, Navigation } from "@packages/effect-next"
+import { Navigation } from "@packages/effect-next"
 import { SignInInputSchema } from "@auth/application"
 import { Auth } from "@auth/component"
+
+import { SetAuthCookie } from "../factories/set-auth-cookie.factory"
 
 import {
   SignInPresenter,
@@ -21,7 +23,7 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
 }) {
   const auth = yield* Auth
   const signInPresenter = yield* SignInPresenter
-  const cookies = yield* Headers.Cookies
+  const setAuthCookie = yield* SetAuthCookie
 
   const submittedState: SignInViewModel = {
     ...previousState,
@@ -33,7 +35,7 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
 
   return {
     handle: Effect.fn("SignInController.handle")(
-      function* () {
+      function* ({ redirectUrl }: { redirectUrl: string }) {
         const parsedInput = yield* Schema.decodeUnknownEffect(
           SignInControllerInputSchema
         )(
@@ -49,15 +51,9 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
           password: parsedInput.password,
         })
 
-        cookies.set("authToken", session.token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          path: "/",
-          maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
-        })
+        yield* setAuthCookie({ session })
 
-        return yield* Navigation.Redirect("/dashboard")
+        return yield* Navigation.Redirect(redirectUrl)
       },
       Effect.catchTags({
         SchemaError: (error) =>

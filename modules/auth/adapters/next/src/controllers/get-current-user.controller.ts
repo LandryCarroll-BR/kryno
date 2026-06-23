@@ -1,7 +1,7 @@
 import { Effect, Option, Schema } from "effect"
 import { GetCurrentUserInputSchema } from "@auth/application"
 import { Auth } from "@auth/component"
-import { Headers } from "@packages/effect-next"
+import { Headers, Navigation } from "@packages/effect-next"
 
 export const GetCurrentUserControllerInputSchema =
   GetCurrentUserInputSchema.annotate({
@@ -10,9 +10,11 @@ export const GetCurrentUserControllerInputSchema =
 
 export const GetCurrentUserController = Effect.fn(
   "GetCurrentUserController.make"
-)(function* () {
+)(function* ({ redirectUrl }: { redirectUrl: string }) {
   const auth = yield* Auth
   const cookies = yield* Headers.Cookies
+
+  const handleNoUser = Navigation.Redirect(redirectUrl)
 
   return {
     handle: Effect.fn("GetCurrentUserController.handle")(
@@ -20,16 +22,22 @@ export const GetCurrentUserController = Effect.fn(
         const authToken = cookies.get("authToken")
 
         if (!authToken?.value) {
-          return Option.none()
+          return yield* handleNoUser
         }
 
         const parsedInput = yield* Schema.decodeUnknownEffect(
           GetCurrentUserControllerInputSchema
         )({ token: authToken.value })
 
-        return yield* auth.getCurrentUser(parsedInput)
+        const currentUser = yield* auth.getCurrentUser(parsedInput)
+
+        if (Option.isNone(currentUser)) {
+          return yield* handleNoUser
+        }
+
+        return currentUser.value
       },
-      Effect.catchTag("SchemaError", () => Effect.succeed(Option.none()))
+      Effect.catch(() => handleNoUser)
     ),
   }
 })

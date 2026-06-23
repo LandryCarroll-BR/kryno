@@ -14,7 +14,7 @@ export const SignOutController = Effect.fn("SignOutController.make")(
 
     return {
       handle: Effect.fn("SignOutController.handle")(
-        function* () {
+        function* ({ redirectUrl }: { redirectUrl: string }) {
           const authToken = cookies.get("authToken")
 
           if (authToken?.value) {
@@ -24,7 +24,7 @@ export const SignOutController = Effect.fn("SignOutController.make")(
           }
 
           cookies.delete({ name: "authToken", path: "/" })
-          return yield* Navigation.Redirect("/sign-in")
+          return yield* Navigation.Redirect(redirectUrl)
         },
         Effect.catchTag("SchemaError", () => Effect.void),
         Effect.catchCause((cause) =>
