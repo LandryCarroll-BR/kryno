@@ -28,10 +28,8 @@ export const SignUpControllerInputSchema = Schema.Struct({
 )
 
 export const SignUpController = Effect.fn("SignUpController.make")(function* ({
-  previousState,
   formData,
 }: {
-  previousState: SignUpViewModel
   formData: FormData
 }) {
   const auth = yield* Auth
@@ -39,12 +37,12 @@ export const SignUpController = Effect.fn("SignUpController.make")(function* ({
   const setAuthCookie = yield* SetAuthCookie
 
   const submittedState: SignUpViewModel = {
-    ...previousState,
+    status: "loading",
     fields: {
-      username: { value: getString(formData, "username") },
-      email: { value: getString(formData, "email") },
-      password: { value: "" },
-      confirmPassword: { value: "" },
+      username: { status: "valid", value: getString(formData, "username") },
+      email: { status: "valid", value: getString(formData, "email") },
+      password: { status: "valid", value: "" },
+      confirmPassword: { status: "valid", value: "" },
     },
   }
 

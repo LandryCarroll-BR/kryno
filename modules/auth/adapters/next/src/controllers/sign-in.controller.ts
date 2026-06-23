@@ -15,10 +15,8 @@ export const SignInControllerInputSchema = SignInInputSchema.annotate({
 })
 
 export const SignInController = Effect.fn("SignInController.make")(function* ({
-  previousState,
   formData,
 }: {
-  previousState: SignInViewModel
   formData: FormData
 }) {
   const auth = yield* Auth
@@ -26,10 +24,10 @@ export const SignInController = Effect.fn("SignInController.make")(function* ({
   const setAuthCookie = yield* SetAuthCookie
 
   const submittedState: SignInViewModel = {
-    ...previousState,
+    status: "loading",
     fields: {
-      email: { value: getString(formData, "email") },
-      password: { value: "" },
+      email: { status: "valid", value: getString(formData, "email") },
+      password: { status: "valid", value: "" },
     },
   }
 

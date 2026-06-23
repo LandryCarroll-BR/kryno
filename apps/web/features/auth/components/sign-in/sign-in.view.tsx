@@ -25,10 +25,10 @@ import {
 const initialState = {
   status: "idle",
   fields: {
-    email: { value: "" },
-    password: { value: "" },
+    email: { status: "valid", value: "" },
+    password: { status: "valid", value: "" },
   },
-} as const
+} as const satisfies SignInViewModel
 
 export function SignInView({
   action,
@@ -39,6 +39,12 @@ export function SignInView({
   ) => Promise<SignInViewModel>
 }) {
   const [state, formAction, pending] = useActionState(action, initialState)
+  const emailError =
+    state.fields.email.status === "invalid" ? state.fields.email.error : ""
+  const passwordError =
+    state.fields.password.status === "invalid"
+      ? state.fields.password.error
+      : ""
 
   return (
     <Card className="w-[min(28rem,calc(100vw-2rem))]">
@@ -51,13 +57,13 @@ export function SignInView({
       <CardContent>
         <form action={formAction}>
           <FieldGroup>
-            {state.error && (
+            {state.status === "error" && (
               <Alert variant="destructive">
                 <AlertDescription>{state.error}</AlertDescription>
               </Alert>
             )}
 
-            <Field data-invalid={Boolean(state.fields.email.error)}>
+            <Field data-invalid={Boolean(emailError)}>
               <FieldLabel htmlFor="email">Email address</FieldLabel>
               <Input
                 id="email"
@@ -65,32 +71,26 @@ export function SignInView({
                 type="email"
                 autoComplete="email"
                 defaultValue={state.fields.email.value}
-                aria-invalid={Boolean(state.fields.email.error)}
-                aria-describedby={
-                  state.fields.email.error ? "email-error" : undefined
-                }
+                aria-invalid={Boolean(emailError)}
+                aria-describedby={emailError ? "email-error" : undefined}
                 placeholder="you@example.com"
               />
-              <FieldError id="email-error">
-                {state.fields.email.error}
-              </FieldError>
+              <FieldError id="email-error">{emailError}</FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fields.password.error)}>
+            <Field data-invalid={Boolean(passwordError)}>
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                aria-invalid={Boolean(state.fields.password.error)}
+                aria-invalid={Boolean(passwordError)}
                 aria-describedby={
-                  state.fields.password.error ? "password-error" : undefined
+                  passwordError ? "password-error" : undefined
                 }
               />
-              <FieldError id="password-error">
-                {state.fields.password.error}
-              </FieldError>
+              <FieldError id="password-error">{passwordError}</FieldError>
             </Field>
 
             <Field>

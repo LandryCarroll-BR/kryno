@@ -4,6 +4,43 @@ import type { SchemaError } from "effect/Schema"
 
 const formatSchemaIssue = SchemaIssue.makeFormatterStandardSchemaV1()
 
+type SignUpFieldViewModel =
+  | {
+      readonly status: "valid"
+      readonly value: string
+    }
+  | {
+      readonly status: "invalid"
+      readonly value: string
+      readonly error: string
+    }
+
+type SignUpFieldsViewModel = {
+  readonly username: SignUpFieldViewModel
+  readonly email: SignUpFieldViewModel
+  readonly password: SignUpFieldViewModel
+  readonly confirmPassword: SignUpFieldViewModel
+}
+
+export type SignUpViewModel =
+  | {
+      readonly status: "idle"
+      readonly fields: SignUpFieldsViewModel
+    }
+  | {
+      readonly status: "loading"
+      readonly fields: SignUpFieldsViewModel
+    }
+  | {
+      readonly status: "success"
+      readonly fields: SignUpFieldsViewModel
+    }
+  | {
+      readonly status: "error"
+      readonly error: string
+      readonly fields: SignUpFieldsViewModel
+    }
+
 export class SignUpPresenter extends Service<
   SignUpPresenter,
   {
@@ -38,15 +75,19 @@ export class SignUpPresenter extends Service<
             status: "success",
             fields: {
               username: {
+                status: "valid",
                 value: prev.fields.username.value,
               },
               email: {
+                status: "valid",
                 value: prev.fields.email.value,
               },
               password: {
+                status: "valid",
                 value: prev.fields.password.value,
               },
               confirmPassword: {
+                status: "valid",
                 value: prev.fields.confirmPassword.value,
               },
             },
@@ -72,34 +113,30 @@ export class SignUpPresenter extends Service<
 
         presentInputParseError: (prev, error) => {
           const { issues } = formatSchemaIssue(error.issue)
-          const errorFor = (field: keyof SignUpViewModel["fields"]) => {
+          const fieldFor = (
+            field: keyof SignUpFieldsViewModel
+          ): SignUpFieldViewModel => {
             const message = issues.find(
               (issue) => issue.path?.[0] === field
             )?.message
 
-            return message === undefined ? {} : { error: message }
+            return message === undefined
+              ? { status: "valid", value: prev.fields[field].value }
+              : {
+                  status: "invalid",
+                  value: prev.fields[field].value,
+                  error: message,
+                }
           }
 
           return Effect.succeed({
             status: "error",
             error: "Invalid input. Please check your data and try again.",
             fields: {
-              username: {
-                value: prev.fields.username.value,
-                ...errorFor("username"),
-              },
-              email: {
-                value: prev.fields.email.value,
-                ...errorFor("email"),
-              },
-              password: {
-                value: prev.fields.password.value,
-                ...errorFor("password"),
-              },
-              confirmPassword: {
-                value: prev.fields.confirmPassword.value,
-                ...errorFor("confirmPassword"),
-              },
+              username: fieldFor("username"),
+              email: fieldFor("email"),
+              password: fieldFor("password"),
+              confirmPassword: fieldFor("confirmPassword"),
             },
           })
         },
@@ -110,15 +147,19 @@ export class SignUpPresenter extends Service<
             error: "An unexpected error occurred. Please try again.",
             fields: {
               username: {
+                status: "valid",
                 value: prev.fields.username.value,
               },
               email: {
+                status: "valid",
                 value: prev.fields.email.value,
               },
               password: {
+                status: "valid",
                 value: prev.fields.password.value,
               },
               confirmPassword: {
+                status: "valid",
                 value: prev.fields.confirmPassword.value,
               },
             },
@@ -126,27 +167,4 @@ export class SignUpPresenter extends Service<
       }
     })
   )
-}
-
-export type SignUpViewModel = {
-  status: "idle" | "loading" | "success" | "error"
-  error?: string
-  fields: {
-    username: {
-      value: string
-      error?: string
-    }
-    email: {
-      value: string
-      error?: string
-    }
-    password: {
-      value: string
-      error?: string
-    }
-    confirmPassword: {
-      value: string
-      error?: string
-    }
-  }
 }

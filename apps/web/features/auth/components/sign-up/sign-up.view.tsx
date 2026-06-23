@@ -25,12 +25,12 @@ import {
 const initialState = {
   status: "idle",
   fields: {
-    username: { value: "" },
-    email: { value: "" },
-    password: { value: "" },
-    confirmPassword: { value: "" },
+    username: { status: "valid", value: "" },
+    email: { status: "valid", value: "" },
+    password: { status: "valid", value: "" },
+    confirmPassword: { status: "valid", value: "" },
   },
-} as const
+} as const satisfies SignUpViewModel
 
 export function SignUpView({
   action,
@@ -41,6 +41,20 @@ export function SignUpView({
   ) => Promise<SignUpViewModel>
 }) {
   const [state, formAction, pending] = useActionState(action, initialState)
+  const usernameError =
+    state.fields.username.status === "invalid"
+      ? state.fields.username.error
+      : ""
+  const emailError =
+    state.fields.email.status === "invalid" ? state.fields.email.error : ""
+  const passwordError =
+    state.fields.password.status === "invalid"
+      ? state.fields.password.error
+      : ""
+  const confirmPasswordError =
+    state.fields.confirmPassword.status === "invalid"
+      ? state.fields.confirmPassword.error
+      : ""
 
   return (
     <Card className="w-[min(28rem,calc(100vw-2rem))]">
@@ -53,31 +67,29 @@ export function SignUpView({
       <CardContent>
         <form action={formAction}>
           <FieldGroup>
-            {state.error && (
+            {state.status === "error" && (
               <Alert variant="destructive">
                 <AlertDescription>{state.error}</AlertDescription>
               </Alert>
             )}
 
-            <Field data-invalid={Boolean(state.fields.username.error)}>
+            <Field data-invalid={Boolean(usernameError)}>
               <FieldLabel htmlFor="username">Username</FieldLabel>
               <Input
                 id="username"
                 name="username"
                 autoComplete="username"
                 defaultValue={state.fields.username.value}
-                aria-invalid={Boolean(state.fields.username.error)}
+                aria-invalid={Boolean(usernameError)}
                 aria-describedby={
-                  state.fields.username.error ? "username-error" : undefined
+                  usernameError ? "username-error" : undefined
                 }
                 placeholder="yourname"
               />
-              <FieldError id="username-error">
-                {state.fields.username.error}
-              </FieldError>
+              <FieldError id="username-error">{usernameError}</FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fields.email.error)}>
+            <Field data-invalid={Boolean(emailError)}>
               <FieldLabel htmlFor="email">Email address</FieldLabel>
               <Input
                 id="email"
@@ -85,36 +97,30 @@ export function SignUpView({
                 type="email"
                 autoComplete="email"
                 defaultValue={state.fields.email.value}
-                aria-invalid={Boolean(state.fields.email.error)}
-                aria-describedby={
-                  state.fields.email.error ? "email-error" : undefined
-                }
+                aria-invalid={Boolean(emailError)}
+                aria-describedby={emailError ? "email-error" : undefined}
                 placeholder="you@example.com"
               />
-              <FieldError id="email-error">
-                {state.fields.email.error}
-              </FieldError>
+              <FieldError id="email-error">{emailError}</FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fields.password.error)}>
+            <Field data-invalid={Boolean(passwordError)}>
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="new-password"
-                aria-invalid={Boolean(state.fields.password.error)}
+                aria-invalid={Boolean(passwordError)}
                 aria-describedby={
-                  state.fields.password.error ? "password-error" : undefined
+                  passwordError ? "password-error" : undefined
                 }
                 placeholder="At least 8 characters"
               />
-              <FieldError id="password-error">
-                {state.fields.password.error}
-              </FieldError>
+              <FieldError id="password-error">{passwordError}</FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fields.confirmPassword.error)}>
+            <Field data-invalid={Boolean(confirmPasswordError)}>
               <FieldLabel htmlFor="confirmPassword">
                 Confirm password
               </FieldLabel>
@@ -123,16 +129,14 @@ export function SignUpView({
                 name="confirmPassword"
                 type="password"
                 autoComplete="new-password"
-                aria-invalid={Boolean(state.fields.confirmPassword.error)}
+                aria-invalid={Boolean(confirmPasswordError)}
                 aria-describedby={
-                  state.fields.confirmPassword.error
-                    ? "confirm-password-error"
-                    : undefined
+                  confirmPasswordError ? "confirm-password-error" : undefined
                 }
                 placeholder="Re-enter your password"
               />
               <FieldError id="confirm-password-error">
-                {state.fields.confirmPassword.error}
+                {confirmPasswordError}
               </FieldError>
             </Field>
 

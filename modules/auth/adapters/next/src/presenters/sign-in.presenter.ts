@@ -4,6 +4,41 @@ import type { SchemaError } from "effect/Schema"
 
 const formatSchemaIssue = SchemaIssue.makeFormatterStandardSchemaV1()
 
+type SignInFieldViewModel =
+  | {
+      readonly status: "valid"
+      readonly value: string
+    }
+  | {
+      readonly status: "invalid"
+      readonly value: string
+      readonly error: string
+    }
+
+type SignInFieldsViewModel = {
+  readonly email: SignInFieldViewModel
+  readonly password: SignInFieldViewModel
+}
+
+export type SignInViewModel =
+  | {
+      readonly status: "idle"
+      readonly fields: SignInFieldsViewModel
+    }
+  | {
+      readonly status: "loading"
+      readonly fields: SignInFieldsViewModel
+    }
+  | {
+      readonly status: "success"
+      readonly fields: SignInFieldsViewModel
+    }
+  | {
+      readonly status: "error"
+      readonly error: string
+      readonly fields: SignInFieldsViewModel
+    }
+
 export class SignInPresenter extends Service<
   SignInPresenter,
   {
@@ -37,8 +72,9 @@ export class SignInPresenter extends Service<
           Effect.succeed({
             status: "success",
             fields: {
-              email: { value: prev.fields.email.value },
+              email: { status: "valid", value: prev.fields.email.value },
               password: {
+                status: "valid",
                 value: prev.fields.password.value,
               },
             },
@@ -64,26 +100,28 @@ export class SignInPresenter extends Service<
 
         presentInputParseError: (prev, error) => {
           const { issues } = formatSchemaIssue(error.issue)
-          const errorFor = (field: keyof SignInViewModel["fields"]) => {
+          const fieldFor = (
+            field: keyof SignInFieldsViewModel
+          ): SignInFieldViewModel => {
             const message = issues.find(
               (issue) => issue.path?.[0] === field
             )?.message
 
-            return message === undefined ? {} : { error: message }
+            return message === undefined
+              ? { status: "valid", value: prev.fields[field].value }
+              : {
+                  status: "invalid",
+                  value: prev.fields[field].value,
+                  error: message,
+                }
           }
 
           return Effect.succeed({
             status: "error",
             error: "Invalid input. Please check your data and try again.",
             fields: {
-              email: {
-                value: prev.fields.email.value,
-                ...errorFor("email"),
-              },
-              password: {
-                value: prev.fields.password.value,
-                ...errorFor("password"),
-              },
+              email: fieldFor("email"),
+              password: fieldFor("password"),
             },
           })
         },
@@ -93,8 +131,9 @@ export class SignInPresenter extends Service<
             status: "error",
             error: "An unexpected error occurred. Please try again.",
             fields: {
-              email: { value: prev.fields.email.value },
+              email: { status: "valid", value: prev.fields.email.value },
               password: {
+                status: "valid",
                 value: prev.fields.password.value,
               },
             },
@@ -102,19 +141,4 @@ export class SignInPresenter extends Service<
       }
     })
   )
-}
-
-export type SignInViewModel = {
-  status: "idle" | "loading" | "success" | "error"
-  error?: string
-  fields: {
-    email: {
-      value: string
-      error?: string
-    }
-    password: {
-      value: string
-      error?: string
-    }
-  }
 }
