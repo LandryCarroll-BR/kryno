@@ -16,4 +16,6 @@ export const bouldersTable = climbingSchema.table("boulders", (t) => ({
   grade: t.text().$type<BoulderGrade>().notNull(),
   wallAngle: t.text().$type<WallAngle>().notNull(),
   movementStyle: t.text().$type<MovementStyle>().notNull(),
+  createdAt: t.timestamp({ withTimezone: true }).notNull(),
+  updatedAt: t.timestamp({ withTimezone: true }).notNull(),
 }))

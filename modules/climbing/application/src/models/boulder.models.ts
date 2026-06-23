@@ -63,4 +63,6 @@ export class Boulder extends Schema.Class<Boulder>("Boulder")({
   grade: BoulderGrade,
   wallAngle: WallAngle,
   movementStyle: MovementStyle,
+  createdAt: Schema.Date,
+  updatedAt: Schema.Date,
 }) {}

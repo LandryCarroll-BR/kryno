@@ -1,4 +1,4 @@
-import { Effect, Layer, Schema } from "effect"
+import { Clock, Effect, Layer, Schema } from "effect"
 import { Service } from "effect/Context"
 import type { SchemaError } from "effect/Schema"
 
@@ -50,6 +50,7 @@ export class CreateBoulderUseCase extends Service<
             parsedInput.token
           )
           const id = yield* boulderIdService.generate()
+          const now = new Date(yield* Clock.currentTimeMillis)
 
           return yield* boulderRepository.insert(
             Boulder.make({
@@ -59,6 +60,8 @@ export class CreateBoulderUseCase extends Service<
               grade: parsedInput.grade,
               wallAngle: parsedInput.wallAngle,
               movementStyle: parsedInput.movementStyle,
+              createdAt: now,
+              updatedAt: now,
             })
           )
         }),

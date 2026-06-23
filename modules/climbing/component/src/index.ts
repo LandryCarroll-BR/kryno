@@ -7,6 +7,7 @@ import {
   CreateBoulderUseCase,
   EndClimbingSessionUseCase,
   GetCurrentClimbingSessionUseCase,
+  ListCreatedBouldersUseCase,
   StartClimbingSessionUseCase,
 } from "@climbing/application"
 
@@ -16,6 +17,7 @@ export class Climbing extends Service<
     readonly createBoulder: CreateBoulderUseCase["Service"]["execute"]
     readonly endClimbingSession: EndClimbingSessionUseCase["Service"]["execute"]
     readonly getCurrentClimbingSession: GetCurrentClimbingSessionUseCase["Service"]["execute"]
+    readonly listCreatedBoulders: ListCreatedBouldersUseCase["Service"]["execute"]
     readonly startClimbingSession: StartClimbingSessionUseCase["Service"]["execute"]
   }
 >()("@climbing/component/Climbing") {
@@ -25,11 +27,13 @@ export class Climbing extends Service<
       const createBoulder = yield* CreateBoulderUseCase
       const endClimbingSession = yield* EndClimbingSessionUseCase
       const getCurrentClimbingSession = yield* GetCurrentClimbingSessionUseCase
+      const listCreatedBoulders = yield* ListCreatedBouldersUseCase
       const startClimbingSession = yield* StartClimbingSessionUseCase
       return {
         createBoulder: createBoulder.execute,
         endClimbingSession: endClimbingSession.execute,
         getCurrentClimbingSession: getCurrentClimbingSession.execute,
+        listCreatedBoulders: listCreatedBoulders.execute,
         startClimbingSession: startClimbingSession.execute,
       }
     })

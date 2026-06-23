@@ -60,11 +60,13 @@ export const ClimbingSessionDBRepository = Layer.effect(
           const [created] = yield* db
             .insert(climbingSessionsTable)
             .values({
-              id: session.id,
-              climberId: session.climberId,
-              startedAt: session.startedAt,
-              endedAt: null,
-            })
+            id: session.id,
+            climberId: session.climberId,
+            startedAt: session.startedAt,
+            endedAt: null,
+            createdAt: session.startedAt,
+            updatedAt: session.startedAt,
+          })
             .onConflictDoNothing()
             .returning()
             .pipe(Effect.orDie)
@@ -78,7 +80,7 @@ export const ClimbingSessionDBRepository = Layer.effect(
       )(function* (climberId, endedAt) {
         const [ended] = yield* db
           .update(climbingSessionsTable)
-          .set({ endedAt })
+          .set({ endedAt, updatedAt: endedAt })
           .where(
             and(
               eq(climbingSessionsTable.climberId, climberId),

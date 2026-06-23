@@ -1,3 +1,4 @@
+import { asc, desc, eq } from "drizzle-orm"
 import { Effect, Layer, Schema } from "effect"
 
 import { Boulder, BoulderRepository } from "@climbing/application"
@@ -13,6 +14,8 @@ const toBoulder = (row: typeof bouldersTable.$inferSelect): Boulder =>
     grade: row.grade,
     wallAngle: row.wallAngle,
     movementStyle: row.movementStyle,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
   })
 
 export const BoulderDBRepository = Layer.effect(
@@ -21,6 +24,19 @@ export const BoulderDBRepository = Layer.effect(
     const db = yield* ClimbingDB
 
     return {
+      findByCreatorClimberId: Effect.fn(
+        "BoulderRepository.findByCreatorClimberId"
+      )(function* (climberId) {
+        const boulders = yield* db
+          .select()
+          .from(bouldersTable)
+          .where(eq(bouldersTable.creatorClimberId, climberId))
+          .orderBy(desc(bouldersTable.updatedAt), asc(bouldersTable.name))
+          .pipe(Effect.orDie)
+
+        return boulders.map(toBoulder)
+      }),
+
       insert: Effect.fn("BoulderRepository.insert")(function* (boulder) {
         const [created] = yield* db
           .insert(bouldersTable)
@@ -31,6 +47,8 @@ export const BoulderDBRepository = Layer.effect(
             grade: boulder.grade,
             wallAngle: boulder.wallAngle,
             movementStyle: boulder.movementStyle,
+            createdAt: boulder.createdAt,
+            updatedAt: boulder.updatedAt,
           })
           .returning()
           .pipe(Effect.orDie)

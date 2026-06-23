@@ -12,6 +12,8 @@ export const climbingSessionsTable = climbingSchema.table(
     climberId: t.char({ length: 24 }).$type<ClimberId>().notNull(),
     startedAt: t.timestamp({ withTimezone: true }).notNull(),
     endedAt: t.timestamp({ withTimezone: true }),
+    createdAt: t.timestamp({ withTimezone: true }).notNull(),
+    updatedAt: t.timestamp({ withTimezone: true }).notNull(),
   }),
   (t) => [
     uniqueIndex("climbing_sessions_one_active_per_climber")

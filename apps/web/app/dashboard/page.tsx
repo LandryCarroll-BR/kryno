@@ -3,6 +3,7 @@ import { signOut } from "@/features/auth/components/sign-out/sign-out.action"
 import { SignOutView } from "@/features/auth/components/sign-out/sign-out.view"
 import { createBoulder } from "@/features/climbing/components/create-boulder/create-boulder.action"
 import { CreateBoulderView } from "@/features/climbing/components/create-boulder/create-boulder.view"
+import { ListCreatedBouldersView } from "@/features/climbing/components/list-created-boulders/list-created-boulders.view"
 import { withAuthentication } from "@/features/auth/utils/with-authentication"
 import { GetCurrentClimbingSessionView } from "../../features/climbing/components/get-current-climbing-session/get-current-climbing-session.view"
 import { Suspense } from "react"
@@ -21,6 +22,9 @@ async function Dashboard() {
           <GetCurrentClimbingSessionView />
         </Suspense>
         <CreateBoulderView action={createBoulder} />
+        <Suspense>
+          <ListCreatedBouldersView />
+        </Suspense>
       </main>
     </div>
   )
