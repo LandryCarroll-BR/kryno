@@ -3,21 +3,25 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "db:down": "docker compose down",
-    "db:generate": "pnpm --filter @workspace/database run db:generate",
-    "db:migrate": "pnpm --filter @workspace/database run db:migrate",
-    "db:reset": "docker compose exec -T postgres sh -c 'dropdb --if-exists --username \"$POSTGRES_USER\" kryno && createdb --username \"$POSTGRES_USER\" kryno'",
-    "db:studio": "pnpm --filter @workspace/database exec drizzle-kit studio --config drizzle.config.ts",
-    "db:up": "docker compose up -d postgres",
     "dev": "turbo dev",
-    "format": "turbo format",
+    "build": "turbo build",
     "test": "node --test test/*.test.mjs && turbo test",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v",
+    "db:auth:generate": "pnpm --filter @auth/infrastructure run db:generate",
+    "db:auth:migrate": "pnpm --filter @auth/infrastructure run db:migrate",
+    "db:auth:studio": "pnpm --filter @auth/infrastructure run db:studio",
+    "db:climbing:generate": "pnpm --filter @climbing/infrastructure run db:generate",
+    "db:climbing:migrate": "pnpm --filter @climbing/infrastructure run db:migrate",
+    "db:climbing:studio": "pnpm --filter @climbing/infrastructure run db:studio",
+    "format": "turbo format",
     "prepare": "effect-language-service patch",
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
     "@effect/language-service": "^0.86.2",
+    "@turbo/gen": "^2.9.18",
     "effect-solutions": "^0.5.3",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
@@ -26,6 +30,6 @@
   },
   "packageManager": "pnpm@11.3.0",
   "engines": {
-    "node": ">=20"
+    "node": ">=24.7.0"
   }
 }

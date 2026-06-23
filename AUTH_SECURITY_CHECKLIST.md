@@ -1,0 +1,165 @@
+# Auth Security Checklist
+
+Work from top to bottom. The first two items should be completed before the
+authentication system is used in production.
+
+Last audited against the repository on 2026-06-22. Items are checked only when
+the implementation is complete and supported by the current code or tests.
+
+## Critical
+
+### Replace SHA-256 password hashing with Argon2id
+
+- [x] Select an actively maintained Argon2id implementation.
+- [x] Store encoded hashes containing the algorithm, parameters, salt, and hash.
+- [x] Replace `UserService.hashPassword` with Argon2id hashing.
+- [x] Replace `UserService.validatePasswords` with Argon2id verification using
+      the stored parameters and a timing-safe hash comparison.
+- [x] Choose and document memory, time, and parallelism parameters appropriate
+      for the production environment.
+- [x] Design a migration strategy for existing SHA-256 hashes. No user
+      migration is required before launch; reset the development database.
+- [x] Ensure passwords and password hashes never appear in logs or errors.
+- [ ] Add tests for correct passwords, incorrect passwords, unique salts, and
+      malformed stored hashes.
+
+Relevant file:
+`modules/auth/infrastructure/src/services/user.service.ts`
+
+### Enforce authentication at every protected server boundary
+
+- [x] Stop treating the presence of `authToken` as proof of authentication.
+- [x] Add a reusable server-side guard that validates the session and loads the
+      current user.
+- [x] Use the guard in every protected page, route handler, server action, and
+      data query.
+- [x] Redirect browser page requests with invalid sessions to `/sign-in`.
+- [x] Reject unauthorized server actions and API requests rather than merely
+      hiding UI.
+- [x] Delete invalid, expired, or revoked authentication cookies when possible.
+- [x] Keep the proxy cookie check only as an optional early redirect.
+- [ ] Add tests showing that forged, malformed, expired, and revoked cookies
+      cannot access protected resources.
+
+Relevant files:
+
+- `apps/web/proxy.ts`
+- `modules/auth/application/src/factories/validate-session.factory.ts`
+- `modules/auth/adapters/next/src/controllers/get-current-user.controller.ts`
+
+## High Priority
+
+### Add sign-in rate limiting
+
+- [ ] Rate-limit attempts by both normalized account identifier and client IP.
+- [ ] Add progressive delays or temporary cooldowns after repeated failures.
+- [ ] Ensure limits work across application instances by using shared storage.
+- [ ] Define behavior when the rate-limit store is unavailable.
+- [ ] Record security events without logging passwords or session tokens.
+- [ ] Return a generic response that does not reveal whether an account exists.
+- [ ] Add tests for limit enforcement, reset windows, and successful login
+      behavior.
+
+Relevant file:
+`modules/auth/application/src/use-cases/sign-in.use-case.ts`
+
+### Prevent account enumeration
+
+- [ ] Replace distinct “email not found” and “invalid password” responses with
+      one generic authentication error.
+- [ ] Perform a dummy Argon2id verification when no account exists to reduce
+      timing differences.
+- [ ] Avoid returning submitted email addresses inside authentication errors.
+- [ ] Review sign-up duplicate-account messages and decide whether exposing
+      account existence is acceptable for the product.
+- [ ] Add tests confirming equivalent public responses for unknown accounts and
+      incorrect passwords.
+
+Relevant files:
+
+- `modules/auth/application/src/errors/user.errors.ts`
+- `modules/auth/application/src/use-cases/sign-in.use-case.ts`
+- `modules/auth/adapters/next/src/presenters/sign-in.presenter.ts`
+
+### Add an absolute session lifetime
+
+- [x] Define and document inactivity and absolute expiration periods.
+- [x] Reject sessions whose `createdAt` exceeds the absolute lifetime.
+- [x] Keep activity refreshes from extending the absolute expiration time.
+- [x] Align cookie expiration with server-side session expiration.
+- [ ] Consider rotating session tokens after login and sensitive account
+      changes.
+- [ ] Add tests for inactivity expiry, absolute expiry, refresh behavior, and
+      token rotation.
+
+Relevant files:
+
+- `modules/auth/application/src/models/session.models.ts`
+- `modules/auth/application/src/factories/validate-session.factory.ts`
+- `modules/auth/adapters/next/src/controllers/sign-in.controller.ts`
+- `modules/auth/adapters/next/src/controllers/sign-up.controller.ts`
+
+### Do not expose credential fields through authentication responses
+
+- [x] Introduce a public/current-user model that excludes `passwordHash`.
+- [x] Map the persisted `User` entity to that safe model in the use case.
+- [x] Separate safe `Session` data from credential-bearing `PersistedSession`
+      data.
+- [x] Return only safe session data and the client token from sign-in and
+      sign-up.
+- [x] Return only safe session data from session validation.
+- [x] Review all module exports to ensure credential-bearing models do not cross
+      presentation or API boundaries unnecessarily.
+- [x] Add tests asserting that current-user and session results contain no
+      password hash, session-secret hash, or other credential material.
+
+Relevant files:
+
+- `modules/auth/application/src/models/user.models.ts`
+- `modules/auth/application/src/models/session.models.ts`
+- `modules/auth/application/src/use-cases/get-current-user.use-case.ts`
+- `modules/auth/application/src/use-cases/sign-in.use-case.ts`
+- `modules/auth/application/src/use-cases/sign-up.use-case.ts`
+- `modules/auth/application/src/use-cases/validate-session.use-case.ts`
+
+## Hardening
+
+### Normalize user identifiers
+
+- [ ] Define canonical email normalization, at minimum trimming and consistent
+      casing.
+- [ ] Apply normalization before both storage and lookup.
+- [ ] Decide whether usernames are case-sensitive and enforce that consistently.
+- [ ] Add database support for canonical uniqueness if needed.
+- [ ] Add tests covering whitespace and casing variants.
+
+### Harden the authentication cookie
+
+- [ ] Consider using a `__Host-` prefixed cookie name in production.
+- [x] Keep `HttpOnly`, `Secure`, `SameSite`, and `Path=/` explicitly configured.
+- [ ] Centralize cookie creation and deletion so their options cannot drift.
+- [x] Verify that cookie lifetime matches the server-side session policy.
+- [ ] Confirm the desired CSRF policy for every state-changing server action.
+
+### Review database credentials and privileges
+
+- [ ] Confirm `auth_local` is used only in local development.
+- [ ] Keep production credentials outside the repository and rotate them
+      through the deployment secret manager.
+- [ ] Grant the runtime database role only the privileges required by the auth
+      module.
+- [ ] Separate migration privileges from runtime privileges.
+
+Relevant file:
+`modules/auth/infrastructure/bootstrap.sql`
+
+## Final Verification
+
+- [ ] Add an end-to-end test for sign-up, sign-in, authenticated access, and
+      sign-out.
+- [ ] Test forged, malformed, expired, revoked, and stolen-session scenarios.
+- [ ] Test concurrent sign-ups using the same email or username.
+- [ ] Run the auth package tests and type checks.
+- [ ] Perform a production-like review with HTTPS and production cookie flags.
+- [ ] Document the final password, session, rate-limit, and account-recovery
+      policies.

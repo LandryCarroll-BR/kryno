@@ -1,0 +1,14 @@
+{
+  "extends": "@packages/tsconfig/effect.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": [
+      "vitest/globals",
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ]
+}

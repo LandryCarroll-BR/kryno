@@ -1,11 +1,14 @@
 packages:
   - "apps/*"
   - "packages/*"
-  - "tooling/*"
-  - "modules/*"
+  - "modules/**/*"
+
 allowBuilds:
+  argon2: set this to true or false
   esbuild: true
-  msgpackr-extract: true 
+  msgpackr-extract: true
   msw: true
+  sharp: true
+  unrs-resolver: true
 minimumReleaseAgeExclude:
   - shadcn@4.8.1

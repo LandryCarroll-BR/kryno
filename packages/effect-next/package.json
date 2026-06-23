@@ -1,0 +1,24 @@
+{
+  "name": "@packages/effect-next",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "effect": "4.0.0-beta.70",
+    "next": "^16.2.9"
+  },
+  "devDependencies": {
+    "@effect/vitest": "4.0.0-beta.70",
+    "@types/node": "^25.1.0",
+    "@packages/tsconfig": "workspace:*",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

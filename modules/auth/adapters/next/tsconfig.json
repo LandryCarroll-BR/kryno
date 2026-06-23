@@ -1,0 +1,11 @@
+{
+  "extends": "@packages/tsconfig/effect.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["vitest/globals", "node"]
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "src/views/sign-up.view.tsx"]
+}
