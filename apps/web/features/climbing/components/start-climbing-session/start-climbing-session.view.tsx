@@ -1,9 +1,9 @@
 "use client"
 
 import { useActionState } from "react"
-import type { StartClimbingSessionViewModel } from "@climbing/adapters-next"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
+
 import {
   Card,
   CardContent,
@@ -12,19 +12,16 @@ import {
   CardTitle,
 } from "@packages/ui/components/card"
 
-const initialState: StartClimbingSessionViewModel = {
-  status: "idle",
-}
+import { startClimbingSession } from "@/features/climbing/components/start-climbing-session/start-climbing-session.action"
 
 export function StartClimbingSessionView({
   action,
 }: {
-  action: (
-    previousState: StartClimbingSessionViewModel,
-    formData: FormData
-  ) => Promise<StartClimbingSessionViewModel>
+  action: typeof startClimbingSession
 }) {
-  const [state, formAction, pending] = useActionState(action, initialState)
+  const [state, formAction, pending] = useActionState(action, {
+    status: "idle",
+  })
 
   if (state.status === "success") {
     return (

@@ -7,33 +7,18 @@ import {
   CardTitle,
 } from "@packages/ui/components/card"
 
-import { listCreatedBoulders } from "./list-created-boulders.query"
-import { logBoulderAttempt } from "../log-boulder-attempt/log-boulder-attempt.action"
+import { listCreatedBoulders } from "@/features/climbing/components/list-created-boulders/list-created-boulders.query"
+import { logBoulderAttempt } from "@/features/climbing/components/log-boulder-attempt/log-boulder-attempt.action"
 import { LogBoulderAttemptView } from "../log-boulder-attempt/log-boulder-attempt.view"
 
-const wallAngleLabels: Record<string, string> = {
-  SLAB: "Slab",
-  VERTICAL: "Vertical",
-  OVERHANG: "Overhang",
-  ROOF: "Roof",
-}
-
-const movementStyleLabels: Record<string, string> = {
-  COORDINATION: "Coordination",
-  POWER: "Power",
-  TECHNICAL: "Technical",
-}
-
-const formatDate = (value: string): string =>
-  new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value))
-
-export async function ListCreatedBouldersView() {
-  const createdBoulders = await listCreatedBoulders()
+export async function ListCreatedBouldersView({
+  query,
+  action,
+}: {
+  query: typeof listCreatedBoulders
+  action: typeof logBoulderAttempt
+}) {
+  const createdBoulders = await query()
 
   return (
     <Card>
@@ -62,9 +47,9 @@ export async function ListCreatedBouldersView() {
                     </h2>
                     <Badge variant="secondary">{boulder.grade}</Badge>
                   </div>
-                  <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                    <span>{wallAngleLabels[boulder.wallAngle]}</span>
-                    <span>{movementStyleLabels[boulder.movementStyle]}</span>
+                  <div className="flex flex-wrap divide-x text-xs text-muted-foreground">
+                    <span className="pr-2">{boulder.wallAngle}</span>
+                    <span className="pl-2">{boulder.movementStyle}</span>
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
@@ -72,7 +57,7 @@ export async function ListCreatedBouldersView() {
                     Updated {formatDate(boulder.updatedAt)}
                   </p>
                   <LogBoulderAttemptView
-                    action={logBoulderAttempt}
+                    action={action}
                     boulderId={boulder.id}
                   />
                 </div>
@@ -84,3 +69,11 @@ export async function ListCreatedBouldersView() {
     </Card>
   )
 }
+
+const formatDate = (value: string): string =>
+  new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(value))

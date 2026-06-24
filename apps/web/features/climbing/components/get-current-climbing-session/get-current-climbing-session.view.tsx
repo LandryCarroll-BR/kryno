@@ -4,8 +4,12 @@ import { getCurrentClimbingSession } from "@/features/climbing/components/get-cu
 import { startClimbingSession } from "@/features/climbing/components/start-climbing-session/start-climbing-session.action"
 import { StartClimbingSessionView } from "@/features/climbing/components/start-climbing-session/start-climbing-session.view"
 
-export async function GetCurrentClimbingSessionView() {
-  const currentClimbingSession = await getCurrentClimbingSession()
+export async function GetCurrentClimbingSessionView({
+  query,
+}: {
+  query: typeof getCurrentClimbingSession
+}) {
+  const currentClimbingSession = await query()
 
   return (
     <>

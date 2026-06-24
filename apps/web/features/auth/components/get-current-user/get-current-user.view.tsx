@@ -1,8 +1,12 @@
 import { Avatar, AvatarFallback } from "@packages/ui/components/avatar"
-import { getCurrentUser } from "@/features/auth/components/current-user/current-user.query"
+import { getCurrentUser } from "@/features/auth/components/get-current-user/get-current-user.query"
 
-export async function CurrentUserView() {
-  const currentUser = await getCurrentUser()
+export async function GetCurrentUserView({
+  query,
+}: {
+  query: typeof getCurrentUser
+}) {
+  const currentUser = await query()
 
   const [first = "?"] = currentUser.username.toUpperCase().split("")
 

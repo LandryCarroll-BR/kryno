@@ -7,6 +7,11 @@ export type EndClimbingSessionViewModel =
       readonly status: "idle"
     }
   | {
+      readonly status: "active"
+      readonly sessionId: string
+      readonly startedAt: string
+    }
+  | {
       readonly status: "ended"
       readonly sessionId: string
       readonly endedAt: string

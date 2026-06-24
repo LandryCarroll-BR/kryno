@@ -1,12 +1,16 @@
-import { CurrentUserView } from "@/features/auth/components/current-user/current-user.view"
+import { Suspense } from "react"
+import { GetCurrentUserView } from "@/features/auth/components/get-current-user/get-current-user.view"
 import { signOut } from "@/features/auth/components/sign-out/sign-out.action"
 import { SignOutView } from "@/features/auth/components/sign-out/sign-out.view"
 import { createBoulder } from "@/features/climbing/components/create-boulder/create-boulder.action"
 import { CreateBoulderView } from "@/features/climbing/components/create-boulder/create-boulder.view"
 import { ListCreatedBouldersView } from "@/features/climbing/components/list-created-boulders/list-created-boulders.view"
 import { withAuthentication } from "@/features/auth/utils/with-authentication"
-import { GetCurrentClimbingSessionView } from "../../features/climbing/components/get-current-climbing-session/get-current-climbing-session.view"
-import { Suspense } from "react"
+import { GetCurrentClimbingSessionView } from "@/features/climbing/components/get-current-climbing-session/get-current-climbing-session.view"
+import { getCurrentUser } from "@/features/auth/components/get-current-user/get-current-user.query"
+import { listCreatedBoulders } from "@/features/climbing/components/list-created-boulders/list-created-boulders.query"
+import { getCurrentClimbingSession } from "@/features/climbing/components/get-current-climbing-session/get-current-climbing-session.query"
+import { logBoulderAttempt } from "@/features/climbing/components/log-boulder-attempt/log-boulder-attempt.action"
 
 async function Dashboard() {
   return (
@@ -14,16 +18,19 @@ async function Dashboard() {
       <main className="grid grid-cols-2 gap-8 p-24">
         <div className="flex items-center gap-4">
           <Suspense>
-            <CurrentUserView />
+            <GetCurrentUserView query={getCurrentUser} />
             <SignOutView action={signOut} />
           </Suspense>
         </div>
         <Suspense>
-          <GetCurrentClimbingSessionView />
+          <GetCurrentClimbingSessionView query={getCurrentClimbingSession} />
         </Suspense>
         <CreateBoulderView action={createBoulder} />
         <Suspense>
-          <ListCreatedBouldersView />
+          <ListCreatedBouldersView
+            query={listCreatedBoulders}
+            action={logBoulderAttempt}
+          />
         </Suspense>
       </main>
     </div>

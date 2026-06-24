@@ -22,6 +22,8 @@ import {
   FieldLabel,
 } from "@packages/ui/components/field"
 
+import { signIn } from "@/features/auth/components/sign-in/sign-in.action"
+
 const initialState = {
   status: "idle",
   fields: {
@@ -30,14 +32,7 @@ const initialState = {
   },
 } as const satisfies SignInViewModel
 
-export function SignInView({
-  action,
-}: {
-  action: (
-    previousState: SignInViewModel,
-    formData: FormData
-  ) => Promise<SignInViewModel>
-}) {
+export function SignInView({ action }: { action: typeof signIn }) {
   const [state, formAction, pending] = useActionState(action, initialState)
   const emailError =
     state.fields.email.status === "invalid" ? state.fields.email.error : ""
@@ -86,9 +81,7 @@ export function SignInView({
                 type="password"
                 autoComplete="current-password"
                 aria-invalid={Boolean(passwordError)}
-                aria-describedby={
-                  passwordError ? "password-error" : undefined
-                }
+                aria-describedby={passwordError ? "password-error" : undefined}
               />
               <FieldError id="password-error">{passwordError}</FieldError>
             </Field>

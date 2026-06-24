@@ -7,8 +7,8 @@ import { revalidatePath } from "next/cache"
 import {
   ClimbingAdapterRuntime,
   CreateBoulderController,
-  type CreateBoulderViewModel,
 } from "@climbing/adapters-next"
+import type { CreateBoulderViewModel } from "@climbing/adapters-next/models/create-boulder"
 
 export async function createBoulder(
   previousState: CreateBoulderViewModel,

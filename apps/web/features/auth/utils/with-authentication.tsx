@@ -1,7 +1,7 @@
 import "server-only"
 
 import type { FunctionComponent } from "react"
-import { getCurrentUser } from "@/features/auth/components/current-user/current-user.query"
+import { getCurrentUser } from "@/features/auth/components/get-current-user/get-current-user.query"
 
 export function withAuthentication<Props extends object>(
   Component: FunctionComponent<Props>

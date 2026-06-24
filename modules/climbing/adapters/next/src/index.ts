@@ -22,6 +22,8 @@ export * from "./presenters/list-created-boulders.presenter"
 export * from "./presenters/log-boulder-attempt.presenter"
 export * from "./presenters/start-climbing-session.presenter"
 
+export * from "./view-models/create-boulder.view-model"
+
 export const PresenterLayer = Layer.mergeAll(
   CreateBoulderPresenter.Live,
   EndClimbingSessionPresenter.Live,

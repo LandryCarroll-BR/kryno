@@ -3,16 +3,15 @@
 import "server-only"
 import { Effect } from "effect"
 import { revalidatePath } from "next/cache"
+
 import {
   ClimbingAdapterRuntime,
   EndClimbingSessionController,
   type EndClimbingSessionViewModel,
 } from "@climbing/adapters-next"
 
-import type { EndClimbingSessionState } from "./end-climbing-session.view"
-
 export async function endClimbingSession(
-  previousState: EndClimbingSessionState
+  previousState: EndClimbingSessionViewModel
 ) {
   const controllerPreviousState: EndClimbingSessionViewModel =
     previousState.status === "active" ? { status: "idle" } : previousState

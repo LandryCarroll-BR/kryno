@@ -9,6 +9,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./view-models": "./src/view-models/index.ts",
     "./test": "./test/index.ts"
   },
   "dependencies": {

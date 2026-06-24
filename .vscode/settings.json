@@ -57,7 +57,9 @@
     "modules/climbing/adapters/next/.turbo": true,
     "modules/climbing/adapters/next/node_modules": true,
     "modules/climbing/component/.turbo": true,
-    "modules/climbing/component/node_modules": true
+    "modules/climbing/component/node_modules": true,
+    "modules/climbing/component/test/create-boulder.test.ts": true,
+    "apps/web/tsconfig.tsbuildinfo": true
   },
   "hide-files.files": [
     ".gitignore",
@@ -111,7 +113,8 @@
     "modules/climbing/adapters/next/node_modules",
     "modules/climbing/component/.turbo",
     "modules/climbing/component/node_modules",
-    "modules/climbing/component/test/create-boulder.test.ts"
+    "modules/climbing/component/test/create-boulder.test.ts",
+    "apps/web/tsconfig.tsbuildinfo"
   ],
   "typescript.preferences.importModuleSpecifier": "relative",
   "javascript.preferences.importModuleSpecifier": "relative"

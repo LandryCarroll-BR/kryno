@@ -22,6 +22,8 @@ import {
   FieldLabel,
 } from "@packages/ui/components/field"
 
+import { signUp } from "@/features/auth/components/sign-up/sign-up.action"
+
 const initialState = {
   status: "idle",
   fields: {
@@ -32,25 +34,22 @@ const initialState = {
   },
 } as const satisfies SignUpViewModel
 
-export function SignUpView({
-  action,
-}: {
-  action: (
-    previousState: SignUpViewModel,
-    formData: FormData
-  ) => Promise<SignUpViewModel>
-}) {
+export function SignUpView({ action }: { action: typeof signUp }) {
   const [state, formAction, pending] = useActionState(action, initialState)
+
   const usernameError =
     state.fields.username.status === "invalid"
       ? state.fields.username.error
       : ""
+
   const emailError =
     state.fields.email.status === "invalid" ? state.fields.email.error : ""
+
   const passwordError =
     state.fields.password.status === "invalid"
       ? state.fields.password.error
       : ""
+
   const confirmPasswordError =
     state.fields.confirmPassword.status === "invalid"
       ? state.fields.confirmPassword.error
@@ -81,9 +80,7 @@ export function SignUpView({
                 autoComplete="username"
                 defaultValue={state.fields.username.value}
                 aria-invalid={Boolean(usernameError)}
-                aria-describedby={
-                  usernameError ? "username-error" : undefined
-                }
+                aria-describedby={usernameError ? "username-error" : undefined}
                 placeholder="yourname"
               />
               <FieldError id="username-error">{usernameError}</FieldError>
@@ -112,9 +109,7 @@ export function SignUpView({
                 type="password"
                 autoComplete="new-password"
                 aria-invalid={Boolean(passwordError)}
-                aria-describedby={
-                  passwordError ? "password-error" : undefined
-                }
+                aria-describedby={passwordError ? "password-error" : undefined}
                 placeholder="At least 8 characters"
               />
               <FieldError id="password-error">{passwordError}</FieldError>

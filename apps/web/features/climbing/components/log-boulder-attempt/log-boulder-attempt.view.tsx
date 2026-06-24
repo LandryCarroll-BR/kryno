@@ -1,24 +1,19 @@
 "use client"
 
 import { useActionState } from "react"
-import type { LogBoulderAttemptViewModel } from "@climbing/adapters-next"
 import { Button } from "@packages/ui/components/button"
-
-const initialState: LogBoulderAttemptViewModel = {
-  status: "idle",
-}
+import { logBoulderAttempt } from "@/features/climbing/components/log-boulder-attempt/log-boulder-attempt.action"
 
 export function LogBoulderAttemptView({
   action,
   boulderId,
 }: {
-  action: (
-    previousState: LogBoulderAttemptViewModel,
-    formData: FormData
-  ) => Promise<LogBoulderAttemptViewModel>
+  action: typeof logBoulderAttempt
   boulderId: string
 }) {
-  const [state, formAction, pending] = useActionState(action, initialState)
+  const [state, formAction, pending] = useActionState(action, {
+    status: "idle",
+  })
 
   return (
     <div className="flex flex-col items-start gap-2">

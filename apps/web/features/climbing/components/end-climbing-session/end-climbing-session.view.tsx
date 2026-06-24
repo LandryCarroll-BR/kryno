@@ -1,12 +1,14 @@
 "use client"
 
 import { useActionState } from "react"
+import { Alert, AlertDescription } from "@packages/ui/components/alert"
+import { Button } from "@packages/ui/components/button"
+
 import type {
   EndClimbingSessionViewModel,
   GetCurrentClimbingSessionViewModel,
 } from "@climbing/adapters-next"
-import { Alert, AlertDescription } from "@packages/ui/components/alert"
-import { Button } from "@packages/ui/components/button"
+
 import {
   Card,
   CardContent,
@@ -15,27 +17,26 @@ import {
   CardTitle,
 } from "@packages/ui/components/card"
 
-const initialState: EndClimbingSessionViewModel = {
-  status: "idle",
-}
-
-export type EndClimbingSessionState =
-  | EndClimbingSessionViewModel
-  | Extract<GetCurrentClimbingSessionViewModel, { status: "active" }>
+import { endClimbingSession } from "./end-climbing-session.action"
 
 export function EndClimbingSessionView({
   action,
   session,
 }: {
-  action: (
-    previousState: EndClimbingSessionState,
-    formData: FormData
-  ) => Promise<EndClimbingSessionViewModel>
-  session?: Extract<GetCurrentClimbingSessionViewModel, { status: "active" }>
+  action: typeof endClimbingSession
+  session: GetCurrentClimbingSessionViewModel
 }) {
   const [state, formAction, pending] = useActionState(
     action,
-    session ?? initialState
+    session?.status === "active"
+      ? {
+          status: "active",
+          sessionId: session.sessionId,
+          startedAt: session.startedAt,
+        }
+      : {
+          status: "idle",
+        }
   )
 
   if (state.status === "ended") {
