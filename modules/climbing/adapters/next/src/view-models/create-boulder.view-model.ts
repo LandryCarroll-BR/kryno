@@ -1,70 +1,31 @@
-export type CreateBoulderFormViewModel = {
-  readonly gradeOptions: readonly string[]
-  readonly wallAngleOptions: readonly {
-    readonly label: string
-    readonly value: string
-  }[]
-  readonly movementStyleOptions: readonly {
-    readonly label: string
-    readonly value: string
-  }[]
-  readonly defaultValues: {
-    readonly grade: string
-    readonly wallAngle: string
-    readonly movementStyle: string
+export type CreateBoulderViewModel = {
+  status: "idle" | "success"
+  message: string
+  fields: {
+    name: {
+      value: string
+      label: string
+      error: string
+    }
+    grade: {
+      value: BoulderGradeOption
+      label: string
+      error: string
+    }
+    wallAngle: {
+      value: WallAngleOption
+      label: string
+      error: string
+    }
+    movementStyle: {
+      value: MovementStyleOption
+      label: string
+      error: string
+    }
   }
 }
 
-export type CreateBoulderFieldViewModel =
-  | {
-      readonly status: "valid"
-      readonly value: string
-    }
-  | {
-      readonly status: "invalid"
-      readonly value: string
-      readonly error: string
-    }
-
-export type CreateBoulderFieldsViewModel = {
-  readonly name: CreateBoulderFieldViewModel
-  readonly grade: CreateBoulderFieldViewModel
-  readonly wallAngle: CreateBoulderFieldViewModel
-  readonly movementStyle: CreateBoulderFieldViewModel
-}
-
-export type CreateBoulderFieldErrorsViewModel = {
-  readonly name: string
-  readonly grade: string
-  readonly wallAngle: string
-  readonly movementStyle: string
-}
-
-export type CreateBoulderViewModel = (
-  | {
-      readonly status: "idle"
-      readonly fields: CreateBoulderFieldsViewModel
-      readonly fieldErrors: CreateBoulderFieldErrorsViewModel
-    }
-  | {
-      readonly status: "success"
-      readonly boulderId: string
-      readonly name: string
-      readonly grade: string
-      readonly fields: CreateBoulderFieldsViewModel
-      readonly fieldErrors: CreateBoulderFieldErrorsViewModel
-    }
-  | {
-      readonly status: "error"
-      readonly error: string
-      readonly fields: CreateBoulderFieldsViewModel
-      readonly fieldErrors: CreateBoulderFieldErrorsViewModel
-    }
-) & {
-  readonly form: CreateBoulderFormViewModel
-}
-
-const boulderGrades = [
+export const gradeOptions = [
   "VB",
   "V0",
   "V1",
@@ -84,51 +45,51 @@ const boulderGrades = [
   "V15",
   "V16",
   "V17",
-]
+] as const
 
-const wallAngleOptions = [
+export type BoulderGradeOption = (typeof gradeOptions)[number]
+
+export const wallAngleOptions = [
   { label: "Slab", value: "SLAB" },
   { label: "Vertical", value: "VERTICAL" },
   { label: "Overhang", value: "OVERHANG" },
   { label: "Roof", value: "ROOF" },
-]
+] as const
 
-const movementStyleOptions = [
+export type WallAngleOption = (typeof wallAngleOptions)[number]["value"]
+
+export const movementStyleOptions = [
   { label: "Coordination", value: "COORDINATION" },
   { label: "Power", value: "POWER" },
   { label: "Technical", value: "TECHNICAL" },
-]
+] as const
 
-export const createBoulderForm = {
-  gradeOptions: boulderGrades,
-  wallAngleOptions,
-  movementStyleOptions,
-  defaultValues: {
-    grade: "V4",
-    wallAngle: "OVERHANG",
-    movementStyle: "POWER",
-  },
-} satisfies CreateBoulderFormViewModel
+export type MovementStyleOption =
+  (typeof movementStyleOptions)[number]["value"]
 
 export const createBoulderInitialViewModel = {
   status: "idle",
-  form: createBoulderForm,
+  message: "",
   fields: {
-    name: { status: "valid", value: "" },
-    grade: { status: "valid", value: createBoulderForm.defaultValues.grade },
+    name: {
+      value: "",
+      label: "Name",
+      error: "",
+    },
+    grade: {
+      value: "V4",
+      label: "Grade",
+      error: "",
+    },
     wallAngle: {
-      status: "valid",
-      value: createBoulderForm.defaultValues.wallAngle,
+      value: "OVERHANG",
+      label: "Wall angle",
+      error: "",
     },
     movementStyle: {
-      status: "valid",
-      value: createBoulderForm.defaultValues.movementStyle,
+      value: "POWER",
+      label: "Movement style",
+      error: "",
     },
-  },
-  fieldErrors: {
-    name: "",
-    grade: "",
-    wallAngle: "",
-    movementStyle: "",
   },
 } satisfies CreateBoulderViewModel

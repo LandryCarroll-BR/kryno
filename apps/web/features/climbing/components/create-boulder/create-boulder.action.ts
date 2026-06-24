@@ -8,7 +8,7 @@ import {
   ClimbingAdapterRuntime,
   CreateBoulderController,
 } from "@climbing/adapters-next"
-import type { CreateBoulderViewModel } from "@climbing/adapters-next/models/create-boulder"
+import type { CreateBoulderViewModel } from "@climbing/adapters-next/view-models"
 
 export async function createBoulder(
   previousState: CreateBoulderViewModel,

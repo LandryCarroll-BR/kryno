@@ -6,51 +6,20 @@ import { Headers, Navigation } from "@packages/effect-next"
 import { CreateBoulderPresenter } from "../presenters/create-boulder.presenter"
 
 import {
-  createBoulderForm,
-  type CreateBoulderFieldsViewModel,
+  gradeOptions,
+  movementStyleOptions,
+  wallAngleOptions,
   type CreateBoulderViewModel,
 } from "../view-models/create-boulder.view-model"
 
-const submittedStateFrom = (
-  previousState: CreateBoulderViewModel,
-  formData: FormData
-): CreateBoulderViewModel => ({
-  status: "idle",
-  form: createBoulderForm,
-  fields: {
-    name: {
-      status: "valid",
-      value: getSubmittedString(previousState, formData, "name"),
-    },
-    grade: {
-      status: "valid",
-      value: getSubmittedString(previousState, formData, "grade"),
-    },
-    wallAngle: {
-      status: "valid",
-      value: getSubmittedString(previousState, formData, "wallAngle"),
-    },
-    movementStyle: {
-      status: "valid",
-      value: getSubmittedString(previousState, formData, "movementStyle"),
-    },
-  },
-  fieldErrors: {
-    name: "",
-    grade: "",
-    wallAngle: "",
-    movementStyle: "",
-  },
-})
-
-const decodeInput = (token: string, formData: FormData) =>
+const decodeInput = (token: string, values: CreateBoulderViewModel["fields"]) =>
   Schema.decodeUnknownEffect(CreateBoulderInputSchema)(
     {
       token,
-      name: getString(formData, "name"),
-      grade: getString(formData, "grade"),
-      wallAngle: getString(formData, "wallAngle"),
-      movementStyle: getString(formData, "movementStyle"),
+      name: values.name.value,
+      grade: values.grade.value,
+      wallAngle: values.wallAngle.value,
+      movementStyle: values.movementStyle.value,
     },
     { errors: "all" }
   )
@@ -67,13 +36,12 @@ export const CreateBoulderController = Effect.fn(
   const climbing = yield* Climbing
   const cookies = yield* Headers.Cookies
   const presenter = yield* CreateBoulderPresenter
-
   const redirectToSignIn = Navigation.Redirect(redirectUrl)
 
   return {
     handle: Effect.fn("CreateBoulderController.handle")(
       (formData: FormData) => {
-        const submittedState = submittedStateFrom(previousState, formData)
+        const submittedFields = submittedFieldsFrom(previousState, formData)
 
         return Effect.gen(function* () {
           const authToken = cookies.get("authToken")
@@ -82,14 +50,14 @@ export const CreateBoulderController = Effect.fn(
             return yield* redirectToSignIn
           }
 
-          const input = yield* decodeInput(authToken.value, formData)
+          const input = yield* decodeInput(authToken.value, submittedFields)
           const boulder = yield* climbing.createBoulder(input)
 
-          return yield* presenter.presentSuccess(submittedState, boulder)
+          return yield* presenter.presentSuccess(submittedFields, boulder)
         }).pipe(
           Effect.catchTags({
             SchemaError: (error) =>
-              presenter.presentInputParseError(submittedState, error),
+              presenter.presentInputParseError(submittedFields, error),
             UnauthenticatedClimberError: () => redirectToSignIn,
           })
         )
@@ -98,16 +66,67 @@ export const CreateBoulderController = Effect.fn(
   }
 })
 
-const getSubmittedString = (
+const submittedFieldsFrom = (
   previousState: CreateBoulderViewModel,
+  formData: FormData
+): CreateBoulderViewModel["fields"] => ({
+  name: {
+    ...previousState.fields.name,
+    value: stringFromFormData(formData, "name", previousState.fields.name.value),
+    error: "",
+  },
+  grade: {
+    ...previousState.fields.grade,
+    value: optionFromFormData(
+      formData,
+      "grade",
+      gradeOptions,
+      previousState.fields.grade.value
+    ),
+    error: "",
+  },
+  wallAngle: {
+    ...previousState.fields.wallAngle,
+    value: optionFromFormData(
+      formData,
+      "wallAngle",
+      wallAngleOptions.map((option) => option.value),
+      previousState.fields.wallAngle.value
+    ),
+    error: "",
+  },
+  movementStyle: {
+    ...previousState.fields.movementStyle,
+    value: optionFromFormData(
+      formData,
+      "movementStyle",
+      movementStyleOptions.map((option) => option.value),
+      previousState.fields.movementStyle.value
+    ),
+    error: "",
+  },
+})
+
+const stringFromFormData = (
   formData: FormData,
-  field: keyof CreateBoulderFieldsViewModel
+  name: string,
+  fallback: string
 ): string => {
-  const value = formData.get(field)
-  return typeof value === "string" ? value : previousState.fields[field].value
+  const value = formData.get(name)
+  return typeof value === "string" ? value : fallback
 }
 
-const getString = (formData: FormData, name: string): string => {
+const optionFromFormData = <TValue extends string>(
+  formData: FormData,
+  name: string,
+  options: readonly TValue[],
+  fallback: TValue
+): TValue => {
   const value = formData.get(name)
-  return typeof value === "string" ? value : ""
+
+  if (typeof value !== "string") {
+    return fallback
+  }
+
+  return options.find((option) => option === value) ?? fallback
 }

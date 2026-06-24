@@ -28,7 +28,10 @@ import {
 
 import {
   createBoulderInitialViewModel,
+  gradeOptions,
+  movementStyleOptions,
   type CreateBoulderViewModel,
+  wallAngleOptions,
 } from "@climbing/adapters-next/view-models"
 
 type CreateBoulderAction = (
@@ -51,91 +54,89 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
       <CardContent>
         <form action={formAction}>
           <FieldGroup>
-            {state.status === "success" && (
-              <Alert>
-                <AlertDescription>
-                  Created {state.name} at {state.grade}.
-                </AlertDescription>
+            {state.message !== "" && (
+              <Alert variant={state.status === "success" ? "default" : "destructive"}>
+                <AlertDescription>{state.message}</AlertDescription>
               </Alert>
             )}
 
-            {state.status === "error" && (
-              <Alert variant="destructive">
-                <AlertDescription>{state.error}</AlertDescription>
-              </Alert>
-            )}
-
-            <Field data-invalid={Boolean(state.fieldErrors.name)}>
-              <FieldLabel htmlFor="boulder-name">Name</FieldLabel>
+            <Field data-invalid={Boolean(state.fields.name.error)}>
+              <FieldLabel htmlFor="boulder-name">
+                {state.fields.name.label}
+              </FieldLabel>
               <Input
                 id="boulder-name"
                 name="name"
                 placeholder="Blue Circuit 12"
                 disabled={pending}
                 defaultValue={state.fields.name.value}
-                aria-invalid={Boolean(state.fieldErrors.name)}
+                aria-invalid={Boolean(state.fields.name.error)}
                 aria-describedby={
-                  state.fieldErrors.name ? "boulder-name-error" : undefined
+                  state.fields.name.error ? "boulder-name-error" : undefined
                 }
               />
               <FieldError id="boulder-name-error">
-                {state.fieldErrors.name}
+                {state.fields.name.error}
               </FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fieldErrors.grade)}>
-              <FieldLabel htmlFor="boulder-grade">Grade</FieldLabel>
+            <Field data-invalid={Boolean(state.fields.grade.error)}>
+              <FieldLabel htmlFor="boulder-grade">
+                {state.fields.grade.label}
+              </FieldLabel>
               <NativeSelect
                 id="boulder-grade"
                 name="grade"
                 className="w-full"
                 disabled={pending}
                 defaultValue={state.fields.grade.value}
-                aria-invalid={Boolean(state.fieldErrors.grade)}
+                aria-invalid={Boolean(state.fields.grade.error)}
                 aria-describedby={
-                  state.fieldErrors.grade ? "boulder-grade-error" : undefined
+                  state.fields.grade.error ? "boulder-grade-error" : undefined
                 }
               >
-                {state.form.gradeOptions.map((grade) => (
+                {gradeOptions.map((grade) => (
                   <NativeSelectOption key={grade} value={grade}>
                     {grade}
                   </NativeSelectOption>
                 ))}
               </NativeSelect>
               <FieldError id="boulder-grade-error">
-                {state.fieldErrors.grade}
+                {state.fields.grade.error}
               </FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fieldErrors.wallAngle)}>
-              <FieldLabel htmlFor="boulder-wall-angle">Wall angle</FieldLabel>
+            <Field data-invalid={Boolean(state.fields.wallAngle.error)}>
+              <FieldLabel htmlFor="boulder-wall-angle">
+                {state.fields.wallAngle.label}
+              </FieldLabel>
               <NativeSelect
                 id="boulder-wall-angle"
                 name="wallAngle"
                 className="w-full"
                 disabled={pending}
                 defaultValue={state.fields.wallAngle.value}
-                aria-invalid={Boolean(state.fieldErrors.wallAngle)}
+                aria-invalid={Boolean(state.fields.wallAngle.error)}
                 aria-describedby={
-                  state.fieldErrors.wallAngle
+                  state.fields.wallAngle.error
                     ? "boulder-wall-angle-error"
                     : undefined
                 }
               >
-                {state.form.wallAngleOptions.map((angle) => (
+                {wallAngleOptions.map((angle) => (
                   <NativeSelectOption key={angle.value} value={angle.value}>
                     {angle.label}
                   </NativeSelectOption>
                 ))}
               </NativeSelect>
               <FieldError id="boulder-wall-angle-error">
-                {state.fieldErrors.wallAngle}
+                {state.fields.wallAngle.error}
               </FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fieldErrors.movementStyle)}>
+            <Field data-invalid={Boolean(state.fields.movementStyle.error)}>
               <FieldLabel htmlFor="boulder-movement-style">
-                Movement style
+                {state.fields.movementStyle.label}
               </FieldLabel>
               <NativeSelect
                 id="boulder-movement-style"
@@ -143,21 +144,21 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
                 className="w-full"
                 disabled={pending}
                 defaultValue={state.fields.movementStyle.value}
-                aria-invalid={Boolean(state.fieldErrors.movementStyle)}
+                aria-invalid={Boolean(state.fields.movementStyle.error)}
                 aria-describedby={
-                  state.fieldErrors.movementStyle
+                  state.fields.movementStyle.error
                     ? "boulder-movement-style-error"
                     : undefined
                 }
               >
-                {state.form.movementStyleOptions.map((style) => (
+                {movementStyleOptions.map((style) => (
                   <NativeSelectOption key={style.value} value={style.value}>
                     {style.label}
                   </NativeSelectOption>
                 ))}
               </NativeSelect>
               <FieldError id="boulder-movement-style-error">
-                {state.fieldErrors.movementStyle}
+                {state.fields.movementStyle.error}
               </FieldError>
             </Field>
 

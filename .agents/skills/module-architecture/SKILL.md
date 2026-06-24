@@ -52,8 +52,10 @@ modules/<module>/
         index.ts              # adapter layers and ManagedRuntime
         controllers/
         factories/            # optional framework-side factories
-        models/               # adapter/view models
+        models/               # adapter transport models when useful
         presenters/
+        utils/                # adapter helpers, including reusable form helpers
+        view-models/          # UI-facing view models and form specs
       test/
         index.ts              # adapter test runtime
       package.json
@@ -159,14 +161,31 @@ Framework adapters translate between a delivery mechanism and the component faca
 
 - Put server/action controllers in `src/controllers/*.controller.ts`.
 - Put view-model shaping and user-facing error mapping in `src/presenters/*.presenter.ts`.
-- Put adapter-only form/view types in `src/models/*.models.ts` when useful.
+- Put UI-facing form/view models in `src/view-models/*.view-model.ts`.
+- Put adapter-only transport models in `src/models/*.models.ts` when useful.
 - Put adapter-only helpers such as cookie factories in `src/factories/*.factory.ts`.
+- Put reusable adapter helpers, such as generic form helpers, in `src/utils/`.
 - Controllers may parse form data, read cookies/headers, call the component facade, set cookies, redirect, and catch domain/application errors into presenter or navigation results.
 - Controllers should depend on the component facade, not application use cases or infrastructure repositories directly.
 - Presenters should be Effect services when they are provided through adapter layers.
 - Compose `PresenterLayer`, `AdapterLayer`, and `<Module>AdapterRuntime` in `src/index.ts`.
 - The adapter runtime should be a `ManagedRuntime.make(AdapterLayer)` for the live component plus presenter/factory layers.
 - In `test/index.ts`, compose the adapter against `<Module>TestLayer` and export `<Module>AdapterTestRuntime`.
+
+### Adapter Form Pattern
+
+When a framework adapter handles server-action forms, prefer a plain view model and small local helpers over a form framework:
+
+- Model each field as a single source of truth: `{ value, label, error }`. Do not keep a separate `fieldErrors` object or a separate valid/invalid status union unless the UI genuinely needs richer per-field state.
+- Keep the top-level form state small, usually `{ status, message, fields }`.
+- Export option lists from the view model when React selects need them.
+- Export one initial view model constant from the view model file.
+- In controllers, build submitted fields directly from `FormData` and the previous fields. Keep this code obvious, even if it repeats a few field names.
+- Decode use-case input from `submittedFields.<field>.value`.
+- In presenters, accept submitted fields, map `SchemaError` issues onto field `error` properties, and return the final view model.
+- React views should read `state.fields.<field>.value` and `state.fields.<field>.error` directly.
+
+Keep generic utilities small. A shared `utils/form.ts` should usually only contain generic schema issue formatting helpers such as `formatSchemaIssue` and `fieldErrorFor`. Controllers remain responsible for transport concerns; presenters remain responsible for user-facing state and messages. Only return plain serializable view models to React.
 
 ## Package Exports
 
