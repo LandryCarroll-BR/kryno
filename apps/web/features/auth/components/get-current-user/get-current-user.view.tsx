@@ -1,14 +1,27 @@
 import { Avatar, AvatarFallback } from "@packages/ui/components/avatar"
-import { getCurrentUser } from "@/features/auth/components/get-current-user/get-current-user.query"
+import { Alert, AlertDescription } from "@packages/ui/components/alert"
+import type { GetCurrentUserViewModel } from "@auth/adapters-next/view-models/get-current-user"
+
+type GetCurrentUserQuery = () => Promise<GetCurrentUserViewModel>
 
 export async function GetCurrentUserView({
   query,
 }: {
-  query: typeof getCurrentUser
+  query: GetCurrentUserQuery
 }) {
   const currentUser = await query()
 
-  const [first = "?"] = currentUser.username.toUpperCase().split("")
+  if (currentUser.status !== "success") {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{currentUser.message}</AlertDescription>
+      </Alert>
+    )
+  }
+
+  const [first = "?"] = currentUser.fields.username.value
+    .toUpperCase()
+    .split("")
 
   return (
     <Avatar size="lg">

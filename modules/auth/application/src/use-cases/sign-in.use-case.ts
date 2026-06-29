@@ -19,6 +19,7 @@ export const SignInInputSchema = Schema.Struct({
 }).annotate({ identifier: "SignInInput" })
 
 export type SignInInput = typeof SignInInputSchema.Type
+export type SignInOutput = SessionWithToken
 
 export class SignInUseCase extends Service<
   SignInUseCase,
@@ -26,7 +27,7 @@ export class SignInUseCase extends Service<
     readonly execute: (
       input: SignInInput
     ) => Effect.Effect<
-      SessionWithToken,
+      SignInOutput,
       SchemaError | UserEmailNotFoundError | UserPasswordInvalidError
     >
   }

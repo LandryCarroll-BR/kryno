@@ -11,6 +11,7 @@
     ".": "./src/index.ts",
     "./controllers/*": "./src/controllers/*.controller.ts",
     "./presenters/*": "./src/presenters/*.presenter.ts",
+    "./view-models/*": "./src/view-models/*.view-model.ts",
     "./test": "./test/index.ts"
   },
   "dependencies": {

@@ -1,170 +1,96 @@
 import { Effect, Layer, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
+import type {
+  UserEmailAlreadyExistsError,
+  UsernameAlreadyExistsError,
+} from "@auth/application/errors/user"
+import type { SignUpOutput } from "@auth/application/use-cases/sign-up"
 import type { SchemaError } from "effect/Schema"
 
-const formatSchemaIssue = SchemaIssue.makeFormatterStandardSchemaV1()
-
-type SignUpFieldViewModel =
-  | {
-      readonly status: "valid"
-      readonly value: string
-    }
-  | {
-      readonly status: "invalid"
-      readonly value: string
-      readonly error: string
-    }
-
-type SignUpFieldsViewModel = {
-  readonly username: SignUpFieldViewModel
-  readonly email: SignUpFieldViewModel
-  readonly password: SignUpFieldViewModel
-  readonly confirmPassword: SignUpFieldViewModel
-}
-
-export type SignUpViewModel =
-  | {
-      readonly status: "idle"
-      readonly fields: SignUpFieldsViewModel
-    }
-  | {
-      readonly status: "loading"
-      readonly fields: SignUpFieldsViewModel
-    }
-  | {
-      readonly status: "success"
-      readonly fields: SignUpFieldsViewModel
-    }
-  | {
-      readonly status: "error"
-      readonly error: string
-      readonly fields: SignUpFieldsViewModel
-    }
+import {
+  signUpInitialViewModel,
+  type SignUpViewModel,
+} from "../view-models/sign-up.view-model"
 
 export class SignUpPresenter extends Service<
   SignUpPresenter,
   {
     readonly presentSuccess: (
-      prev: SignUpViewModel
+      success: SignUpOutput
     ) => Effect.Effect<SignUpViewModel>
 
-    readonly presentInputParseError: (
-      prev: SignUpViewModel,
+    readonly presentSchemaError: (
+      previousState: SignUpViewModel,
       error: SchemaError
     ) => Effect.Effect<SignUpViewModel>
 
     readonly presentUsernameAlreadyExists: (
-      prev: SignUpViewModel
+      previousState: SignUpViewModel,
+      error: UsernameAlreadyExistsError
     ) => Effect.Effect<SignUpViewModel>
 
     readonly presentEmailAlreadyExists: (
-      prev: SignUpViewModel
+      previousState: SignUpViewModel,
+      error: UserEmailAlreadyExistsError
     ) => Effect.Effect<SignUpViewModel>
 
     readonly presentUnexpectedError: (
-      prev: SignUpViewModel
+      previousState: SignUpViewModel
     ) => Effect.Effect<SignUpViewModel>
   }
 >()("@auth/adapters/next/SignUpPresenter") {
-  static Live = Layer.effect(
-    SignUpPresenter,
-    Effect.gen(function* () {
-      return {
-        presentSuccess: (prev) =>
-          Effect.succeed({
-            status: "success",
-            fields: {
-              username: {
-                status: "valid",
-                value: prev.fields.username.value,
-              },
-              email: {
-                status: "valid",
-                value: prev.fields.email.value,
-              },
-              password: {
-                status: "valid",
-                value: prev.fields.password.value,
-              },
-              confirmPassword: {
-                status: "valid",
-                value: prev.fields.confirmPassword.value,
-              },
-            },
-          }),
+  static Live = Layer.succeed(SignUpPresenter, {
+    presentSuccess: (_success) =>
+      Effect.succeed({
+        ...signUpInitialViewModel,
+        status: "success",
+        message: "Your account has been created.",
+      }),
 
-        presentUsernameAlreadyExists: (prev) =>
-          Effect.succeed({
-            status: "error",
-            error: "That username is already taken.",
-            fields: {
-              ...prev.fields,
-            },
-          }),
+    presentSchemaError: (previousState, error) =>
+      Effect.succeed({
+        ...previousState,
+        status: "invalid",
+        message: "Invalid input. Please check your data and try again.",
+        errors: SignUpPresenter.formatErrors(error),
+      }),
 
-        presentEmailAlreadyExists: (prev) =>
-          Effect.succeed({
-            status: "error",
-            error: "An account with that email already exists.",
-            fields: {
-              ...prev.fields,
-            },
-          }),
+    presentUsernameAlreadyExists: (previousState, _error) =>
+      Effect.succeed({
+        ...previousState,
+        status: "error",
+        message: "That username is already taken.",
+      }),
 
-        presentInputParseError: (prev, error) => {
-          const { issues } = formatSchemaIssue(error.issue)
-          const fieldFor = (
-            field: keyof SignUpFieldsViewModel
-          ): SignUpFieldViewModel => {
-            const message = issues.find(
-              (issue) => issue.path?.[0] === field
-            )?.message
+    presentEmailAlreadyExists: (previousState, _error) =>
+      Effect.succeed({
+        ...previousState,
+        status: "error",
+        message: "An account with that email already exists.",
+      }),
 
-            return message === undefined
-              ? { status: "valid", value: prev.fields[field].value }
-              : {
-                  status: "invalid",
-                  value: prev.fields[field].value,
-                  error: message,
-                }
-          }
+    presentUnexpectedError: (previousState) =>
+      Effect.succeed({
+        ...previousState,
+        status: "error",
+        message: "An unexpected error occurred. Please try again.",
+      }),
+  })
 
-          return Effect.succeed({
-            status: "error",
-            error: "Invalid input. Please check your data and try again.",
-            fields: {
-              username: fieldFor("username"),
-              email: fieldFor("email"),
-              password: fieldFor("password"),
-              confirmPassword: fieldFor("confirmPassword"),
-            },
-          })
-        },
+  static formatErrors = (error: SchemaError) => {
+    const { issues } = SignUpPresenter.toStandardSchema(error.issue)
 
-        presentUnexpectedError: (prev) =>
-          Effect.succeed({
-            status: "error",
-            error: "An unexpected error occurred. Please try again.",
-            fields: {
-              username: {
-                status: "valid",
-                value: prev.fields.username.value,
-              },
-              email: {
-                status: "valid",
-                value: prev.fields.email.value,
-              },
-              password: {
-                status: "valid",
-                value: prev.fields.password.value,
-              },
-              confirmPassword: {
-                status: "valid",
-                value: prev.fields.confirmPassword.value,
-              },
-            },
-          }),
-      }
-    })
-  )
+    const fieldError = (
+      field: keyof SignUpViewModel["fields"]
+    ): string => issues.find(({ path }) => path?.[0] === field)?.message ?? ""
+
+    return {
+      username: fieldError("username"),
+      email: fieldError("email"),
+      password: fieldError("password"),
+      confirmPassword: fieldError("confirmPassword"),
+    } satisfies SignUpViewModel["errors"]
+  }
+
+  static toStandardSchema = SchemaIssue.makeFormatterStandardSchemaV1()
 }

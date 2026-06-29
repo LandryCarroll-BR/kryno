@@ -1,7 +1,6 @@
 "use client"
 
 import { useActionState } from "react"
-import type { SignUpViewModel } from "@auth/adapters-next/presenters/sign-up"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
 import { Input } from "@packages/ui/components/input"
@@ -22,38 +21,21 @@ import {
   FieldLabel,
 } from "@packages/ui/components/field"
 
-import { signUp } from "@/features/auth/components/sign-up/sign-up.action"
+import {
+  signUpInitialViewModel,
+  type SignUpViewModel,
+} from "@auth/adapters-next/view-models/sign-up"
 
-const initialState = {
-  status: "idle",
-  fields: {
-    username: { status: "valid", value: "" },
-    email: { status: "valid", value: "" },
-    password: { status: "valid", value: "" },
-    confirmPassword: { status: "valid", value: "" },
-  },
-} as const satisfies SignUpViewModel
+type SignUpAction = (
+  previousState: SignUpViewModel,
+  formData: FormData
+) => Promise<SignUpViewModel>
 
-export function SignUpView({ action }: { action: typeof signUp }) {
-  const [state, formAction, pending] = useActionState(action, initialState)
-
-  const usernameError =
-    state.fields.username.status === "invalid"
-      ? state.fields.username.error
-      : ""
-
-  const emailError =
-    state.fields.email.status === "invalid" ? state.fields.email.error : ""
-
-  const passwordError =
-    state.fields.password.status === "invalid"
-      ? state.fields.password.error
-      : ""
-
-  const confirmPasswordError =
-    state.fields.confirmPassword.status === "invalid"
-      ? state.fields.confirmPassword.error
-      : ""
+export function SignUpView({ action }: { action: SignUpAction }) {
+  const [state, formAction, pending] = useActionState(
+    action,
+    signUpInitialViewModel
+  )
 
   return (
     <Card className="w-[min(28rem,calc(100vw-2rem))]">
@@ -66,72 +48,98 @@ export function SignUpView({ action }: { action: typeof signUp }) {
       <CardContent>
         <form action={formAction}>
           <FieldGroup>
-            {state.status === "error" && (
-              <Alert variant="destructive">
-                <AlertDescription>{state.error}</AlertDescription>
+            {state.message !== "" && (
+              <Alert
+                variant={state.status === "success" ? "default" : "destructive"}
+              >
+                <AlertDescription>{state.message}</AlertDescription>
               </Alert>
             )}
 
-            <Field data-invalid={Boolean(usernameError)}>
-              <FieldLabel htmlFor="username">Username</FieldLabel>
+            <Field data-invalid={Boolean(state.errors.username)}>
+              <FieldLabel htmlFor="username">
+                {state.fields.username.label}
+              </FieldLabel>
               <Input
                 id="username"
                 name="username"
                 autoComplete="username"
+                disabled={pending}
                 defaultValue={state.fields.username.value}
-                aria-invalid={Boolean(usernameError)}
-                aria-describedby={usernameError ? "username-error" : undefined}
+                aria-invalid={Boolean(state.errors.username)}
+                aria-describedby={
+                  state.errors.username ? "username-error" : undefined
+                }
                 placeholder="yourname"
               />
-              <FieldError id="username-error">{usernameError}</FieldError>
+              <FieldError id="username-error">
+                {state.errors.username}
+              </FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(emailError)}>
-              <FieldLabel htmlFor="email">Email address</FieldLabel>
+            <Field data-invalid={Boolean(state.errors.email)}>
+              <FieldLabel htmlFor="email">
+                {state.fields.email.label}
+              </FieldLabel>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
+                disabled={pending}
                 defaultValue={state.fields.email.value}
-                aria-invalid={Boolean(emailError)}
-                aria-describedby={emailError ? "email-error" : undefined}
+                aria-invalid={Boolean(state.errors.email)}
+                aria-describedby={
+                  state.errors.email ? "email-error" : undefined
+                }
                 placeholder="you@example.com"
               />
-              <FieldError id="email-error">{emailError}</FieldError>
+              <FieldError id="email-error">{state.errors.email}</FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(passwordError)}>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+            <Field data-invalid={Boolean(state.errors.password)}>
+              <FieldLabel htmlFor="password">
+                {state.fields.password.label}
+              </FieldLabel>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="new-password"
-                aria-invalid={Boolean(passwordError)}
-                aria-describedby={passwordError ? "password-error" : undefined}
+                disabled={pending}
+                defaultValue={state.fields.password.value}
+                aria-invalid={Boolean(state.errors.password)}
+                aria-describedby={
+                  state.errors.password ? "password-error" : undefined
+                }
                 placeholder="At least 8 characters"
               />
-              <FieldError id="password-error">{passwordError}</FieldError>
+              <FieldError id="password-error">
+                {state.errors.password}
+              </FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(confirmPasswordError)}>
+            <Field data-invalid={Boolean(state.errors.confirmPassword)}>
               <FieldLabel htmlFor="confirmPassword">
-                Confirm password
+                {state.fields.confirmPassword.label}
               </FieldLabel>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
                 autoComplete="new-password"
-                aria-invalid={Boolean(confirmPasswordError)}
+                disabled={pending}
+                defaultValue={state.fields.confirmPassword.value}
+                aria-invalid={Boolean(state.errors.confirmPassword)}
                 aria-describedby={
-                  confirmPasswordError ? "confirm-password-error" : undefined
+                  state.errors.confirmPassword
+                    ? "confirm-password-error"
+                    : undefined
                 }
                 placeholder="Re-enter your password"
               />
               <FieldError id="confirm-password-error">
-                {confirmPasswordError}
+                {state.errors.confirmPassword}
               </FieldError>
             </Field>
 

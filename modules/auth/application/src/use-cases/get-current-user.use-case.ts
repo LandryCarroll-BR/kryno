@@ -18,6 +18,7 @@ export const GetCurrentUserInputSchema = Schema.Struct({
 }).annotate({ identifier: "GetCurrentUserInput" })
 
 export type GetCurrentUserInput = typeof GetCurrentUserInputSchema.Type
+export type GetCurrentUserOutput = Option.Option<CurrentUser>
 
 export class GetCurrentUserUseCase extends Service<
   GetCurrentUserUseCase,
@@ -25,7 +26,7 @@ export class GetCurrentUserUseCase extends Service<
     readonly execute: (
       input: GetCurrentUserInput
     ) => Effect.Effect<
-      Option.Option<CurrentUser>,
+      GetCurrentUserOutput,
       | SchemaError
       | InvalidSessionSecretHashError
       | InvalidSessionTokenError

@@ -20,6 +20,7 @@ export const SignUpInputSchema = Schema.Struct({
 }).annotate({ identifier: "SignUpInput" })
 
 export type SignUpInput = typeof SignUpInputSchema.Type
+export type SignUpOutput = SessionWithToken
 
 export class SignUpUseCase extends Service<
   SignUpUseCase,
@@ -27,7 +28,7 @@ export class SignUpUseCase extends Service<
     readonly execute: (
       input: SignUpInput
     ) => Effect.Effect<
-      SessionWithToken,
+      SignUpOutput,
       | SchemaError
       | UserEmailAlreadyExistsError
       | UsernameAlreadyExistsError

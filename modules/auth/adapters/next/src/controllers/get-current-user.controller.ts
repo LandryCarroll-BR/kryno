@@ -3,6 +3,8 @@ import { GetCurrentUserInputSchema } from "@auth/application/use-cases/get-curre
 import { Auth } from "@auth/component"
 import { Headers, Navigation } from "@packages/effect-next"
 
+import { GetCurrentUserPresenter } from "../presenters/get-current-user.presenter"
+
 export const GetCurrentUserControllerInputSchema =
   GetCurrentUserInputSchema.annotate({
     identifier: "GetCurrentUserControllerInput",
@@ -13,31 +15,58 @@ export const GetCurrentUserController = Effect.fn(
 )(function* ({ redirectUrl }: { redirectUrl: string }) {
   const auth = yield* Auth
   const cookies = yield* Headers.Cookies
-
-  const handleNoUser = Navigation.Redirect(redirectUrl)
+  const presenter = yield* GetCurrentUserPresenter
+  const redirectToSignIn = Navigation.Redirect(redirectUrl)
 
   return {
-    handle: Effect.fn("GetCurrentUserController.handle")(
-      function* () {
-        const authToken = cookies.get("authToken")
+    handle: Effect.fn("GetCurrentUserController.handle")(function* () {
+      const authToken = cookies.get("authToken")
 
-        if (!authToken?.value) {
-          return yield* handleNoUser
-        }
+      if (!authToken?.value) {
+        return yield* redirectToSignIn
+      }
 
-        const parsedInput = yield* Schema.decodeUnknownEffect(
+      const result = yield* Effect.gen(function* () {
+        const input = yield* Schema.decodeUnknownEffect(
           GetCurrentUserControllerInputSchema
-        )({ token: authToken.value })
+        )(
+          {
+            token: authToken.value,
+          },
+          { errors: "all" }
+        )
 
-        const currentUser = yield* auth.getCurrentUser(parsedInput)
+        const success = yield* auth.getCurrentUser(input)
 
-        if (Option.isNone(currentUser)) {
-          return yield* handleNoUser
-        }
+        return { _tag: "Success" as const, success }
+      }).pipe(
+        Effect.catchDefect(() =>
+          presenter
+            .presentUnexpectedError()
+            .pipe(
+              Effect.map((viewModel) => ({
+                _tag: "Presented" as const,
+                viewModel,
+              }))
+            )
+        ),
+        Effect.catchTags({
+          SchemaError: () => redirectToSignIn,
+          InvalidSessionSecretHashError: () => redirectToSignIn,
+          InvalidSessionTokenError: () => redirectToSignIn,
+          SessionNotFoundError: () => redirectToSignIn,
+        })
+      )
 
-        return currentUser.value
-      },
-      Effect.catch(() => handleNoUser)
-    ),
+      if (result._tag === "Presented") {
+        return result.viewModel
+      }
+
+      if (Option.isNone(result.success)) {
+        return yield* redirectToSignIn
+      }
+
+      return yield* presenter.presentSuccess(result.success)
+    }),
   }
 })

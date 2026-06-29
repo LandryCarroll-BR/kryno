@@ -17,6 +17,7 @@ export const SignOutInputSchema = Schema.Struct({
 }).annotate({ identifier: "SignOutInput" })
 
 export type SignOutInput = typeof SignOutInputSchema.Type
+export type SignOutOutput = void
 
 export class SignOutUseCase extends Service<
   SignOutUseCase,
@@ -24,7 +25,7 @@ export class SignOutUseCase extends Service<
     readonly execute: (
       input: SignOutInput
     ) => Effect.Effect<
-      void,
+      SignOutOutput,
       | SchemaError
       | InvalidSessionSecretHashError
       | InvalidSessionTokenError

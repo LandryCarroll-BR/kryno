@@ -1,7 +1,6 @@
 "use client"
 
 import { useActionState } from "react"
-import type { SignInViewModel } from "@auth/adapters-next/presenters/sign-in"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
 import { Input } from "@packages/ui/components/input"
@@ -22,24 +21,21 @@ import {
   FieldLabel,
 } from "@packages/ui/components/field"
 
-import { signIn } from "@/features/auth/components/sign-in/sign-in.action"
+import {
+  signInInitialViewModel,
+  type SignInViewModel,
+} from "@auth/adapters-next/view-models/sign-in"
 
-const initialState = {
-  status: "idle",
-  fields: {
-    email: { status: "valid", value: "" },
-    password: { status: "valid", value: "" },
-  },
-} as const satisfies SignInViewModel
+type SignInAction = (
+  previousState: SignInViewModel,
+  formData: FormData
+) => Promise<SignInViewModel>
 
-export function SignInView({ action }: { action: typeof signIn }) {
-  const [state, formAction, pending] = useActionState(action, initialState)
-  const emailError =
-    state.fields.email.status === "invalid" ? state.fields.email.error : ""
-  const passwordError =
-    state.fields.password.status === "invalid"
-      ? state.fields.password.error
-      : ""
+export function SignInView({ action }: { action: SignInAction }) {
+  const [state, formAction, pending] = useActionState(
+    action,
+    signInInitialViewModel
+  )
 
   return (
     <Card className="w-[min(28rem,calc(100vw-2rem))]">
@@ -52,38 +48,53 @@ export function SignInView({ action }: { action: typeof signIn }) {
       <CardContent>
         <form action={formAction}>
           <FieldGroup>
-            {state.status === "error" && (
-              <Alert variant="destructive">
-                <AlertDescription>{state.error}</AlertDescription>
+            {state.message !== "" && (
+              <Alert
+                variant={state.status === "success" ? "default" : "destructive"}
+              >
+                <AlertDescription>{state.message}</AlertDescription>
               </Alert>
             )}
 
-            <Field data-invalid={Boolean(emailError)}>
-              <FieldLabel htmlFor="email">Email address</FieldLabel>
+            <Field data-invalid={Boolean(state.errors.email)}>
+              <FieldLabel htmlFor="email">
+                {state.fields.email.label}
+              </FieldLabel>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
+                disabled={pending}
                 defaultValue={state.fields.email.value}
-                aria-invalid={Boolean(emailError)}
-                aria-describedby={emailError ? "email-error" : undefined}
+                aria-invalid={Boolean(state.errors.email)}
+                aria-describedby={
+                  state.errors.email ? "email-error" : undefined
+                }
                 placeholder="you@example.com"
               />
-              <FieldError id="email-error">{emailError}</FieldError>
+              <FieldError id="email-error">{state.errors.email}</FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(passwordError)}>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+            <Field data-invalid={Boolean(state.errors.password)}>
+              <FieldLabel htmlFor="password">
+                {state.fields.password.label}
+              </FieldLabel>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                aria-invalid={Boolean(passwordError)}
-                aria-describedby={passwordError ? "password-error" : undefined}
+                disabled={pending}
+                defaultValue={state.fields.password.value}
+                aria-invalid={Boolean(state.errors.password)}
+                aria-describedby={
+                  state.errors.password ? "password-error" : undefined
+                }
               />
-              <FieldError id="password-error">{passwordError}</FieldError>
+              <FieldError id="password-error">
+                {state.errors.password}
+              </FieldError>
             </Field>
 
             <Field>

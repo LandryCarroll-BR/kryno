@@ -1,144 +1,94 @@
 import { Effect, Layer, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
+import type {
+  UserEmailNotFoundError,
+  UserPasswordInvalidError,
+} from "@auth/application/errors/user"
+import type { SignInOutput } from "@auth/application/use-cases/sign-in"
 import type { SchemaError } from "effect/Schema"
 
-const formatSchemaIssue = SchemaIssue.makeFormatterStandardSchemaV1()
-
-type SignInFieldViewModel =
-  | {
-      readonly status: "valid"
-      readonly value: string
-    }
-  | {
-      readonly status: "invalid"
-      readonly value: string
-      readonly error: string
-    }
-
-type SignInFieldsViewModel = {
-  readonly email: SignInFieldViewModel
-  readonly password: SignInFieldViewModel
-}
-
-export type SignInViewModel =
-  | {
-      readonly status: "idle"
-      readonly fields: SignInFieldsViewModel
-    }
-  | {
-      readonly status: "loading"
-      readonly fields: SignInFieldsViewModel
-    }
-  | {
-      readonly status: "success"
-      readonly fields: SignInFieldsViewModel
-    }
-  | {
-      readonly status: "error"
-      readonly error: string
-      readonly fields: SignInFieldsViewModel
-    }
+import {
+  signInInitialViewModel,
+  type SignInViewModel,
+} from "../view-models/sign-in.view-model"
 
 export class SignInPresenter extends Service<
   SignInPresenter,
   {
     readonly presentSuccess: (
-      prev: SignInViewModel
+      success: SignInOutput
     ) => Effect.Effect<SignInViewModel>
 
-    readonly presentInputParseError: (
-      prev: SignInViewModel,
+    readonly presentSchemaError: (
+      previousState: SignInViewModel,
       error: SchemaError
     ) => Effect.Effect<SignInViewModel>
 
     readonly presentEmailNotFound: (
-      prev: SignInViewModel
+      previousState: SignInViewModel,
+      error: UserEmailNotFoundError
     ) => Effect.Effect<SignInViewModel>
 
     readonly presentPasswordInvalid: (
-      prev: SignInViewModel
+      previousState: SignInViewModel,
+      error: UserPasswordInvalidError
     ) => Effect.Effect<SignInViewModel>
 
     readonly presentUnexpectedError: (
-      prev: SignInViewModel
+      previousState: SignInViewModel
     ) => Effect.Effect<SignInViewModel>
   }
 >()("@auth/adapters/next/SignInPresenter") {
-  static Live = Layer.effect(
-    SignInPresenter,
-    Effect.gen(function* () {
-      return {
-        presentSuccess: (prev) =>
-          Effect.succeed({
-            status: "success",
-            fields: {
-              email: { status: "valid", value: prev.fields.email.value },
-              password: {
-                status: "valid",
-                value: prev.fields.password.value,
-              },
-            },
-          }),
+  static Live = Layer.succeed(SignInPresenter, {
+    presentSuccess: (_success) =>
+      Effect.succeed({
+        ...signInInitialViewModel,
+        status: "success",
+        message: "Signed in successfully.",
+      }),
 
-        presentEmailNotFound: (prev) =>
-          Effect.succeed({
-            status: "error",
-            error: "Invalid email or password.",
-            fields: {
-              ...prev.fields,
-            },
-          }),
+    presentSchemaError: (previousState, error) =>
+      Effect.succeed({
+        ...previousState,
+        status: "invalid",
+        message: "Invalid input. Please check your data and try again.",
+        errors: SignInPresenter.formatErrors(error),
+      }),
 
-        presentPasswordInvalid: (prev) =>
-          Effect.succeed({
-            status: "error",
-            error: "Invalid email or password.",
-            fields: {
-              ...prev.fields,
-            },
-          }),
+    presentEmailNotFound: (previousState, _error) =>
+      Effect.succeed({
+        ...previousState,
+        status: "error",
+        message: "Invalid email or password.",
+      }),
 
-        presentInputParseError: (prev, error) => {
-          const { issues } = formatSchemaIssue(error.issue)
-          const fieldFor = (
-            field: keyof SignInFieldsViewModel
-          ): SignInFieldViewModel => {
-            const message = issues.find(
-              (issue) => issue.path?.[0] === field
-            )?.message
+    presentPasswordInvalid: (previousState, _error) =>
+      Effect.succeed({
+        ...previousState,
+        status: "error",
+        message: "Invalid email or password.",
+      }),
 
-            return message === undefined
-              ? { status: "valid", value: prev.fields[field].value }
-              : {
-                  status: "invalid",
-                  value: prev.fields[field].value,
-                  error: message,
-                }
-          }
+    presentUnexpectedError: (previousState) =>
+      Effect.succeed({
+        ...previousState,
+        status: "error",
+        message: "An unexpected error occurred. Please try again.",
+      }),
+  })
 
-          return Effect.succeed({
-            status: "error",
-            error: "Invalid input. Please check your data and try again.",
-            fields: {
-              email: fieldFor("email"),
-              password: fieldFor("password"),
-            },
-          })
-        },
+  static formatErrors = (error: SchemaError) => {
+    const { issues } = SignInPresenter.toStandardSchema(error.issue)
 
-        presentUnexpectedError: (prev) =>
-          Effect.succeed({
-            status: "error",
-            error: "An unexpected error occurred. Please try again.",
-            fields: {
-              email: { status: "valid", value: prev.fields.email.value },
-              password: {
-                status: "valid",
-                value: prev.fields.password.value,
-              },
-            },
-          }),
-      }
-    })
-  )
+    const fieldError = (
+      field: keyof SignInViewModel["fields"]
+    ): string => issues.find(({ path }) => path?.[0] === field)?.message ?? ""
+
+    return {
+      email: fieldError("email"),
+      password: fieldError("password"),
+    } satisfies SignInViewModel["errors"]
+  }
+
+  static toStandardSchema = SchemaIssue.makeFormatterStandardSchemaV1()
 }

@@ -1,71 +1,46 @@
 import { Effect, Schema } from "effect"
-import { Navigation } from "@packages/effect-next"
 import { SignInInputSchema } from "@auth/application/use-cases/sign-in"
 import { Auth } from "@auth/component"
 
 import { SetAuthCookie } from "../factories/set-auth-cookie.factory"
-
-import {
-  SignInPresenter,
-  type SignInViewModel,
-} from "../presenters/sign-in.presenter"
+import { SignInPresenter } from "../presenters/sign-in.presenter"
+import { type SignInViewModel } from "../view-models/sign-in.view-model"
 
 export const SignInControllerInputSchema = SignInInputSchema.annotate({
   identifier: "SignInControllerInput",
 })
 
 export const SignInController = Effect.fn("SignInController.make")(function* ({
-  formData,
+  previousState,
 }: {
-  formData: FormData
+  previousState: SignInViewModel
 }) {
   const auth = yield* Auth
-  const signInPresenter = yield* SignInPresenter
+  const presenter = yield* SignInPresenter
   const setAuthCookie = yield* SetAuthCookie
-
-  const submittedState: SignInViewModel = {
-    status: "loading",
-    fields: {
-      email: { status: "valid", value: getString(formData, "email") },
-      password: { status: "valid", value: "" },
-    },
-  }
 
   return {
     handle: Effect.fn("SignInController.handle")(
-      function* ({ redirectUrl }: { redirectUrl: string }) {
-        const parsedInput = yield* Schema.decodeUnknownEffect(
+      function* (formData: FormData) {
+        const input = yield* Schema.decodeUnknownEffect(
           SignInControllerInputSchema
-        )(
-          {
-            email: formData.get("email"),
-            password: formData.get("password"),
-          },
-          { errors: "all" }
-        )
+        )(Object.fromEntries(formData), { errors: "all" })
 
-        const session = yield* auth.signIn({
-          email: parsedInput.email,
-          password: parsedInput.password,
-        })
+        const success = yield* auth.signIn(input)
 
-        yield* setAuthCookie({ session })
+        yield* setAuthCookie({ session: success })
 
-        return yield* Navigation.Redirect(redirectUrl)
+        return yield* presenter.presentSuccess(success)
       },
       Effect.catchTags({
         SchemaError: (error) =>
-          signInPresenter.presentInputParseError(submittedState, error),
-        UserEmailNotFoundError: () =>
-          signInPresenter.presentEmailNotFound(submittedState),
-        UserPasswordInvalidError: () =>
-          signInPresenter.presentPasswordInvalid(submittedState),
-      })
+          presenter.presentSchemaError(previousState, error),
+        UserEmailNotFoundError: (error) =>
+          presenter.presentEmailNotFound(previousState, error),
+        UserPasswordInvalidError: (error) =>
+          presenter.presentPasswordInvalid(previousState, error),
+      }),
+      Effect.catchDefect(() => presenter.presentUnexpectedError(previousState))
     ),
   }
 })
-
-const getString = (formData: FormData, field: string) => {
-  const value = formData.get(field)
-  return typeof value === "string" ? value : ""
-}
