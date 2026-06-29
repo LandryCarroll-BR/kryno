@@ -1,16 +1,15 @@
-import { Effect } from "effect"
+import { Effect, Schema } from "effect"
+import { EndClimbingSessionInputSchema } from "@climbing/application/use-cases/end-climbing-session"
 import { Climbing } from "@climbing/component"
 import { Headers, Navigation } from "@packages/effect-next"
 
-import {
-  EndClimbingSessionPresenter,
-  type EndClimbingSessionViewModel,
-} from "../presenters/end-climbing-session.presenter"
+import { EndClimbingSessionPresenter } from "../presenters/end-climbing-session.presenter"
+import { type EndClimbingSessionViewModel } from "../view-models/end-climbing-session.view-model"
 
 export const EndClimbingSessionController = Effect.fn(
   "EndClimbingSessionController.make"
 )(function* ({
-  previousState: _previousState,
+  previousState,
   redirectUrl,
 }: {
   previousState: EndClimbingSessionViewModel
@@ -19,29 +18,39 @@ export const EndClimbingSessionController = Effect.fn(
   const climbing = yield* Climbing
   const cookies = yield* Headers.Cookies
   const presenter = yield* EndClimbingSessionPresenter
-
   const redirectToSignIn = Navigation.Redirect(redirectUrl)
 
   return {
     handle: Effect.fn("EndClimbingSessionController.handle")(
-      function* () {
+      function* (formData: FormData) {
         const authToken = cookies.get("authToken")
 
         if (!authToken?.value) {
           return yield* redirectToSignIn
         }
 
-        const session = yield* climbing.endClimbingSession({
-          token: authToken.value,
-        })
+        const input = yield* Schema.decodeUnknownEffect(
+          EndClimbingSessionInputSchema
+        )(
+          {
+            token: authToken.value,
+            ...Object.fromEntries(formData),
+          },
+          { errors: "all" }
+        )
 
-        return yield* presenter.presentSuccess(session)
+        const success = yield* climbing.endClimbingSession(input)
+
+        return yield* presenter.presentSuccess(success)
       },
       Effect.catchTags({
-        SchemaError: () => redirectToSignIn,
+        SchemaError: (error) =>
+          presenter.presentSchemaError(previousState, error),
         UnauthenticatedClimberError: () => redirectToSignIn,
-        NoActiveClimbingSessionError: () => presenter.presentNoActiveSession(),
-      })
+        NoActiveClimbingSessionError: (error) =>
+          presenter.presentNoActiveSession(previousState, error),
+      }),
+      Effect.catchDefect(() => presenter.presentUnexpectedError(previousState))
     ),
   }
 })

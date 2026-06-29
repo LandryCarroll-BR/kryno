@@ -13,6 +13,7 @@ export const EndClimbingSessionInputSchema = Schema.Struct({
 }).annotate({ identifier: "EndClimbingSessionInput" })
 
 export type EndClimbingSessionInput = typeof EndClimbingSessionInputSchema.Type
+export type EndClimbingSessionOutput = CompletedClimbingSession
 
 export class EndClimbingSessionUseCase extends Service<
   EndClimbingSessionUseCase,
@@ -20,7 +21,7 @@ export class EndClimbingSessionUseCase extends Service<
     readonly execute: (
       input: EndClimbingSessionInput
     ) => Effect.Effect<
-      CompletedClimbingSession,
+      EndClimbingSessionOutput,
       SchemaError | UnauthenticatedClimberError | NoActiveClimbingSessionError
     >
   }

@@ -22,6 +22,7 @@ export const LogBoulderAttemptInputSchema = Schema.Struct({
 }).annotate({ identifier: "LogBoulderAttemptInput" })
 
 export type LogBoulderAttemptInput = typeof LogBoulderAttemptInputSchema.Type
+export type LogBoulderAttemptOutput = ClimbingAttempt
 
 export class LogBoulderAttemptUseCase extends Service<
   LogBoulderAttemptUseCase,
@@ -29,7 +30,7 @@ export class LogBoulderAttemptUseCase extends Service<
     readonly execute: (
       input: LogBoulderAttemptInput
     ) => Effect.Effect<
-      ClimbingAttempt,
+      LogBoulderAttemptOutput,
       | SchemaError
       | UnauthenticatedClimberError
       | SavedBoulderNotFoundError

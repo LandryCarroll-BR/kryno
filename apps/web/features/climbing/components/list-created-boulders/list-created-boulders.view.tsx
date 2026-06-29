@@ -1,4 +1,6 @@
+import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Badge } from "@packages/ui/components/badge"
+
 import {
   Card,
   CardContent,
@@ -7,35 +9,49 @@ import {
   CardTitle,
 } from "@packages/ui/components/card"
 
-import { listCreatedBoulders } from "@/features/climbing/components/list-created-boulders/list-created-boulders.query"
-import { logBoulderAttempt } from "@/features/climbing/components/log-boulder-attempt/log-boulder-attempt.action"
+import type { ListCreatedBouldersViewModel } from "@climbing/adapters-next/view-models/list-created-boulders"
+import type { LogBoulderAttemptViewModel } from "@climbing/adapters-next/view-models/log-boulder-attempt"
+
 import { LogBoulderAttemptView } from "../log-boulder-attempt/log-boulder-attempt.view"
+
+type ListCreatedBouldersQuery = () => Promise<ListCreatedBouldersViewModel>
+
+type LogBoulderAttemptAction = (
+  previousState: LogBoulderAttemptViewModel,
+  formData: FormData
+) => Promise<LogBoulderAttemptViewModel>
 
 export async function ListCreatedBouldersView({
   query,
   action,
 }: {
-  query: typeof listCreatedBoulders
-  action: typeof logBoulderAttempt
+  query: ListCreatedBouldersQuery
+  action: LogBoulderAttemptAction
 }) {
   const createdBoulders = await query()
+  const boulders = createdBoulders.fields.boulders.value
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Your boulders</CardTitle>
+        <CardTitle>{createdBoulders.fields.boulders.label}</CardTitle>
         <CardDescription>
           Problems you have created, sorted by most recently updated.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {createdBoulders.boulders.length === 0 ? (
+        {createdBoulders.status === "invalid" ||
+        createdBoulders.status === "error" ? (
+          <Alert variant="destructive">
+            <AlertDescription>{createdBoulders.message}</AlertDescription>
+          </Alert>
+        ) : boulders.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No boulders yet. Create one to climb later.
+            {createdBoulders.message}
           </p>
         ) : (
           <div className="divide-y">
-            {createdBoulders.boulders.map((boulder) => (
+            {boulders.map((boulder) => (
               <article
                 key={boulder.id}
                 className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between"

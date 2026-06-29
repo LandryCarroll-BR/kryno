@@ -5,23 +5,21 @@ import { Effect } from "effect"
 import { revalidatePath } from "next/cache"
 
 import { ClimbingAdapterRuntime } from "@climbing/adapters-next"
-import { EndClimbingSessionViewModel } from "@climbing/adapters-next/presenters/end-climbing-session"
 import { EndClimbingSessionController } from "@climbing/adapters-next/controllers/end-climbing-session"
+import type { EndClimbingSessionViewModel } from "@climbing/adapters-next/view-models/end-climbing-session"
 
 export async function endClimbingSession(
-  previousState: EndClimbingSessionViewModel
+  previousState: EndClimbingSessionViewModel,
+  formData: FormData
 ) {
-  const controllerPreviousState: EndClimbingSessionViewModel =
-    previousState.status === "active" ? { status: "idle" } : previousState
-
   const result = await ClimbingAdapterRuntime.runPromise(
     EndClimbingSessionController({
-      previousState: controllerPreviousState,
+      previousState,
       redirectUrl: "/sign-in",
-    }).pipe(Effect.flatMap(({ handle }) => handle()))
+    }).pipe(Effect.flatMap(({ handle }) => handle(formData)))
   )
 
-  if (result.status === "ended" || result.status === "error") {
+  if (result.status === "success") {
     revalidatePath("/dashboard")
   }
 

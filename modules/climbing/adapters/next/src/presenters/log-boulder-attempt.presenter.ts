@@ -1,60 +1,112 @@
-import { Effect, Layer } from "effect"
+import { Effect, Layer, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
-import type { ClimbingAttempt } from "@climbing/application/models/climbing-attempt"
+import type { SavedBoulderNotFoundError } from "@climbing/application/errors/boulder"
+import type { NoActiveClimbingSessionError } from "@climbing/application/errors/climbing-session"
+import type { LogBoulderAttemptOutput } from "@climbing/application/use-cases/log-boulder-attempt"
+import type { SchemaError } from "effect/Schema"
 
-export type LogBoulderAttemptViewModel =
-  | {
-      readonly status: "idle"
-    }
-  | {
-      readonly status: "success"
-      readonly attemptId: string
-      readonly boulderId: string
-      readonly outcome: string
-      readonly ordinal: number
-    }
-  | {
-      readonly status: "error"
-      readonly error: string
-    }
+import {
+  logBoulderAttemptInitialViewModel,
+  type LogBoulderAttemptViewModel,
+} from "../view-models/log-boulder-attempt.view-model"
 
 export class LogBoulderAttemptPresenter extends Service<
   LogBoulderAttemptPresenter,
   {
     readonly presentSuccess: (
-      attempt: ClimbingAttempt
+      success: LogBoulderAttemptOutput
     ) => Effect.Effect<LogBoulderAttemptViewModel>
-    readonly presentValidationError: () => Effect.Effect<LogBoulderAttemptViewModel>
-    readonly presentNoActiveSession: () => Effect.Effect<LogBoulderAttemptViewModel>
-    readonly presentSavedBoulderNotFound: () => Effect.Effect<LogBoulderAttemptViewModel>
+
+    readonly presentSchemaError: (
+      previousState: LogBoulderAttemptViewModel,
+      error: SchemaError
+    ) => Effect.Effect<LogBoulderAttemptViewModel>
+
+    readonly presentNoActiveSession: (
+      previousState: LogBoulderAttemptViewModel,
+      error: NoActiveClimbingSessionError
+    ) => Effect.Effect<LogBoulderAttemptViewModel>
+
+    readonly presentSavedBoulderNotFound: (
+      previousState: LogBoulderAttemptViewModel,
+      error: SavedBoulderNotFoundError
+    ) => Effect.Effect<LogBoulderAttemptViewModel>
+
+    readonly presentUnexpectedError: (
+      previousState: LogBoulderAttemptViewModel
+    ) => Effect.Effect<LogBoulderAttemptViewModel>
   }
 >()("@climbing/adapters/next/LogBoulderAttemptPresenter") {
   static Live = Layer.succeed(LogBoulderAttemptPresenter, {
     presentSuccess: (attempt) =>
       Effect.succeed({
+        ...logBoulderAttemptInitialViewModel,
         status: "success",
-        attemptId: attempt.id,
-        boulderId: attempt.boulderId,
-        outcome: attempt.outcome,
-        ordinal: attempt.ordinal,
+        message: `Logged attempt ${attempt.ordinal}.`,
+        fields: {
+          attemptId: {
+            ...logBoulderAttemptInitialViewModel.fields.attemptId,
+            value: attempt.id,
+          },
+          boulderId: {
+            ...logBoulderAttemptInitialViewModel.fields.boulderId,
+            value: attempt.boulderId,
+          },
+          outcome: {
+            ...logBoulderAttemptInitialViewModel.fields.outcome,
+            value: attempt.outcome,
+          },
+          ordinal: {
+            ...logBoulderAttemptInitialViewModel.fields.ordinal,
+            value: String(attempt.ordinal),
+          },
+        },
       }),
 
-    presentValidationError: () =>
+    presentSchemaError: (previousState, error) =>
       Effect.succeed({
-        status: "error",
-        error: "Choose a boulder and attempt outcome.",
+        ...previousState,
+        status: "invalid",
+        message: "Choose a boulder and attempt outcome.",
+        errors: LogBoulderAttemptPresenter.formatErrors(error),
       }),
 
-    presentNoActiveSession: () =>
+    presentNoActiveSession: (previousState, _error) =>
       Effect.succeed({
+        ...previousState,
         status: "error",
-        error: "Start a climbing session before logging attempts.",
+        message: "Start a climbing session before logging attempts.",
       }),
 
-    presentSavedBoulderNotFound: () =>
+    presentSavedBoulderNotFound: (previousState, _error) =>
       Effect.succeed({
+        ...previousState,
         status: "error",
-        error: "That boulder is not available in your saved boulders.",
+        message: "That boulder is not available in your saved boulders.",
+      }),
+
+    presentUnexpectedError: (previousState) =>
+      Effect.succeed({
+        ...previousState,
+        status: "error",
+        message: "Unable to log this attempt. Please try again.",
       }),
   })
+
+  static formatErrors = (error: SchemaError) => {
+    const { issues } = LogBoulderAttemptPresenter.toStandardSchema(error.issue)
+
+    const fieldError = (
+      field: keyof LogBoulderAttemptViewModel["fields"]
+    ): string => issues.find(({ path }) => path?.[0] === field)?.message ?? ""
+
+    return {
+      attemptId: fieldError("attemptId"),
+      boulderId: fieldError("boulderId"),
+      outcome: fieldError("outcome"),
+      ordinal: fieldError("ordinal"),
+    } satisfies LogBoulderAttemptViewModel["errors"]
+  }
+
+  static toStandardSchema = SchemaIssue.makeFormatterStandardSchemaV1()
 }

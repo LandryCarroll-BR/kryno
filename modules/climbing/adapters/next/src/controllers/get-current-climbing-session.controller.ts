@@ -1,4 +1,5 @@
-import { Effect } from "effect"
+import { Effect, Schema } from "effect"
+import { GetCurrentClimbingSessionInputSchema } from "@climbing/application/use-cases/get-current-climbing-session"
 import { Climbing } from "@climbing/component"
 import { Headers, Navigation } from "@packages/effect-next"
 
@@ -10,7 +11,6 @@ export const GetCurrentClimbingSessionController = Effect.fn(
   const climbing = yield* Climbing
   const cookies = yield* Headers.Cookies
   const presenter = yield* GetCurrentClimbingSessionPresenter
-
   const redirectToSignIn = Navigation.Redirect(redirectUrl)
 
   return {
@@ -22,16 +22,24 @@ export const GetCurrentClimbingSessionController = Effect.fn(
           return yield* redirectToSignIn
         }
 
-        const session = yield* climbing.getCurrentClimbingSession({
-          token: authToken.value,
-        })
+        const input = yield* Schema.decodeUnknownEffect(
+          GetCurrentClimbingSessionInputSchema
+        )(
+          {
+            token: authToken.value,
+          },
+          { errors: "all" }
+        )
 
-        return yield* presenter.present(session)
+        const success = yield* climbing.getCurrentClimbingSession(input)
+
+        return yield* presenter.presentSuccess(success)
       },
       Effect.catchTags({
-        SchemaError: () => redirectToSignIn,
+        SchemaError: (error) => presenter.presentSchemaError(error),
         UnauthenticatedClimberError: () => redirectToSignIn,
-      })
+      }),
+      Effect.catchDefect(() => presenter.presentUnexpectedError())
     ),
   }
 })

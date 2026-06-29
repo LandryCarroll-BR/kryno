@@ -2,44 +2,58 @@
 
 import { useActionState } from "react"
 import { Button } from "@packages/ui/components/button"
-import { logBoulderAttempt } from "@/features/climbing/components/log-boulder-attempt/log-boulder-attempt.action"
+
+import {
+  logBoulderAttemptInitialViewModel,
+  outcomeOptions,
+  type LogBoulderAttemptViewModel,
+} from "@climbing/adapters-next/view-models/log-boulder-attempt"
+
+type LogBoulderAttemptAction = (
+  previousState: LogBoulderAttemptViewModel,
+  formData: FormData
+) => Promise<LogBoulderAttemptViewModel>
 
 export function LogBoulderAttemptView({
   action,
   boulderId,
 }: {
-  action: typeof logBoulderAttempt
+  action: LogBoulderAttemptAction
   boulderId: string
 }) {
-  const [state, formAction, pending] = useActionState(action, {
-    status: "idle",
-  })
+  const [state, formAction, pending] = useActionState(
+    action,
+    logBoulderAttemptInitialViewModel
+  )
 
   return (
     <div className="flex flex-col items-start gap-2">
       <div className="flex flex-wrap gap-2">
-        <form action={formAction}>
-          <input type="hidden" name="boulderId" value={boulderId} />
-          <input type="hidden" name="outcome" value="FELL" />
-          <Button type="submit" size="sm" variant="outline" disabled={pending}>
-            Fell
-          </Button>
-        </form>
-        <form action={formAction}>
-          <input type="hidden" name="boulderId" value={boulderId} />
-          <input type="hidden" name="outcome" value="TOPPED" />
-          <Button type="submit" size="sm" disabled={pending}>
-            Topped
-          </Button>
-        </form>
+        {outcomeOptions.map((outcome) => (
+          <form key={outcome.value} action={formAction}>
+            <input type="hidden" name="boulderId" value={boulderId} />
+            <input type="hidden" name="outcome" value={outcome.value} />
+            <Button
+              type="submit"
+              size="sm"
+              variant={outcome.value === "FELL" ? "outline" : "default"}
+              disabled={pending}
+            >
+              {outcome.label}
+            </Button>
+          </form>
+        ))}
       </div>
-      {state.status === "success" && (
-        <p className="text-sm text-muted-foreground">
-          Logged attempt {state.ordinal}.
+      {state.message !== "" && (
+        <p
+          className={
+            state.status === "success"
+              ? "text-sm text-muted-foreground"
+              : "max-w-56 text-sm text-destructive"
+          }
+        >
+          {state.message}
         </p>
-      )}
-      {state.status === "error" && (
-        <p className="max-w-56 text-sm text-destructive">{state.error}</p>
       )}
     </div>
   )

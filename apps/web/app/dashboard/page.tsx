@@ -11,6 +11,8 @@ import { getCurrentUser } from "@/features/auth/components/get-current-user/get-
 import { listCreatedBoulders } from "@/features/climbing/components/list-created-boulders/list-created-boulders.query"
 import { getCurrentClimbingSession } from "@/features/climbing/components/get-current-climbing-session/get-current-climbing-session.query"
 import { logBoulderAttempt } from "@/features/climbing/components/log-boulder-attempt/log-boulder-attempt.action"
+import { startClimbingSession } from "@/features/climbing/components/start-climbing-session/start-climbing-session.action"
+import { endClimbingSession } from "@/features/climbing/components/end-climbing-session/end-climbing-session.action"
 
 async function Dashboard() {
   return (
@@ -23,7 +25,11 @@ async function Dashboard() {
           </Suspense>
         </div>
         <Suspense>
-          <GetCurrentClimbingSessionView query={getCurrentClimbingSession} />
+          <GetCurrentClimbingSessionView
+            query={getCurrentClimbingSession}
+            startAction={startClimbingSession}
+            endAction={endClimbingSession}
+          />
         </Suspense>
         <CreateBoulderView action={createBoulder} />
         <Suspense>

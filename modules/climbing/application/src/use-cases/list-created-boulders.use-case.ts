@@ -14,6 +14,7 @@ export const ListCreatedBouldersInputSchema = Schema.Struct({
 
 export type ListCreatedBouldersInput =
   typeof ListCreatedBouldersInputSchema.Type
+export type ListCreatedBouldersOutput = readonly Boulder[]
 
 export class ListCreatedBouldersUseCase extends Service<
   ListCreatedBouldersUseCase,
@@ -21,7 +22,7 @@ export class ListCreatedBouldersUseCase extends Service<
     readonly execute: (
       input: ListCreatedBouldersInput
     ) => Effect.Effect<
-      readonly Boulder[],
+      ListCreatedBouldersOutput,
       SchemaError | UnauthenticatedClimberError
     >
   }

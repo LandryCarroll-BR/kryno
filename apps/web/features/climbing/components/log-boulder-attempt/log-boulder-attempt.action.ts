@@ -5,8 +5,8 @@ import { Effect } from "effect"
 import { revalidatePath } from "next/cache"
 
 import { ClimbingAdapterRuntime } from "@climbing/adapters-next"
-import { LogBoulderAttemptViewModel } from "@climbing/adapters-next/presenters/log-boulder-attempt"
 import { LogBoulderAttemptController } from "@climbing/adapters-next/controllers/log-boulder-attempt"
+import type { LogBoulderAttemptViewModel } from "@climbing/adapters-next/view-models/log-boulder-attempt"
 
 export async function logBoulderAttempt(
   previousState: LogBoulderAttemptViewModel,

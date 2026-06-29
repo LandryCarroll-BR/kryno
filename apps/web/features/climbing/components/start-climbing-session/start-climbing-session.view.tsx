@@ -12,31 +12,37 @@ import {
   CardTitle,
 } from "@packages/ui/components/card"
 
-import { startClimbingSession } from "@/features/climbing/components/start-climbing-session/start-climbing-session.action"
+import {
+  startClimbingSessionInitialViewModel,
+  type StartClimbingSessionViewModel,
+} from "@climbing/adapters-next/view-models/start-climbing-session"
+
+type StartClimbingSessionAction = (
+  previousState: StartClimbingSessionViewModel,
+  formData: FormData
+) => Promise<StartClimbingSessionViewModel>
 
 export function StartClimbingSessionView({
   action,
 }: {
-  action: typeof startClimbingSession
+  action: StartClimbingSessionAction
 }) {
-  const [state, formAction, pending] = useActionState(action, {
-    status: "idle",
-  })
+  const [state, formAction, pending] = useActionState(
+    action,
+    startClimbingSessionInitialViewModel
+  )
 
   if (state.status === "success") {
     return (
       <Card className="w-[min(28rem,calc(100vw-2rem))]">
         <CardHeader>
           <CardTitle>Session started</CardTitle>
-          <CardDescription>Your climbing session is active.</CardDescription>
+          <CardDescription>{state.message}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Started at{" "}
-            {new Intl.DateTimeFormat(undefined, {
-              dateStyle: "medium",
-              timeStyle: "short",
-            }).format(new Date(state.startedAt))}
+            {state.fields.startedAt.label}{" "}
+            {formatDate(state.fields.startedAt.value)}
           </p>
         </CardContent>
       </Card>
@@ -53,9 +59,9 @@ export function StartClimbingSessionView({
       </CardHeader>
       <CardContent>
         <form action={formAction}>
-          {state.status === "error" && (
+          {state.message !== "" && (
             <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{state.error}</AlertDescription>
+              <AlertDescription>{state.message}</AlertDescription>
             </Alert>
           )}
           <Button type="submit" disabled={pending}>
@@ -66,3 +72,9 @@ export function StartClimbingSessionView({
     </Card>
   )
 }
+
+const formatDate = (value: string): string =>
+  new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value))

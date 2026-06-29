@@ -12,71 +12,40 @@ import {
   CardTitle,
 } from "@packages/ui/components/card"
 
-import { endClimbingSession } from "./end-climbing-session.action"
-import { GetCurrentClimbingSessionViewModel } from "@climbing/adapters-next/presenters/get-current-climbing-session"
+import {
+  endClimbingSessionInitialViewModel,
+  type EndClimbingSessionViewModel,
+} from "@climbing/adapters-next/view-models/end-climbing-session"
+import type { GetCurrentClimbingSessionViewModel } from "@climbing/adapters-next/view-models/get-current-climbing-session"
+
+type EndClimbingSessionAction = (
+  previousState: EndClimbingSessionViewModel,
+  formData: FormData
+) => Promise<EndClimbingSessionViewModel>
 
 export function EndClimbingSessionView({
   action,
   session,
 }: {
-  action: typeof endClimbingSession
+  action: EndClimbingSessionAction
   session: GetCurrentClimbingSessionViewModel
 }) {
   const [state, formAction, pending] = useActionState(
     action,
-    session?.status === "active"
-      ? {
-          status: "active",
-          sessionId: session.sessionId,
-          startedAt: session.startedAt,
-        }
-      : {
-          status: "idle",
-        }
+    endClimbingSessionInitialViewModel
   )
 
-  if (state.status === "ended") {
+  if (state.status === "success") {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Session ended</CardTitle>
-          <CardDescription>Your climbing session has ended.</CardDescription>
+          <CardDescription>{state.message}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Ended at{" "}
-            {new Intl.DateTimeFormat(undefined, {
-              dateStyle: "medium",
-              timeStyle: "short",
-            }).format(new Date(state.endedAt))}
+            {state.fields.endedAt.label} {formatDate(state.fields.endedAt.value)}
           </p>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (state.status === "active") {
-    return (
-      <Card className="w-[min(28rem,calc(100vw-2rem))]">
-        <CardHeader>
-          <CardTitle>Active session</CardTitle>
-          <CardDescription>
-            Your climbing session is in progress.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-            Started at{" "}
-            {new Intl.DateTimeFormat(undefined, {
-              dateStyle: "medium",
-              timeStyle: "short",
-            }).format(new Date(state.startedAt))}
-          </p>
-          <form action={formAction}>
-            <Button type="submit" disabled={pending} variant="secondary">
-              {pending ? "Ending session..." : "End climbing session"}
-            </Button>
-          </form>
         </CardContent>
       </Card>
     )
@@ -85,16 +54,18 @@ export function EndClimbingSessionView({
   return (
     <Card className="w-[min(28rem,calc(100vw-2rem))]">
       <CardHeader>
-        <CardTitle>Done climbing?</CardTitle>
-        <CardDescription>
-          End your active session when you leave the gym.
-        </CardDescription>
+        <CardTitle>Active session</CardTitle>
+        <CardDescription>{session.message}</CardDescription>
       </CardHeader>
       <CardContent>
+        <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
+          {session.fields.startedAt.label}{" "}
+          {formatDate(session.fields.startedAt.value)}
+        </p>
         <form action={formAction}>
-          {state.status === "error" && (
+          {state.message !== "" && (
             <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{state.error}</AlertDescription>
+              <AlertDescription>{state.message}</AlertDescription>
             </Alert>
           )}
           <Button type="submit" disabled={pending} variant="secondary">
@@ -105,3 +76,9 @@ export function EndClimbingSessionView({
     </Card>
   )
 }
+
+const formatDate = (value: string): string =>
+  new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value))

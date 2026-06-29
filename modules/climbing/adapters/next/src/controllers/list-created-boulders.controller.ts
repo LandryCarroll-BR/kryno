@@ -1,4 +1,5 @@
-import { Effect } from "effect"
+import { Effect, Schema } from "effect"
+import { ListCreatedBouldersInputSchema } from "@climbing/application/use-cases/list-created-boulders"
 import { Climbing } from "@climbing/component"
 import { Headers, Navigation } from "@packages/effect-next"
 
@@ -10,7 +11,6 @@ export const ListCreatedBouldersController = Effect.fn(
   const climbing = yield* Climbing
   const cookies = yield* Headers.Cookies
   const presenter = yield* ListCreatedBouldersPresenter
-
   const redirectToSignIn = Navigation.Redirect(redirectUrl)
 
   return {
@@ -22,16 +22,24 @@ export const ListCreatedBouldersController = Effect.fn(
           return yield* redirectToSignIn
         }
 
-        const boulders = yield* climbing.listCreatedBoulders({
-          token: authToken.value,
-        })
+        const input = yield* Schema.decodeUnknownEffect(
+          ListCreatedBouldersInputSchema
+        )(
+          {
+            token: authToken.value,
+          },
+          { errors: "all" }
+        )
 
-        return yield* presenter.present(boulders)
+        const success = yield* climbing.listCreatedBoulders(input)
+
+        return yield* presenter.presentSuccess(success)
       },
       Effect.catchTags({
-        SchemaError: () => redirectToSignIn,
+        SchemaError: (error) => presenter.presentSchemaError(error),
         UnauthenticatedClimberError: () => redirectToSignIn,
-      })
+      }),
+      Effect.catchDefect(() => presenter.presentUnexpectedError())
     ),
   }
 })

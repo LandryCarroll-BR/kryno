@@ -13,6 +13,8 @@ export const GetCurrentClimbingSessionInputSchema = Schema.Struct({
 
 export type GetCurrentClimbingSessionInput =
   typeof GetCurrentClimbingSessionInputSchema.Type
+export type GetCurrentClimbingSessionOutput =
+  Option.Option<ActiveClimbingSession>
 
 export class GetCurrentClimbingSessionUseCase extends Service<
   GetCurrentClimbingSessionUseCase,
@@ -20,7 +22,7 @@ export class GetCurrentClimbingSessionUseCase extends Service<
     readonly execute: (
       input: GetCurrentClimbingSessionInput
     ) => Effect.Effect<
-      Option.Option<ActiveClimbingSession>,
+      GetCurrentClimbingSessionOutput,
       SchemaError | UnauthenticatedClimberError
     >
   }
