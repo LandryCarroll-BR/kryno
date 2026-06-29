@@ -2,14 +2,12 @@ import { Effect, Layer } from "effect"
 import { Service } from "effect/Context"
 import { InfrastructureLayer } from "@auth/infrastructure"
 
-import {
-  SignUpUseCase,
-  SignInUseCase,
-  SignOutUseCase,
-  ValidateSessionUseCase,
-  GetCurrentUserUseCase,
-  ApplicationLayer,
-} from "@auth/application"
+import { ApplicationLayer } from "@auth/application"
+import { GetCurrentUserUseCase } from "@auth/application/use-cases/get-current-user"
+import { SignInUseCase } from "@auth/application/use-cases/sign-in"
+import { SignOutUseCase } from "@auth/application/use-cases/sign-out"
+import { SignUpUseCase } from "@auth/application/use-cases/sign-up"
+import { ValidateSessionUseCase } from "@auth/application/use-cases/validate-session"
 
 export class Auth extends Service<
   Auth,

@@ -1,7 +1,7 @@
 "use client"
 
 import { useActionState } from "react"
-import type { SignUpViewModel } from "@auth/adapters-next"
+import type { SignUpViewModel } from "@auth/adapters-next/presenters/sign-up"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
 import { Input } from "@packages/ui/components/input"

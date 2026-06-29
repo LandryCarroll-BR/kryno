@@ -9,8 +9,6 @@ import { ClimbingAttemptIdServiceLive } from "./services/climbing-attempt-id.ser
 import { BoulderIdServiceLive } from "./services/boulder-id.service"
 import { ClimbingSessionIdServiceLive } from "./services/climbing-session-id.service"
 
-export { ClimbingDB, ClimbingDBContextLive } from "./db/context"
-
 const ClimbingInfrastructureLayer = Layer.mergeAll(
   BoulderDBRepository,
   BoulderIdServiceLive,

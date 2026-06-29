@@ -1,5 +1,5 @@
 import { Effect, Schema } from "effect"
-import { CreateBoulderInputSchema } from "@climbing/application"
+import { CreateBoulderInputSchema } from "@climbing/application/use-cases/create-boulder"
 import { Climbing } from "@climbing/component"
 import { Headers, Navigation } from "@packages/effect-next"
 

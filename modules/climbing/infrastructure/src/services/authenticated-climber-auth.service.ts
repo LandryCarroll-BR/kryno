@@ -1,13 +1,9 @@
 import { Effect, Layer, Option, Schema } from "effect"
 import { Auth } from "@auth/component"
-
-import {
-  AuthenticatedClimber,
-  ClimberId,
-  UnauthenticatedClimberError,
-} from "@climbing/application"
-
-import { SessionToken } from "@auth/application"
+import { SessionToken } from "@auth/application/models/session"
+import { UnauthenticatedClimberError } from "@climbing/application/errors/climber"
+import { ClimberId } from "@climbing/application/models/climber"
+import { AuthenticatedClimber } from "@climbing/application/services/authenticated-climber"
 
 export const AuthenticatedClimberAuth = Layer.effect(
   AuthenticatedClimber,

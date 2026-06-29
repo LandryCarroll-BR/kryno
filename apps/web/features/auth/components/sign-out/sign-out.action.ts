@@ -2,8 +2,8 @@
 
 import "server-only"
 import { Effect } from "effect"
-import { SignOutController } from "@auth/adapters-next"
 import { AuthAdapterRuntime } from "@auth/adapters-next"
+import { SignOutController } from "@auth/adapters-next/controllers/sign-out"
 
 export async function signOut() {
   return AuthAdapterRuntime.runPromise(

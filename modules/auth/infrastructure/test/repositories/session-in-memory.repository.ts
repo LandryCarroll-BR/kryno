@@ -1,4 +1,5 @@
-import { PersistedSession, SessionRepository } from "@auth/application"
+import { PersistedSession } from "@auth/application/models/session"
+import { SessionRepository } from "@auth/application/repositories/session"
 import { Effect, Layer, Option, Ref } from "effect"
 
 export const SessionInMemoryRepository = Layer.effect(

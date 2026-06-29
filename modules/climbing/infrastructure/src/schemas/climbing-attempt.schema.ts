@@ -1,10 +1,10 @@
 import type {
   AttemptOrdinal,
-  BoulderId,
   ClimbingAttemptId,
   ClimbingAttemptOutcome,
-  ClimbingSessionId,
-} from "@climbing/application"
+} from "@climbing/application/models/climbing-attempt"
+import type { BoulderId } from "@climbing/application/models/boulder"
+import type { ClimbingSessionId } from "@climbing/application/models/climbing-session"
 import { uniqueIndex } from "drizzle-orm/pg-core"
 
 import { bouldersTable } from "./boulder.schema"

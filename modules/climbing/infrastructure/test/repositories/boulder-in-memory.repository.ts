@@ -1,5 +1,6 @@
 import { Effect, Layer, Option, Ref } from "effect"
-import { BoulderRepository, type Boulder } from "@climbing/application"
+import type { Boulder } from "@climbing/application/models/boulder"
+import { BoulderRepository } from "@climbing/application/repositories/boulder"
 
 export const BoulderInMemoryRepository = Layer.effect(
   BoulderRepository,

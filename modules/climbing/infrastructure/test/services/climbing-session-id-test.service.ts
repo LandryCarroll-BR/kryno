@@ -1,7 +1,5 @@
-import {
-  ClimbingSessionId,
-  ClimbingSessionIdService,
-} from "@climbing/application"
+import { ClimbingSessionId } from "@climbing/application/models/climbing-session"
+import { ClimbingSessionIdService } from "@climbing/application/services/climbing-session-id"
 import { Effect, Layer } from "effect"
 
 export const ClimbingSessionIdServiceTest = Layer.succeed(

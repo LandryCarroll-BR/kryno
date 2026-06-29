@@ -1,6 +1,7 @@
 import { Effect, Schema } from "effect"
 import { Navigation } from "@packages/effect-next"
-import { Password, SignUpInputSchema } from "@auth/application"
+import { Password } from "@auth/application/models/user"
+import { SignUpInputSchema } from "@auth/application/use-cases/sign-up"
 import { Auth } from "@auth/component"
 
 import { SetAuthCookie } from "../factories/set-auth-cookie.factory"

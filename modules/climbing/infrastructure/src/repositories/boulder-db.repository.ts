@@ -1,7 +1,8 @@
 import { and, asc, desc, eq } from "drizzle-orm"
 import { Effect, Layer, Option, Schema } from "effect"
 
-import { Boulder, BoulderRepository } from "@climbing/application"
+import { Boulder } from "@climbing/application/models/boulder"
+import { BoulderRepository } from "@climbing/application/repositories/boulder"
 
 import { ClimbingDB } from "../db/context"
 import { bouldersTable } from "../schemas/boulder.schema"

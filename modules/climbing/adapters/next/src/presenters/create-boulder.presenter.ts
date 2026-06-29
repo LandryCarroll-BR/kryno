@@ -1,6 +1,6 @@
 import { Effect, Layer, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
-import type { CreateBoulderOutput } from "@climbing/application"
+import type { CreateBoulderOutput } from "@climbing/application/use-cases/create-boulder"
 import type { SchemaError } from "effect/Schema"
 
 import {

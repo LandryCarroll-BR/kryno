@@ -1,5 +1,5 @@
 import { Effect, Schema } from "effect"
-import { LogBoulderAttemptInputSchema } from "@climbing/application"
+import { LogBoulderAttemptInputSchema } from "@climbing/application/use-cases/log-boulder-attempt"
 import { Climbing } from "@climbing/component"
 import { Headers, Navigation } from "@packages/effect-next"
 

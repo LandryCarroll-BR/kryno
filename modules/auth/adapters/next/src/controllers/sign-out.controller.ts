@@ -1,6 +1,6 @@
 import { Effect, Schema } from "effect"
 import { Headers, Navigation } from "@packages/effect-next"
-import { SignOutInputSchema } from "@auth/application"
+import { SignOutInputSchema } from "@auth/application/use-cases/sign-out"
 import { Auth } from "@auth/component"
 
 export const SignOutControllerInputSchema = SignOutInputSchema.annotate({

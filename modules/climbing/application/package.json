@@ -9,12 +9,12 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./errors/*": "./src/errors/*",
-    "./factories/*": "./src/factories/*",
-    "./models/*": "./src/models/*",
-    "./repositories/*": "./src/repositories/*",
-    "./services/*": "./src/services/*",
-    "./use-cases/*": "./src/use-cases/*"
+    "./errors/*": "./src/errors/*.errors.ts",
+    "./factories/*": "./src/factories/*.factory.ts",
+    "./models/*": "./src/models/*.models.ts",
+    "./repositories/*": "./src/repositories/*.repository.ts",
+    "./services/*": "./src/services/*.service.ts",
+    "./use-cases/*": "./src/use-cases/*.use-case.ts"
   },
   "dependencies": {
     "effect": "4.0.0-beta.70"

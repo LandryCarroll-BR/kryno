@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect"
 import { Service } from "effect/Context"
-import type { ClimbingAttempt } from "@climbing/application"
+import type { ClimbingAttempt } from "@climbing/application/models/climbing-attempt"
 
 export type LogBoulderAttemptViewModel =
   | {

@@ -2,10 +2,10 @@ import type {
   BoulderGrade,
   BoulderId,
   BoulderName,
-  ClimberId,
   MovementStyle,
   WallAngle,
-} from "@climbing/application"
+} from "@climbing/application/models/boulder"
+import type { ClimberId } from "@climbing/application/models/climber"
 
 import { climbingSchema } from "./climbing.schema"
 

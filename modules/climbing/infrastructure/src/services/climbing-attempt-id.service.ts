@@ -1,9 +1,7 @@
 import crypto from "node:crypto"
 import { Effect, Layer } from "effect"
-import {
-  ClimbingAttemptId,
-  ClimbingAttemptIdService,
-} from "@climbing/application"
+import { ClimbingAttemptId } from "@climbing/application/models/climbing-attempt"
+import { ClimbingAttemptIdService } from "@climbing/application/services/climbing-attempt-id"
 
 export const ClimbingAttemptIdServiceLive = Layer.succeed(
   ClimbingAttemptIdService,

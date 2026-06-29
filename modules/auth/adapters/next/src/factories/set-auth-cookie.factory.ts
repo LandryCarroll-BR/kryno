@@ -1,5 +1,5 @@
 import { Effect } from "effect"
-import type { SessionWithToken } from "@auth/application"
+import type { SessionWithToken } from "@auth/application/models/session"
 import { Headers } from "@packages/effect-next"
 
 import { AuthCookie } from "../models/auth-web.models"

@@ -2,15 +2,13 @@ import { Effect, Layer } from "effect"
 import { Service } from "effect/Context"
 import { InfrastructureLayer } from "@climbing/infrastructure"
 
-import {
-  ApplicationLayer,
-  CreateBoulderUseCase,
-  EndClimbingSessionUseCase,
-  GetCurrentClimbingSessionUseCase,
-  ListCreatedBouldersUseCase,
-  LogBoulderAttemptUseCase,
-  StartClimbingSessionUseCase,
-} from "@climbing/application"
+import { ApplicationLayer } from "@climbing/application"
+import { CreateBoulderUseCase } from "@climbing/application/use-cases/create-boulder"
+import { EndClimbingSessionUseCase } from "@climbing/application/use-cases/end-climbing-session"
+import { GetCurrentClimbingSessionUseCase } from "@climbing/application/use-cases/get-current-climbing-session"
+import { ListCreatedBouldersUseCase } from "@climbing/application/use-cases/list-created-boulders"
+import { LogBoulderAttemptUseCase } from "@climbing/application/use-cases/log-boulder-attempt"
+import { StartClimbingSessionUseCase } from "@climbing/application/use-cases/start-climbing-session"
 
 export class Climbing extends Service<
   Climbing,

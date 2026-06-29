@@ -1,4 +1,5 @@
-import { BoulderId, BoulderIdService } from "@climbing/application"
+import { BoulderId } from "@climbing/application/models/boulder"
+import { BoulderIdService } from "@climbing/application/services/boulder-id"
 import { Effect, Layer } from "effect"
 
 export const BoulderIdServiceTest = Layer.succeed(BoulderIdService, {

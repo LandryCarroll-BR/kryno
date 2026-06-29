@@ -1,10 +1,12 @@
 import {
   AttemptOrdinal,
   ClimbingAttempt,
-  ClimbingSessionRepository,
+} from "@climbing/application/models/climbing-attempt"
+import {
   type ActiveClimbingSession,
   CompletedClimbingSession,
-} from "@climbing/application"
+} from "@climbing/application/models/climbing-session"
+import { ClimbingSessionRepository } from "@climbing/application/repositories/climbing-session"
 import { Effect, Layer, Option, Ref } from "effect"
 
 export const ClimbingSessionInMemoryRepository = Layer.effect(

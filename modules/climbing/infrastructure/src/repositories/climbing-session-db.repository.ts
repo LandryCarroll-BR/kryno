@@ -2,13 +2,15 @@ import { and, asc, desc, eq, isNull } from "drizzle-orm"
 import { Effect, Layer, Option, Schema } from "effect"
 
 import {
-  ActiveClimbingSession,
   AttemptOrdinal,
   ClimbingAttempt,
+} from "@climbing/application/models/climbing-attempt"
+import {
+  ActiveClimbingSession,
   type ClimbingSessionId,
-  ClimbingSessionRepository,
   CompletedClimbingSession,
-} from "@climbing/application"
+} from "@climbing/application/models/climbing-session"
+import { ClimbingSessionRepository } from "@climbing/application/repositories/climbing-session"
 
 import { ClimbingDB } from "../db/context"
 import { climbingAttemptsTable } from "../schemas/climbing-attempt.schema"

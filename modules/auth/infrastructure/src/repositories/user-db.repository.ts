@@ -1,6 +1,7 @@
 import { Effect, Layer, Option } from "effect"
 import { eq } from "drizzle-orm"
-import { User, UserRepository } from "@auth/application"
+import { User } from "@auth/application/models/user"
+import { UserRepository } from "@auth/application/repositories/user"
 
 import { AuthDB } from "../db/context"
 import { usersTable } from "../schemas/user.schema"

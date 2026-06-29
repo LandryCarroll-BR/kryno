@@ -2,8 +2,9 @@
 
 import "server-only"
 import { Effect } from "effect"
-import { SignInController, SignInViewModel } from "@auth/adapters-next"
 import { AuthAdapterRuntime } from "@auth/adapters-next"
+import { SignInController } from "@auth/adapters-next/controllers/sign-in"
+import type { SignInViewModel } from "@auth/adapters-next/presenters/sign-in"
 
 export async function signIn(_: SignInViewModel, formData: FormData) {
   return AuthAdapterRuntime.runPromise(

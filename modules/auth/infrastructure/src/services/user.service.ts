@@ -1,5 +1,6 @@
 import { Effect, Layer } from "effect"
-import { PasswordHash, UserId, UserService } from "@auth/application"
+import { PasswordHash, UserId } from "@auth/application/models/user"
+import { UserService } from "@auth/application/services/user"
 import crypto from "node:crypto"
 
 // Password hashing policy: Argon2id with 64 MiB memory, 3 passes, and one

@@ -1,4 +1,5 @@
-import { User, UserRepository } from "@auth/application"
+import { User } from "@auth/application/models/user"
+import { UserRepository } from "@auth/application/repositories/user"
 import { Effect, Layer, Option, Ref } from "effect"
 
 export const UserInMemoryRepository = Layer.effect(

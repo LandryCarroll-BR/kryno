@@ -1,4 +1,3 @@
-export {}
 import { Layer } from "effect"
 
 import { BoulderInMemoryRepository } from "./repositories/boulder-in-memory.repository"

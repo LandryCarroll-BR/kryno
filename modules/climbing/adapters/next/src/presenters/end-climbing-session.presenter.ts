@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect"
 import { Service } from "effect/Context"
-import type { CompletedClimbingSession } from "@climbing/application"
+import type { CompletedClimbingSession } from "@climbing/application/models/climbing-session"
 
 export type EndClimbingSessionViewModel =
   | {

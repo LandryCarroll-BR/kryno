@@ -1,6 +1,6 @@
 import { Effect, Layer, Option } from "effect"
 import { Service } from "effect/Context"
-import type { ActiveClimbingSession } from "@climbing/application"
+import type { ActiveClimbingSession } from "@climbing/application/models/climbing-session"
 
 export type GetCurrentClimbingSessionViewModel =
   | {

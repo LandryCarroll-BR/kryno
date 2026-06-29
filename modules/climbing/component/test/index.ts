@@ -1,4 +1,3 @@
-export {}
 import { Layer } from "effect"
 import { ApplicationLayer } from "@climbing/application"
 import { InfrastructureTestLayer } from "@climbing/infrastructure/test"

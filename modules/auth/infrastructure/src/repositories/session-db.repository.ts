@@ -1,10 +1,7 @@
 import { Effect, Layer, Option } from "effect"
 import { eq } from "drizzle-orm"
-import {
-  PersistedSession,
-  type SessionId,
-  SessionRepository,
-} from "@auth/application"
+import { PersistedSession, type SessionId } from "@auth/application/models/session"
+import { SessionRepository } from "@auth/application/repositories/session"
 
 import { AuthDB } from "../db/context"
 import { sessionsTable } from "../schemas/session.schema"

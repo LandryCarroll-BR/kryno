@@ -1,5 +1,9 @@
 import { bytea } from "drizzle-orm/pg-core"
-import type { SessionId, SessionSecretHash, UserId } from "@auth/application"
+import type {
+  SessionId,
+  SessionSecretHash,
+} from "@auth/application/models/session"
+import type { UserId } from "@auth/application/models/user"
 
 import { authSchema } from "./auth.schema"
 import { usersTable } from "./user.schema"

@@ -1,4 +1,3 @@
-export {}
 import { Layer, ManagedRuntime } from "effect"
 import { ClimbingTestLayer } from "@climbing/component/test"
 

@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect"
 import { Service } from "effect/Context"
-import type { Boulder } from "@climbing/application"
+import type { Boulder } from "@climbing/application/models/boulder"
 
 export type CreatedBoulderViewModel = {
   readonly id: string

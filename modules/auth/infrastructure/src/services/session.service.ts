@@ -1,10 +1,10 @@
 import { Effect, Layer } from "effect"
 import {
-  SessionService,
-  SessionSecretHash,
   SessionId,
   SessionSecret,
-} from "@auth/application"
+  SessionSecretHash,
+} from "@auth/application/models/session"
+import { SessionService } from "@auth/application/services/session"
 import crypto from "node:crypto"
 
 export const SessionServiceLive = Layer.effect(

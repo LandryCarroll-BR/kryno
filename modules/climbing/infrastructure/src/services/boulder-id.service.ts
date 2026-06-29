@@ -1,6 +1,7 @@
 import crypto from "node:crypto"
 import { Effect, Layer } from "effect"
-import { BoulderId, BoulderIdService } from "@climbing/application"
+import { BoulderId } from "@climbing/application/models/boulder"
+import { BoulderIdService } from "@climbing/application/services/boulder-id"
 
 export const BoulderIdServiceLive = Layer.succeed(BoulderIdService, {
   generate: Effect.fn("BoulderIdService.generate")(function* () {

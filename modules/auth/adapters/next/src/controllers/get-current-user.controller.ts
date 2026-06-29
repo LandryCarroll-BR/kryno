@@ -1,5 +1,5 @@
 import { Effect, Option, Schema } from "effect"
-import { GetCurrentUserInputSchema } from "@auth/application"
+import { GetCurrentUserInputSchema } from "@auth/application/use-cases/get-current-user"
 import { Auth } from "@auth/component"
 import { Headers, Navigation } from "@packages/effect-next"
 

@@ -1,7 +1,5 @@
-import {
-  ClimbingAttemptId,
-  ClimbingAttemptIdService,
-} from "@climbing/application"
+import { ClimbingAttemptId } from "@climbing/application/models/climbing-attempt"
+import { ClimbingAttemptIdService } from "@climbing/application/services/climbing-attempt-id"
 import { Effect, Layer, Ref } from "effect"
 
 export const ClimbingAttemptIdServiceTest = Layer.effect(

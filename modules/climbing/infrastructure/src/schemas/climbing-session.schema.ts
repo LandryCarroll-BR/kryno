@@ -1,7 +1,8 @@
 import { sql } from "drizzle-orm"
 import { uniqueIndex } from "drizzle-orm/pg-core"
 
-import type { ClimberId, ClimbingSessionId } from "@climbing/application"
+import type { ClimberId } from "@climbing/application/models/climber"
+import type { ClimbingSessionId } from "@climbing/application/models/climbing-session"
 
 import { climbingSchema } from "./climbing.schema"
 
