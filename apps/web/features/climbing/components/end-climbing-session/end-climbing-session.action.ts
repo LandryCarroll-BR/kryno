@@ -4,11 +4,9 @@ import "server-only"
 import { Effect } from "effect"
 import { revalidatePath } from "next/cache"
 
-import {
-  ClimbingAdapterRuntime,
-  EndClimbingSessionController,
-  type EndClimbingSessionViewModel,
-} from "@climbing/adapters-next"
+import { ClimbingAdapterRuntime } from "@climbing/adapters-next"
+import { EndClimbingSessionViewModel } from "@climbing/adapters-next/presenters/end-climbing-session"
+import { EndClimbingSessionController } from "@climbing/adapters-next/controllers/end-climbing-session"
 
 export async function endClimbingSession(
   previousState: EndClimbingSessionViewModel

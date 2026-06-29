@@ -4,25 +4,7 @@ import { Climbing } from "@climbing/component"
 import { Headers, Navigation } from "@packages/effect-next"
 
 import { CreateBoulderPresenter } from "../presenters/create-boulder.presenter"
-
-import {
-  gradeOptions,
-  movementStyleOptions,
-  wallAngleOptions,
-  type CreateBoulderViewModel,
-} from "../view-models/create-boulder.view-model"
-
-const decodeInput = (token: string, values: CreateBoulderViewModel["fields"]) =>
-  Schema.decodeUnknownEffect(CreateBoulderInputSchema)(
-    {
-      token,
-      name: values.name.value,
-      grade: values.grade.value,
-      wallAngle: values.wallAngle.value,
-      movementStyle: values.movementStyle.value,
-    },
-    { errors: "all" }
-  )
+import { type CreateBoulderViewModel } from "../view-models/create-boulder.view-model"
 
 export const CreateBoulderController = Effect.fn(
   "CreateBoulderController.make"
@@ -40,93 +22,33 @@ export const CreateBoulderController = Effect.fn(
 
   return {
     handle: Effect.fn("CreateBoulderController.handle")(
-      (formData: FormData) => {
-        const submittedFields = submittedFieldsFrom(previousState, formData)
+      function* (formData: FormData) {
+        const authToken = cookies.get("authToken")
 
-        return Effect.gen(function* () {
-          const authToken = cookies.get("authToken")
+        if (!authToken?.value) {
+          return yield* redirectToSignIn
+        }
 
-          if (!authToken?.value) {
-            return yield* redirectToSignIn
-          }
-
-          const input = yield* decodeInput(authToken.value, submittedFields)
-          const boulder = yield* climbing.createBoulder(input)
-
-          return yield* presenter.presentSuccess(submittedFields, boulder)
-        }).pipe(
-          Effect.catchTags({
-            SchemaError: (error) =>
-              presenter.presentInputParseError(submittedFields, error),
-            UnauthenticatedClimberError: () => redirectToSignIn,
-          })
+        const input = yield* Schema.decodeUnknownEffect(
+          CreateBoulderInputSchema
+        )(
+          {
+            token: authToken.value,
+            ...Object.fromEntries(formData),
+          },
+          { errors: "all" }
         )
-      }
+
+        const success = yield* climbing.createBoulder(input)
+
+        return yield* presenter.presentSuccess(success)
+      },
+      Effect.catchTags({
+        SchemaError: (error) =>
+          presenter.presentSchemaError(previousState, error),
+        UnauthenticatedClimberError: () => redirectToSignIn,
+      }),
+      Effect.catchDefect(() => presenter.presentUnexpectedError(previousState))
     ),
   }
 })
-
-const submittedFieldsFrom = (
-  previousState: CreateBoulderViewModel,
-  formData: FormData
-): CreateBoulderViewModel["fields"] => ({
-  name: {
-    ...previousState.fields.name,
-    value: stringFromFormData(formData, "name", previousState.fields.name.value),
-    error: "",
-  },
-  grade: {
-    ...previousState.fields.grade,
-    value: optionFromFormData(
-      formData,
-      "grade",
-      gradeOptions,
-      previousState.fields.grade.value
-    ),
-    error: "",
-  },
-  wallAngle: {
-    ...previousState.fields.wallAngle,
-    value: optionFromFormData(
-      formData,
-      "wallAngle",
-      wallAngleOptions.map((option) => option.value),
-      previousState.fields.wallAngle.value
-    ),
-    error: "",
-  },
-  movementStyle: {
-    ...previousState.fields.movementStyle,
-    value: optionFromFormData(
-      formData,
-      "movementStyle",
-      movementStyleOptions.map((option) => option.value),
-      previousState.fields.movementStyle.value
-    ),
-    error: "",
-  },
-})
-
-const stringFromFormData = (
-  formData: FormData,
-  name: string,
-  fallback: string
-): string => {
-  const value = formData.get(name)
-  return typeof value === "string" ? value : fallback
-}
-
-const optionFromFormData = <TValue extends string>(
-  formData: FormData,
-  name: string,
-  options: readonly TValue[],
-  fallback: TValue
-): TValue => {
-  const value = formData.get(name)
-
-  if (typeof value !== "string") {
-    return fallback
-  }
-
-  return options.find((option) => option === value) ?? fallback
-}

@@ -24,13 +24,17 @@ export const CreateBoulderInputSchema = Schema.Struct({
 }).annotate({ identifier: "CreateBoulderInput" })
 
 export type CreateBoulderInput = typeof CreateBoulderInputSchema.Type
+export type CreateBoulderOutput = Boulder
 
 export class CreateBoulderUseCase extends Service<
   CreateBoulderUseCase,
   {
     readonly execute: (
       input: CreateBoulderInput
-    ) => Effect.Effect<Boulder, SchemaError | UnauthenticatedClimberError>
+    ) => Effect.Effect<
+      CreateBoulderOutput,
+      SchemaError | UnauthenticatedClimberError
+    >
   }
 >()("@climbing/application/CreateBoulderUseCase") {
   static Live = Layer.effect(

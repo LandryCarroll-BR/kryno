@@ -4,11 +4,9 @@ import "server-only"
 import { Effect } from "effect"
 import { revalidatePath } from "next/cache"
 
-import {
-  ClimbingAdapterRuntime,
-  LogBoulderAttemptController,
-  type LogBoulderAttemptViewModel,
-} from "@climbing/adapters-next"
+import { ClimbingAdapterRuntime } from "@climbing/adapters-next"
+import { LogBoulderAttemptViewModel } from "@climbing/adapters-next/presenters/log-boulder-attempt"
+import { LogBoulderAttemptController } from "@climbing/adapters-next/controllers/log-boulder-attempt"
 
 export async function logBoulderAttempt(
   previousState: LogBoulderAttemptViewModel,

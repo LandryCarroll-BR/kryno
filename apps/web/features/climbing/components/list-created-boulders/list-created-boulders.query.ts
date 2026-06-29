@@ -1,10 +1,8 @@
 import "server-only"
 import { Effect } from "effect"
 
-import {
-  ClimbingAdapterRuntime,
-  ListCreatedBouldersController,
-} from "@climbing/adapters-next"
+import { ClimbingAdapterRuntime } from "@climbing/adapters-next"
+import { ListCreatedBouldersController } from "@climbing/adapters-next/controllers/list-created-boulders"
 
 export async function listCreatedBoulders() {
   return await ClimbingAdapterRuntime.runPromise(

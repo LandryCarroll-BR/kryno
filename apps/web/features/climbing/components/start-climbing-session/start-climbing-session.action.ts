@@ -3,11 +3,10 @@
 import "server-only"
 import { Effect } from "effect"
 import { revalidatePath } from "next/cache"
-import {
-  ClimbingAdapterRuntime,
-  StartClimbingSessionController,
-  type StartClimbingSessionViewModel,
-} from "@climbing/adapters-next"
+
+import { ClimbingAdapterRuntime } from "@climbing/adapters-next"
+import { StartClimbingSessionViewModel } from "@climbing/adapters-next/presenters/start-climbing-session"
+import { StartClimbingSessionController } from "@climbing/adapters-next/controllers/start-climbing-session"
 
 export async function startClimbingSession(
   previousState: StartClimbingSessionViewModel

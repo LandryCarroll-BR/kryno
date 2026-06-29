@@ -1,6 +1,6 @@
 ---
 name: module-architecture
-description: "Use when creating or refactoring Kryno modules organized as application, infrastructure, component, and adapter workspace packages with Effect services, layers, and package exports."
+description: "Create or refactor Kryno modules organized as application, infrastructure, component, and framework-adapter workspace packages. Use for module boundaries, Effect services and layers, use-case contracts, controllers, presenters, view models, server actions, app views, tests, and package exports."
 ---
 
 # Module Architecture
@@ -54,8 +54,8 @@ modules/<module>/
         factories/            # optional framework-side factories
         models/               # adapter transport models when useful
         presenters/
-        utils/                # adapter helpers, including reusable form helpers
-        view-models/          # UI-facing view models and form specs
+        utils/                # optional helpers shared by multiple adapter features
+        view-models/          # client-safe UI-facing view models and options
       test/
         index.ts              # adapter test runtime
       package.json
@@ -70,7 +70,7 @@ Not every module needs every optional folder, but keep the package roles distinc
 - `component` depends on its own `application` and `infrastructure` packages. It exposes the module's public Effect service facade and complete live layer.
 - `adapters/<framework>` depends on the module component, any application schemas/models needed for transport parsing, and framework helpers such as `@packages/effect-next`.
 - Other modules should depend on a module's component facade, not its infrastructure or framework adapters. They may depend on another module's application package only for shared value schemas or model types that are intentionally public.
-- App code should import framework adapters and runtimes; domain/application code should not.
+- Server-side app code should import framework controllers and runtimes. Client views should import only the adapter's client-safe view-model subpath. Domain/application code should not import either.
 
 ## Application Package
 
@@ -79,6 +79,7 @@ The application package owns business-facing behavior and its ports.
 - Put use cases in `src/use-cases/<verb-noun>.use-case.ts`.
 - Define each use case as an Effect `Context.Service` class with a `static Live` layer and an `execute` method.
 - Co-locate the use case input schema and input type with the use case, for example `SignUpInputSchema` and `SignUpInput`.
+- Co-locate an explicit output type with the use case, for example `CreateBoulderOutput`, even when it currently aliases a domain model. Use that contract at controller and presenter boundaries.
 - Decode untrusted use case input inside `execute` with `Schema.decodeUnknownEffect(...)(input, { errors: "all" })`.
 - Put domain/value schemas in `src/models/*.models.ts`.
 - Put typed errors in `src/errors/*.errors.ts`.
@@ -161,31 +162,50 @@ Framework adapters translate between a delivery mechanism and the component faca
 
 - Put server/action controllers in `src/controllers/*.controller.ts`.
 - Put view-model shaping and user-facing error mapping in `src/presenters/*.presenter.ts`.
-- Put UI-facing form/view models in `src/view-models/*.view-model.ts`.
+- Put client-safe UI-facing state, field metadata, and option lists in `src/view-models/*.view-model.ts`.
 - Put adapter-only transport models in `src/models/*.models.ts` when useful.
 - Put adapter-only helpers such as cookie factories in `src/factories/*.factory.ts`.
-- Put reusable adapter helpers, such as generic form helpers, in `src/utils/`.
-- Controllers may parse form data, read cookies/headers, call the component facade, set cookies, redirect, and catch domain/application errors into presenter or navigation results.
+- Put a helper in `src/utils/` only after multiple adapter features share it. Keep feature-specific schema formatting and field-error mapping with the presenter that owns them.
+- Controllers may decode form data, read cookies/headers, call the component facade, set cookies, redirect, and route failures to presenters or navigation results.
 - Controllers should depend on the component facade, not application use cases or infrastructure repositories directly.
 - Presenters should be Effect services when they are provided through adapter layers.
 - Compose `PresenterLayer`, `AdapterLayer`, and `<Module>AdapterRuntime` in `src/index.ts`.
 - The adapter runtime should be a `ManagedRuntime.make(AdapterLayer)` for the live component plus presenter/factory layers.
 - In `test/index.ts`, compose the adapter against `<Module>TestLayer` and export `<Module>AdapterTestRuntime`.
 
-### Adapter Form Pattern
+### Server-Action Delivery Flow
 
-When a framework adapter handles server-action forms, prefer a plain view model and small local helpers over a form framework:
+Keep each delivery layer narrow:
 
-- Model each field as a single source of truth: `{ value, label, error }`. Do not keep a separate `fieldErrors` object or a separate valid/invalid status union unless the UI genuinely needs richer per-field state.
-- Keep the top-level form state small, usually `{ status, message, fields }`.
-- Export option lists from the view model when React selects need them.
-- Export one initial view model constant from the view model file.
-- In controllers, build submitted fields directly from `FormData` and the previous fields. Keep this code obvious, even if it repeats a few field names.
-- Decode use-case input from `submittedFields.<field>.value`.
-- In presenters, accept submitted fields, map `SchemaError` issues onto field `error` properties, and return the final view model.
-- React views should read `state.fields.<field>.value` and `state.fields.<field>.error` directly.
+- The server action is the framework entry point. Give it the `useActionState` shape `(previousState, formData) => Promise<ViewModel>`.
+- In the action, run the controller with `<Module>AdapterRuntime`, perform app-only success effects such as `revalidatePath`, and return the controller's view model. Do not parse input, call the component facade, or construct presentation state there.
+- Build the controller as an `Effect.fn("<Controller>.make")` factory that acquires adapter and component services once and returns a named `handle` effect.
+- In `handle`, resolve transport context first, decode the raw payload with the application input schema, invoke the component facade, and pass the output contract to the presenter.
+- For simple forms, decode `{ token, ...Object.fromEntries(formData) }` directly rather than maintaining field-by-field extraction, option validation, or submitted-state helpers in the controller. Let the schema validate unknown values.
+- Recover typed failures at the controller boundary with `Effect.catchTags`: send validation failures to the presenter and navigation failures such as unauthenticated access to redirects.
+- Recover defects only at this outer delivery boundary, mapping them to the presenter's unexpected-error state. Keep defects out of the typed application error model.
+- The React view owns rendering only. Inject the action, initialize `useActionState` with the exported initial view model, render exported option lists, and read all labels, values, messages, and errors from adapter view data.
 
-Keep generic utilities small. A shared `utils/form.ts` should usually only contain generic schema issue formatting helpers such as `formatSchemaIssue` and `fieldErrorFor`. Controllers remain responsible for transport concerns; presenters remain responsible for user-facing state and messages. Only return plain serializable view models to React.
+### View Models and Presenters
+
+Use a plain, readonly, serializable view model:
+
+- Keep one top-level object with an explicit status union such as `"idle" | "success" | "invalid" | "error"`, a message, fields, and field errors. Avoid separate top-level state variants when the view always needs the same shape.
+- Model field display data as `{ label, value }`. Keep validation messages in a separate `errors` record keyed by `keyof ViewModel["fields"]`; do not add valid/invalid unions or duplicate errors to every field.
+- Represent every select option consistently as `{ label, value }`, including options whose display label equals their submitted value.
+- Export option lists and one initial view model constant from the view-model file. Use `readonly`, `as const`, and `satisfies` to preserve literal values while checking the public shape.
+- Keep the view-model barrel client-safe: export only types and serializable values, never runtimes, controllers, Effect services, or server-only modules.
+
+Make the presenter the sole owner of presentation policy:
+
+- Accept application output contracts for success and the previous view model plus a typed error for failures.
+- On success, derive the result from the initial view model when the form should reset, then set the success status and message.
+- On schema failure, preserve the previous view model and replace the status, message, and complete field-error record.
+- Convert `SchemaError` issues to field messages inside the presenter. Keep a formatter or field lookup as a presenter-local static helper until another presenter genuinely reuses it.
+- On an unexpected defect, preserve the previous state and return a generic user-facing error; never expose defect details.
+- Do not add a presenter method merely to return the initial constant. Do not let controllers or React views invent statuses, messages, or error mappings.
+
+Only return plain serializable view models to React. Treat the create-boulder files under `modules/climbing/adapters/next/` and `apps/web/features/climbing/components/create-boulder/` as the reference implementation for this flow.
 
 ## Package Exports
 
@@ -228,16 +248,18 @@ Framework adapter package:
 ```json
 {
   ".": "./src/index.ts",
+  "./view-models": "./src/view-models/index.ts",
   "./test": "./test/index.ts"
 }
 ```
 
-Prefer explicit package exports. Avoid exposing database schemas, infrastructure internals, or individual test-double files unless a real caller needs them.
+Use `./view-models` as a client-safe app import boundary. Prefer explicit package exports. Avoid exposing database schemas, infrastructure internals, individual test-double files, or server runtime code through client-facing subpaths.
 
 ## Naming Conventions
 
 - Packages use `@<module>/application`, `@<module>/infrastructure`, `@<module>/component`, and `@<module>/adapters-next`.
 - Use cases use `<Action><Entity>UseCase`, `static Live`, and `execute`.
+- Use-case contracts use `<Action><Entity>InputSchema`, `<Action><Entity>Input`, and `<Action><Entity>Output`.
 - Use case files use kebab case plus `.use-case.ts`.
 - Repositories use `<Entity>Repository` for the port and `<Entity>DBRepository` or `<Entity>InMemoryRepository` for layers.
 - Services use capability names such as `SessionService`, `UserService`, or `ClimbingSessionIdService`.
@@ -252,6 +274,7 @@ Prefer explicit package exports. Avoid exposing database schemas, infrastructure
 - Component tests should exercise the public facade with `<Module>TestLayer`.
 - Adapter tests should use `<Module>AdapterTestRuntime` and assert controller/presenter behavior, including redirects, cookies, and view models.
 - Keep domain behavior assertions in application/component tests. Adapter tests should focus on transport and presentation mapping.
+- Import the production view model and initial state in adapter/view tests. Do not duplicate production view-model types in test-only files.
 - Test support belongs in each package's `test/` folder and is exported through `./test` when other packages need it.
 
 ## Effect Guidance
@@ -271,11 +294,12 @@ Prefer explicit package exports. Avoid exposing database schemas, infrastructure
 
 1. Add or update application models/errors as needed.
 2. Add any required repository/service/factory ports in the application package.
-3. Add `src/use-cases/<use-case>.use-case.ts` with input schema, input type, service class, and `static Live`.
+3. Add `src/use-cases/<use-case>.use-case.ts` with input schema, input/output types, service class, and `static Live`.
 4. Add the use case layer to `ApplicationLayer` and export it from the application package.
 5. Implement any new ports in infrastructure and add them to `InfrastructureLayer`.
 6. Add test doubles to infrastructure `test/` and include them in `InfrastructureTestLayer`.
 7. Expose the use case through the component facade and `<Module>Layer`.
-8. Add or update framework controllers/presenters only when the use case is reachable through that adapter.
-9. Update package exports if a new public subpath is needed.
-10. Run focused typecheck/tests with `pnpm --filter <package> run typecheck` and `pnpm --filter <package> run test`.
+8. Add or update the adapter view model, presenter, and controller when the use case is reachable through that adapter.
+9. Add the thin server action and rendering-only app view when exposing a server-action form.
+10. Update package exports, including the client-safe `./view-models` subpath when needed.
+11. Run focused typecheck/tests with `pnpm --filter <package> run typecheck` and `pnpm --filter <package> run test`.

@@ -32,7 +32,7 @@ import {
   movementStyleOptions,
   type CreateBoulderViewModel,
   wallAngleOptions,
-} from "@climbing/adapters-next/view-models"
+} from "@climbing/adapters-next/view-models/create-boulder"
 
 type CreateBoulderAction = (
   previousState: CreateBoulderViewModel,
@@ -55,12 +55,14 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
         <form action={formAction}>
           <FieldGroup>
             {state.message !== "" && (
-              <Alert variant={state.status === "success" ? "default" : "destructive"}>
+              <Alert
+                variant={state.status === "success" ? "default" : "destructive"}
+              >
                 <AlertDescription>{state.message}</AlertDescription>
               </Alert>
             )}
 
-            <Field data-invalid={Boolean(state.fields.name.error)}>
+            <Field data-invalid={Boolean(state.errors.name)}>
               <FieldLabel htmlFor="boulder-name">
                 {state.fields.name.label}
               </FieldLabel>
@@ -70,17 +72,17 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
                 placeholder="Blue Circuit 12"
                 disabled={pending}
                 defaultValue={state.fields.name.value}
-                aria-invalid={Boolean(state.fields.name.error)}
+                aria-invalid={Boolean(state.errors.name)}
                 aria-describedby={
-                  state.fields.name.error ? "boulder-name-error" : undefined
+                  state.errors.name ? "boulder-name-error" : undefined
                 }
               />
               <FieldError id="boulder-name-error">
-                {state.fields.name.error}
+                {state.errors.name}
               </FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fields.grade.error)}>
+            <Field data-invalid={Boolean(state.errors.grade)}>
               <FieldLabel htmlFor="boulder-grade">
                 {state.fields.grade.label}
               </FieldLabel>
@@ -90,23 +92,23 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
                 className="w-full"
                 disabled={pending}
                 defaultValue={state.fields.grade.value}
-                aria-invalid={Boolean(state.fields.grade.error)}
+                aria-invalid={Boolean(state.errors.grade)}
                 aria-describedby={
-                  state.fields.grade.error ? "boulder-grade-error" : undefined
+                  state.errors.grade ? "boulder-grade-error" : undefined
                 }
               >
                 {gradeOptions.map((grade) => (
-                  <NativeSelectOption key={grade} value={grade}>
-                    {grade}
+                  <NativeSelectOption key={grade.value} value={grade.value}>
+                    {grade.label}
                   </NativeSelectOption>
                 ))}
               </NativeSelect>
               <FieldError id="boulder-grade-error">
-                {state.fields.grade.error}
+                {state.errors.grade}
               </FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fields.wallAngle.error)}>
+            <Field data-invalid={Boolean(state.errors.wallAngle)}>
               <FieldLabel htmlFor="boulder-wall-angle">
                 {state.fields.wallAngle.label}
               </FieldLabel>
@@ -116,9 +118,9 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
                 className="w-full"
                 disabled={pending}
                 defaultValue={state.fields.wallAngle.value}
-                aria-invalid={Boolean(state.fields.wallAngle.error)}
+                aria-invalid={Boolean(state.errors.wallAngle)}
                 aria-describedby={
-                  state.fields.wallAngle.error
+                  state.errors.wallAngle
                     ? "boulder-wall-angle-error"
                     : undefined
                 }
@@ -130,11 +132,11 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
                 ))}
               </NativeSelect>
               <FieldError id="boulder-wall-angle-error">
-                {state.fields.wallAngle.error}
+                {state.errors.wallAngle}
               </FieldError>
             </Field>
 
-            <Field data-invalid={Boolean(state.fields.movementStyle.error)}>
+            <Field data-invalid={Boolean(state.errors.movementStyle)}>
               <FieldLabel htmlFor="boulder-movement-style">
                 {state.fields.movementStyle.label}
               </FieldLabel>
@@ -144,9 +146,9 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
                 className="w-full"
                 disabled={pending}
                 defaultValue={state.fields.movementStyle.value}
-                aria-invalid={Boolean(state.fields.movementStyle.error)}
+                aria-invalid={Boolean(state.errors.movementStyle)}
                 aria-describedby={
-                  state.fields.movementStyle.error
+                  state.errors.movementStyle
                     ? "boulder-movement-style-error"
                     : undefined
                 }
@@ -158,7 +160,7 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
                 ))}
               </NativeSelect>
               <FieldError id="boulder-movement-style-error">
-                {state.fields.movementStyle.error}
+                {state.errors.movementStyle}
               </FieldError>
             </Field>
 

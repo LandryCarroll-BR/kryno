@@ -4,11 +4,6 @@ import { useActionState } from "react"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
 
-import type {
-  EndClimbingSessionViewModel,
-  GetCurrentClimbingSessionViewModel,
-} from "@climbing/adapters-next"
-
 import {
   Card,
   CardContent,
@@ -18,6 +13,7 @@ import {
 } from "@packages/ui/components/card"
 
 import { endClimbingSession } from "./end-climbing-session.action"
+import { GetCurrentClimbingSessionViewModel } from "@climbing/adapters-next/presenters/get-current-climbing-session"
 
 export function EndClimbingSessionView({
   action,

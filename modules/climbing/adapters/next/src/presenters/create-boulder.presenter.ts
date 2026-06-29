@@ -1,6 +1,6 @@
-import { Effect, Layer } from "effect"
+import { Effect, Layer, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
-import type { Boulder } from "@climbing/application"
+import type { CreateBoulderOutput } from "@climbing/application"
 import type { SchemaError } from "effect/Schema"
 
 import {
@@ -8,79 +8,63 @@ import {
   type CreateBoulderViewModel,
 } from "../view-models/create-boulder.view-model"
 
-import { fieldErrorFor, formatSchemaIssue } from "../utils/form"
-
 export class CreateBoulderPresenter extends Service<
   CreateBoulderPresenter,
   {
-    readonly presentIdle: () => Effect.Effect<CreateBoulderViewModel>
-
     readonly presentSuccess: (
-      fields: CreateBoulderViewModel["fields"],
-      boulder: Boulder
+      success: CreateBoulderOutput
     ) => Effect.Effect<CreateBoulderViewModel>
 
-    readonly presentInputParseError: (
-      fields: CreateBoulderViewModel["fields"],
+    readonly presentSchemaError: (
+      previousState: CreateBoulderViewModel,
       error: SchemaError
     ) => Effect.Effect<CreateBoulderViewModel>
 
     readonly presentUnexpectedError: (
-      fields: CreateBoulderViewModel["fields"]
+      previousState: CreateBoulderViewModel
     ) => Effect.Effect<CreateBoulderViewModel>
   }
 >()("@climbing/adapters/next/CreateBoulderPresenter") {
   static Live = Layer.succeed(CreateBoulderPresenter, {
-    presentIdle: () => Effect.succeed(createBoulderInitialViewModel),
-
-    presentSuccess: (fields, boulder) =>
+    presentSuccess: (boulder) =>
       Effect.succeed({
+        ...createBoulderInitialViewModel,
         status: "success",
         message: `Created ${boulder.name} at ${boulder.grade}.`,
-        fields: clearFieldErrors(fields),
       }),
 
-    presentInputParseError: (fields, error) => {
-      const { issues } = formatSchemaIssue(error.issue)
-
+    presentSchemaError: (previousState, error) => {
       return Effect.succeed({
-        status: "idle",
+        ...previousState,
+        status: "invalid",
         message: "Invalid input. Please check your data and try again.",
-        fields: {
-          name: {
-            ...fields.name,
-            error: fieldErrorFor(issues, "name"),
-          },
-          grade: {
-            ...fields.grade,
-            error: fieldErrorFor(issues, "grade"),
-          },
-          wallAngle: {
-            ...fields.wallAngle,
-            error: fieldErrorFor(issues, "wallAngle"),
-          },
-          movementStyle: {
-            ...fields.movementStyle,
-            error: fieldErrorFor(issues, "movementStyle"),
-          },
-        },
+        errors: CreateBoulderPresenter.formatErrors(error),
       })
     },
 
-    presentUnexpectedError: (fields) =>
-      Effect.succeed({
-        status: "idle",
-        message: "Unable to create this boulder. Please try again.",
-        fields: clearFieldErrors(fields),
-      }),
+    presentUnexpectedError: (previousState) => {
+      return Effect.succeed({
+        ...previousState,
+        status: "error",
+        message: "An unexptected Error has occcured. Please try again later.",
+      })
+    },
   })
-}
 
-const clearFieldErrors = (
-  fields: CreateBoulderViewModel["fields"]
-): CreateBoulderViewModel["fields"] => ({
-  name: { ...fields.name, error: "" },
-  grade: { ...fields.grade, error: "" },
-  wallAngle: { ...fields.wallAngle, error: "" },
-  movementStyle: { ...fields.movementStyle, error: "" },
-})
+  static formatErrors = (error: SchemaError) => {
+    const { issues } = CreateBoulderPresenter.toStandardSchema(error.issue)
+
+    const fieldError = (
+      field: keyof CreateBoulderViewModel["fields"]
+    ): string => issues.find(({ path }) => path?.[0] === field)?.message ?? ""
+
+    return {
+      name: fieldError("name"),
+      grade: fieldError("grade"),
+      wallAngle: fieldError("wallAngle"),
+      movementStyle: fieldError("movementStyle"),
+    } satisfies CreateBoulderViewModel["errors"]
+  }
+
+  static toStandardSchema = SchemaIssue.makeFormatterStandardSchemaV1()
+}
