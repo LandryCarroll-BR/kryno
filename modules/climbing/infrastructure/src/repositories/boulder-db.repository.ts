@@ -25,6 +25,23 @@ export const BoulderDBRepository = Layer.effect(
     const db = yield* ClimbingDB
 
     return {
+      deleteByCreatorClimberId: Effect.fn(
+        "BoulderRepository.deleteByCreatorClimberId"
+      )(function* (climberId, boulderId) {
+        const [deleted] = yield* db
+          .delete(bouldersTable)
+          .where(
+            and(
+              eq(bouldersTable.creatorClimberId, climberId),
+              eq(bouldersTable.id, boulderId)
+            )
+          )
+          .returning()
+          .pipe(Effect.orDie)
+
+        return Option.fromNullishOr(deleted).pipe(Option.map(toBoulder))
+      }),
+
       findByCreatorClimberId: Effect.fn(
         "BoulderRepository.findByCreatorClimberId"
       )(function* (climberId) {
@@ -37,6 +54,19 @@ export const BoulderDBRepository = Layer.effect(
 
         return boulders.map(toBoulder)
       }),
+
+      findById: Effect.fn("BoulderRepository.findById")(
+        function* (boulderId) {
+          const [boulder] = yield* db
+            .select()
+            .from(bouldersTable)
+            .where(eq(bouldersTable.id, boulderId))
+            .limit(1)
+            .pipe(Effect.orDie)
+
+          return Option.fromNullishOr(boulder).pipe(Option.map(toBoulder))
+        }
+      ),
 
       findSavedById: Effect.fn("BoulderRepository.findSavedById")(
         function* (climberId, boulderId) {

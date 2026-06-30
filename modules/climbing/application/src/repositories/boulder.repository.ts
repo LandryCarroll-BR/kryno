@@ -11,7 +11,16 @@ export class BoulderRepository extends Service<
       climberId: ClimberId
     ) => Effect.Effect<readonly Boulder[]>
 
+    readonly findById: (
+      boulderId: BoulderId
+    ) => Effect.Effect<Option.Option<Boulder>>
+
     readonly findSavedById: (
+      climberId: ClimberId,
+      boulderId: BoulderId
+    ) => Effect.Effect<Option.Option<Boulder>>
+
+    readonly deleteByCreatorClimberId: (
       climberId: ClimberId,
       boulderId: BoulderId
     ) => Effect.Effect<Option.Option<Boulder>>

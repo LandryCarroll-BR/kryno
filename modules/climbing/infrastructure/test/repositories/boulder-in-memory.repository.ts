@@ -8,6 +8,23 @@ export const BoulderInMemoryRepository = Layer.effect(
     const store = yield* Ref.make(new Map<string, Boulder>())
 
     return {
+      deleteByCreatorClimberId: Effect.fn(
+        "BoulderRepository.deleteByCreatorClimberId"
+      )(function* (climberId, boulderId) {
+        return yield* Ref.modify(store, (boulders) => {
+          const boulder = boulders.get(boulderId)
+
+          if (boulder?.creatorClimberId !== climberId) {
+            return [Option.none(), boulders]
+          }
+
+          const next = new Map(boulders)
+          next.delete(boulderId)
+
+          return [Option.some(boulder), next]
+        })
+      }),
+
       findByCreatorClimberId: Effect.fn(
         "BoulderRepository.findByCreatorClimberId"
       )(function* (climberId) {
@@ -15,7 +32,7 @@ export const BoulderInMemoryRepository = Layer.effect(
 
         return [...boulders.values()]
           .filter((boulder) => boulder.creatorClimberId === climberId)
-          .toSorted((left, right) => {
+          .sort((left, right) => {
             const updatedAt = right.updatedAt.getTime() - left.updatedAt.getTime()
 
             if (updatedAt !== 0) {
@@ -24,6 +41,11 @@ export const BoulderInMemoryRepository = Layer.effect(
 
             return left.name.localeCompare(right.name)
           })
+      }),
+
+      findById: Effect.fn("BoulderRepository.findById")(function* (boulderId) {
+        const boulders = yield* Ref.get(store)
+        return Option.fromNullishOr(boulders.get(boulderId))
       }),
 
       findSavedById: Effect.fn("BoulderRepository.findSavedById")(

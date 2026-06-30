@@ -4,8 +4,15 @@ import { AuthenticatedClimber } from "@climbing/application/services/authenticat
 import { Effect, Layer } from "effect"
 
 export const AuthenticatedClimberTest = Layer.succeed(AuthenticatedClimber, {
-  resolve: (token) =>
-    token === "valid-token"
-      ? Effect.succeed(ClimberId.make("climber-1"))
-      : Effect.fail(new UnauthenticatedClimberError()),
+  resolve: (token) => {
+    if (token === "valid-token") {
+      return Effect.succeed(ClimberId.make("climber-1"))
+    }
+
+    if (token === "other-valid-token") {
+      return Effect.succeed(ClimberId.make("climber-2"))
+    }
+
+    return Effect.fail(new UnauthenticatedClimberError())
+  },
 })

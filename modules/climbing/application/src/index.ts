@@ -1,6 +1,7 @@
 import { Layer } from "effect"
 
 import { CreateBoulderUseCase } from "./use-cases/create-boulder.use-case"
+import { DeleteBoulderUseCase } from "./use-cases/delete-boulder.use-case"
 import { EndClimbingSessionUseCase } from "./use-cases/end-climbing-session.use-case"
 import { GetCurrentClimbingSessionUseCase } from "./use-cases/get-current-climbing-session.use-case"
 import { ListCreatedBouldersUseCase } from "./use-cases/list-created-boulders.use-case"
@@ -9,6 +10,7 @@ import { StartClimbingSessionUseCase } from "./use-cases/start-climbing-session.
 
 export const ApplicationLayer = Layer.mergeAll(
   CreateBoulderUseCase.Live,
+  DeleteBoulderUseCase.Live,
   EndClimbingSessionUseCase.Live,
   GetCurrentClimbingSessionUseCase.Live,
   ListCreatedBouldersUseCase.Live,

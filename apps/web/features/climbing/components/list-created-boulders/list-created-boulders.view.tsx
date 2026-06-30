@@ -10,8 +10,10 @@ import {
 } from "@packages/ui/components/card"
 
 import type { ListCreatedBouldersViewModel } from "@climbing/adapters-next/view-models/list-created-boulders"
+import type { DeleteBoulderViewModel } from "@climbing/adapters-next/view-models/delete-boulder"
 import type { LogBoulderAttemptViewModel } from "@climbing/adapters-next/view-models/log-boulder-attempt"
 
+import { DeleteBoulderView } from "../delete-boulder/delete-boulder.view"
 import { LogBoulderAttemptView } from "../log-boulder-attempt/log-boulder-attempt.view"
 
 type ListCreatedBouldersQuery = () => Promise<ListCreatedBouldersViewModel>
@@ -21,12 +23,19 @@ type LogBoulderAttemptAction = (
   formData: FormData
 ) => Promise<LogBoulderAttemptViewModel>
 
+type DeleteBoulderAction = (
+  previousState: DeleteBoulderViewModel,
+  formData: FormData
+) => Promise<DeleteBoulderViewModel>
+
 export async function ListCreatedBouldersView({
   query,
-  action,
+  logAttemptAction,
+  deleteAction,
 }: {
   query: ListCreatedBouldersQuery
-  action: LogBoulderAttemptAction
+  logAttemptAction: LogBoulderAttemptAction
+  deleteAction: DeleteBoulderAction
 }) {
   const createdBoulders = await query()
   const boulders = createdBoulders.fields.boulders.value
@@ -72,10 +81,17 @@ export async function ListCreatedBouldersView({
                   <p className="text-sm text-muted-foreground">
                     Updated {formatDate(boulder.updatedAt)}
                   </p>
-                  <LogBoulderAttemptView
-                    action={action}
-                    boulderId={boulder.id}
-                  />
+                  <div className="flex flex-wrap items-start gap-2">
+                    <LogBoulderAttemptView
+                      action={logAttemptAction}
+                      boulderId={boulder.id}
+                    />
+                    <DeleteBoulderView
+                      action={deleteAction}
+                      boulderId={boulder.id}
+                      boulderName={boulder.name}
+                    />
+                  </div>
                 </div>
               </article>
             ))}
