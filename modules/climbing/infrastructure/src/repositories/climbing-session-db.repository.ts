@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull } from "drizzle-orm"
+import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm"
 import { Effect, Layer, Option, Schema } from "effect"
 
 import {
@@ -69,6 +69,59 @@ export const ClimbingSessionDBRepository = Layer.effect(
     })
 
     return {
+      findAllByClimberId: Effect.fn(
+        "ClimbingSessionRepository.findAllByClimberId"
+      )(function* (climberId) {
+        const sessions = yield* db
+          .select()
+          .from(climbingSessionsTable)
+          .where(eq(climbingSessionsTable.climberId, climberId))
+          .orderBy(asc(climbingSessionsTable.startedAt))
+          .pipe(Effect.orDie)
+
+        if (sessions.length === 0) {
+          return []
+        }
+
+        const attempts = yield* db
+          .select()
+          .from(climbingAttemptsTable)
+          .where(
+            inArray(
+              climbingAttemptsTable.sessionId,
+              sessions.map((session) => session.id)
+            )
+          )
+          .orderBy(
+            asc(climbingAttemptsTable.occurredAt),
+            asc(climbingAttemptsTable.ordinal)
+          )
+          .pipe(Effect.orDie)
+
+        const attemptsBySessionId = new Map<
+          ClimbingSessionId,
+          ClimbingAttempt[]
+        >()
+
+        for (const attempt of attempts) {
+          const sessionAttempts =
+            attemptsBySessionId.get(attempt.sessionId) ?? []
+          sessionAttempts.push(toAttempt(attempt))
+          attemptsBySessionId.set(attempt.sessionId, sessionAttempts)
+        }
+
+        return sessions.map((session) => {
+          const sessionAttempts = attemptsBySessionId.get(session.id) ?? []
+
+          return session.endedAt === null
+            ? toActiveSession(session, sessionAttempts)
+            : toCompletedSession(
+                { ...session, endedAt: session.endedAt },
+                sessionAttempts
+              )
+        })
+      }),
+
       findActiveByClimberId: Effect.fn(
         "ClimbingSessionRepository.findActiveByClimberId"
       )(function* (climberId) {
@@ -98,13 +151,13 @@ export const ClimbingSessionDBRepository = Layer.effect(
           const [created] = yield* db
             .insert(climbingSessionsTable)
             .values({
-            id: session.id,
-            climberId: session.climberId,
-            startedAt: session.startedAt,
-            endedAt: null,
-            createdAt: session.startedAt,
-            updatedAt: session.startedAt,
-          })
+              id: session.id,
+              climberId: session.climberId,
+              startedAt: session.startedAt,
+              endedAt: null,
+              createdAt: session.startedAt,
+              updatedAt: session.startedAt,
+            })
             .onConflictDoNothing()
             .returning()
             .pipe(Effect.orDie)

@@ -25,21 +25,30 @@ async function Dashboard() {
             <SignOutView action={signOut} />
           </Suspense>
         </div>
-        <Suspense>
-          <GetCurrentClimbingSessionView
-            query={getCurrentClimbingSession}
-            startAction={startClimbingSession}
-            endAction={endClimbingSession}
-          />
-        </Suspense>
-        <CreateBoulderView action={createBoulder} />
-        <Suspense>
-          <ListCreatedBouldersView
-            query={listCreatedBoulders}
-            logAttemptAction={logBoulderAttempt}
-            deleteAction={deleteBoulder}
-          />
-        </Suspense>
+
+        <div>
+          <Suspense>
+            <GetCurrentClimbingSessionView
+              query={getCurrentClimbingSession}
+              startAction={startClimbingSession}
+              endAction={endClimbingSession}
+            />
+          </Suspense>
+        </div>
+
+        <div>
+          <CreateBoulderView action={createBoulder} />
+        </div>
+
+        <div>
+          <Suspense>
+            <ListCreatedBouldersView
+              query={listCreatedBoulders}
+              logAttemptAction={logBoulderAttempt}
+              deleteAction={deleteBoulder}
+            />
+          </Suspense>
+        </div>
       </main>
     </div>
   )

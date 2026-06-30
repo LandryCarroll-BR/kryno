@@ -1,4 +1,4 @@
-import { Effect, Option, Schema } from "effect"
+import { Effect, Option, Result, Schema } from "effect"
 import { GetCurrentUserInputSchema } from "@auth/application/use-cases/get-current-user"
 import { Auth } from "@auth/component"
 import { Headers, Navigation } from "@packages/effect-next"
@@ -38,17 +38,12 @@ export const GetCurrentUserController = Effect.fn(
 
         const success = yield* auth.getCurrentUser(input)
 
-        return { _tag: "Success" as const, success }
+        return Result.succeed(success)
       }).pipe(
         Effect.catchDefect(() =>
           presenter
             .presentUnexpectedError()
-            .pipe(
-              Effect.map((viewModel) => ({
-                _tag: "Presented" as const,
-                viewModel,
-              }))
-            )
+            .pipe(Effect.map((viewModel) => Result.fail(viewModel)))
         ),
         Effect.catchTags({
           SchemaError: () => redirectToSignIn,
@@ -58,15 +53,13 @@ export const GetCurrentUserController = Effect.fn(
         })
       )
 
-      if (result._tag === "Presented") {
-        return result.viewModel
-      }
-
-      if (Option.isNone(result.success)) {
-        return yield* redirectToSignIn
-      }
-
-      return yield* presenter.presentSuccess(result.success)
+      return yield* Result.match(result, {
+        onFailure: (viewModel) => Effect.succeed(viewModel),
+        onSuccess: (success) =>
+          Option.isNone(success)
+            ? redirectToSignIn
+            : presenter.presentSuccess(success),
+      })
     }),
   }
 })

@@ -12,6 +12,7 @@ import type {
 
 import type {
   ActiveClimbingSession,
+  ClimbingSession,
   CompletedClimbingSession,
 } from "../models/climbing-session.models"
 
@@ -21,6 +22,10 @@ export class ClimbingSessionRepository extends Service<
     readonly findActiveByClimberId: (
       climberId: ClimberId
     ) => Effect.Effect<Option.Option<ActiveClimbingSession>>
+
+    readonly findAllByClimberId: (
+      climberId: ClimberId
+    ) => Effect.Effect<readonly ClimbingSession[]>
 
     readonly insertActive: (
       session: ActiveClimbingSession

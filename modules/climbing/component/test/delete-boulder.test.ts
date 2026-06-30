@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest"
-import { Effect } from "effect"
+import { Effect, Predicate } from "effect"
 import { BoulderId, BoulderName } from "@climbing/application/models/boulder"
 
 import { Climbing } from "../src/index"
@@ -52,7 +52,7 @@ describe("Climbing.deleteBoulder", () => {
         })
       )
 
-      expect(error._tag).toBe("CreatedBoulderNotFoundError")
+      expect(Predicate.isTagged(error, "CreatedBoulderNotFoundError")).toBe(true)
     }).pipe(Effect.provide(ClimbingTestLayer))
   )
 
@@ -77,8 +77,10 @@ describe("Climbing.deleteBoulder", () => {
         token: "valid-token",
       })
 
-      expect(error._tag).toBe("UnauthorizedToDeleteBoulderError")
-      expect(ownerBoulders).toEqual([created])
+      expect(
+        Predicate.isTagged(error, "UnauthorizedToDeleteBoulderError")
+      ).toBe(true)
+      expect(ownerBoulders).toEqual([{ boulder: created, sessions: [] }])
     }).pipe(Effect.provide(ClimbingTestLayer))
   )
 
@@ -92,7 +94,9 @@ describe("Climbing.deleteBoulder", () => {
         })
       )
 
-      expect(error._tag).toBe("UnauthenticatedClimberError")
+      expect(Predicate.isTagged(error, "UnauthenticatedClimberError")).toBe(
+        true
+      )
     }).pipe(Effect.provide(ClimbingTestLayer))
   )
 })
