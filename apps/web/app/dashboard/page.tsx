@@ -1,4 +1,6 @@
 import { Suspense } from "react"
+import Link from "next/link"
+import { buttonVariants } from "@packages/ui/components/button"
 import { GetCurrentUserView } from "@/features/auth/components/get-current-user/get-current-user.view"
 import { signOut } from "@/features/auth/components/sign-out/sign-out.action"
 import { SignOutView } from "@/features/auth/components/sign-out/sign-out.view"
@@ -24,6 +26,12 @@ async function Dashboard() {
             <GetCurrentUserView query={getCurrentUser} />
             <SignOutView action={signOut} />
           </Suspense>
+          <Link
+            href="/gyms"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Browse gyms
+          </Link>
         </div>
 
         <div>

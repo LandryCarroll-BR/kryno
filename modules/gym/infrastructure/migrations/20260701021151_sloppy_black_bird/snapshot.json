@@ -1,0 +1,147 @@
+{
+  "version": "8",
+  "dialect": "postgres",
+  "id": "7951470e-bade-41c1-91e5-f1b1a0bb3ba5",
+  "prevIds": [
+    "ec955f6f-c0c9-48e7-b8ab-98b394414f92"
+  ],
+  "ddl": [
+    {
+      "isRlsEnabled": false,
+      "name": "gym_memberships",
+      "entityType": "tables",
+      "schema": "gym"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gyms",
+      "entityType": "tables",
+      "schema": "gym"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "gym_id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "member_id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "joined_at",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gyms"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gyms"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "member_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "gym_memberships_member_id_index",
+      "entityType": "indexes",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "gym_id"
+      ],
+      "schemaTo": "gym",
+      "tableTo": "gyms",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "gym_memberships_gym_id_gyms_id_fkey",
+      "entityType": "fks",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "columns": [
+        "gym_id",
+        "member_id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_memberships_pkey",
+      "entityType": "pks",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "gyms_pkey",
+      "schema": "gym",
+      "table": "gyms",
+      "entityType": "pks"
+    }
+  ],
+  "renames": []
+}

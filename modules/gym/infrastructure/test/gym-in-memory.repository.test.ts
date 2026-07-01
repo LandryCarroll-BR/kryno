@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest"
-import { Effect } from "effect"
+import { Effect, Option } from "effect"
 import { Gym, GymId, GymName } from "@gym/application/models/gym"
 import { GymRepository } from "@gym/application/repositories/gym"
 
@@ -20,6 +20,14 @@ describe("GymInMemoryRepository.insert", () => {
 
       expect(yield* repository.insert(first)).toEqual(first)
       expect(yield* repository.insert(second)).toEqual(second)
+
+      const gyms = yield* repository.findAll()
+      const found = yield* repository.findById(first.id)
+      const missing = yield* repository.findById(GymId.make("missing"))
+
+      expect(gyms).toEqual([first, second])
+      expect(Option.getOrNull(found)).toEqual(first)
+      expect(Option.isNone(missing)).toBe(true)
     }).pipe(Effect.provide(GymInMemoryRepository))
   )
 })
