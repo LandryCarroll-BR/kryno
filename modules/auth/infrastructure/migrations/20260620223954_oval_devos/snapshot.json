@@ -10,13 +10,13 @@
       "isRlsEnabled": false,
       "name": "sessions",
       "entityType": "tables",
-      "schema": "auth"
+      "schema": "kryno_auth"
     },
     {
       "isRlsEnabled": false,
       "name": "users",
       "entityType": "tables",
-      "schema": "auth"
+      "schema": "kryno_auth"
     },
     {
       "type": "char(24)",
@@ -28,7 +28,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "sessions"
     },
     {
@@ -41,7 +41,7 @@
       "identity": null,
       "name": "user_id",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "sessions"
     },
     {
@@ -54,7 +54,7 @@
       "identity": null,
       "name": "role",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "sessions"
     },
     {
@@ -67,7 +67,7 @@
       "identity": null,
       "name": "secret_hash",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "sessions"
     },
     {
@@ -80,7 +80,7 @@
       "identity": null,
       "name": "last_verified_at",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "sessions"
     },
     {
@@ -93,7 +93,7 @@
       "identity": null,
       "name": "created_at",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "sessions"
     },
     {
@@ -106,7 +106,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "users"
     },
     {
@@ -119,7 +119,7 @@
       "identity": null,
       "name": "username",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "users"
     },
     {
@@ -132,7 +132,7 @@
       "identity": null,
       "name": "email",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "users"
     },
     {
@@ -145,7 +145,7 @@
       "identity": null,
       "name": "password_hash",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "users"
     },
     {
@@ -158,7 +158,7 @@
       "identity": null,
       "name": "created_at",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "users"
     },
     {
@@ -171,7 +171,7 @@
       "identity": null,
       "name": "role",
       "entityType": "columns",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "users"
     },
     {
@@ -179,7 +179,7 @@
       "columns": [
         "user_id"
       ],
-      "schemaTo": "auth",
+      "schemaTo": "kryno_auth",
       "tableTo": "users",
       "columnsTo": [
         "id"
@@ -188,7 +188,7 @@
       "onDelete": "CASCADE",
       "name": "sessions_user_id_users_id_fkey",
       "entityType": "fks",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "sessions"
     },
     {
@@ -197,7 +197,7 @@
       ],
       "nameExplicit": false,
       "name": "sessions_pkey",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "sessions",
       "entityType": "pks"
     },
@@ -207,7 +207,7 @@
       ],
       "nameExplicit": false,
       "name": "users_pkey",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "users",
       "entityType": "pks"
     },
@@ -218,7 +218,7 @@
       ],
       "nullsNotDistinct": false,
       "name": "users_username_key",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "users",
       "entityType": "uniques"
     },
@@ -229,7 +229,7 @@
       ],
       "nullsNotDistinct": false,
       "name": "users_email_key",
-      "schema": "auth",
+      "schema": "kryno_auth",
       "table": "users",
       "entityType": "uniques"
     }

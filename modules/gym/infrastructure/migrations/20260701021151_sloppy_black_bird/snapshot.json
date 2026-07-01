@@ -10,13 +10,13 @@
       "isRlsEnabled": false,
       "name": "gym_memberships",
       "entityType": "tables",
-      "schema": "gym"
+      "schema": "kryno_gym"
     },
     {
       "isRlsEnabled": false,
       "name": "gyms",
       "entityType": "tables",
-      "schema": "gym"
+      "schema": "kryno_gym"
     },
     {
       "type": "char(24)",
@@ -28,7 +28,7 @@
       "identity": null,
       "name": "gym_id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -41,7 +41,7 @@
       "identity": null,
       "name": "member_id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -54,7 +54,7 @@
       "identity": null,
       "name": "joined_at",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -67,7 +67,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gyms"
     },
     {
@@ -80,7 +80,7 @@
       "identity": null,
       "name": "name",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gyms"
     },
     {
@@ -101,7 +101,7 @@
       "concurrently": false,
       "name": "gym_memberships_member_id_index",
       "entityType": "indexes",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -109,7 +109,7 @@
       "columns": [
         "gym_id"
       ],
-      "schemaTo": "gym",
+      "schemaTo": "kryno_gym",
       "tableTo": "gyms",
       "columnsTo": [
         "id"
@@ -118,7 +118,7 @@
       "onDelete": "CASCADE",
       "name": "gym_memberships_gym_id_gyms_id_fkey",
       "entityType": "fks",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -129,7 +129,7 @@
       "nameExplicit": false,
       "name": "gym_memberships_pkey",
       "entityType": "pks",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -138,7 +138,7 @@
       ],
       "nameExplicit": false,
       "name": "gyms_pkey",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gyms",
       "entityType": "pks"
     }

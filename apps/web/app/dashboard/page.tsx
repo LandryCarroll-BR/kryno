@@ -19,17 +19,14 @@ import { endClimbingSession } from "@/features/climbing/components/end-climbing-
 
 async function Dashboard() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="grid grid-cols-2 gap-8 p-24">
+    <div className="flex flex-1 flex-col items-center justify-center pt-6">
+      <main className="grid w-full max-w-4xl gap-8 p-4">
         <div className="flex items-center gap-4">
           <Suspense>
             <GetCurrentUserView query={getCurrentUser} />
             <SignOutView action={signOut} />
           </Suspense>
-          <Link
-            href="/gyms"
-            className={buttonVariants({ variant: "outline" })}
-          >
+          <Link href="/gyms" className={buttonVariants({ variant: "outline" })}>
             Browse gyms
           </Link>
         </div>

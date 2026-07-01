@@ -1,1 +1,1 @@
-ALTER TABLE "auth"."sessions" DROP COLUMN "role";
+ALTER TABLE "kryno_auth"."sessions" DROP COLUMN "role";

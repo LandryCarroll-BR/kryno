@@ -10,19 +10,19 @@
       "isRlsEnabled": false,
       "name": "boulders",
       "entityType": "tables",
-      "schema": "climbing"
+      "schema": "kryno_climbing"
     },
     {
       "isRlsEnabled": false,
       "name": "climbing_attempts",
       "entityType": "tables",
-      "schema": "climbing"
+      "schema": "kryno_climbing"
     },
     {
       "isRlsEnabled": false,
       "name": "climbing_sessions",
       "entityType": "tables",
-      "schema": "climbing"
+      "schema": "kryno_climbing"
     },
     {
       "type": "char(24)",
@@ -34,7 +34,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "boulders"
     },
     {
@@ -47,7 +47,7 @@
       "identity": null,
       "name": "creator_climber_id",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "boulders"
     },
     {
@@ -60,7 +60,7 @@
       "identity": null,
       "name": "name",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "boulders"
     },
     {
@@ -73,7 +73,7 @@
       "identity": null,
       "name": "grade",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "boulders"
     },
     {
@@ -86,7 +86,7 @@
       "identity": null,
       "name": "wall_angle",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "boulders"
     },
     {
@@ -99,7 +99,7 @@
       "identity": null,
       "name": "movement_style",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "boulders"
     },
     {
@@ -112,7 +112,7 @@
       "identity": null,
       "name": "created_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "boulders"
     },
     {
@@ -125,7 +125,7 @@
       "identity": null,
       "name": "updated_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "boulders"
     },
     {
@@ -138,7 +138,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -151,7 +151,7 @@
       "identity": null,
       "name": "session_id",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -164,7 +164,7 @@
       "identity": null,
       "name": "boulder_id",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -177,7 +177,7 @@
       "identity": null,
       "name": "ordinal",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -190,7 +190,7 @@
       "identity": null,
       "name": "outcome",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -203,7 +203,7 @@
       "identity": null,
       "name": "occurred_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -216,7 +216,7 @@
       "identity": null,
       "name": "created_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -229,7 +229,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -242,7 +242,7 @@
       "identity": null,
       "name": "climber_id",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -255,7 +255,7 @@
       "identity": null,
       "name": "started_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -268,7 +268,7 @@
       "identity": null,
       "name": "ended_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -281,7 +281,7 @@
       "identity": null,
       "name": "created_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -294,7 +294,7 @@
       "identity": null,
       "name": "updated_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -329,7 +329,7 @@
       "concurrently": false,
       "name": "climbing_attempts_session_boulder_ordinal_unique",
       "entityType": "indexes",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -350,7 +350,7 @@
       "concurrently": false,
       "name": "climbing_sessions_one_active_per_climber",
       "entityType": "indexes",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -358,7 +358,7 @@
       "columns": [
         "session_id"
       ],
-      "schemaTo": "climbing",
+      "schemaTo": "kryno_climbing",
       "tableTo": "climbing_sessions",
       "columnsTo": [
         "id"
@@ -367,7 +367,7 @@
       "onDelete": "CASCADE",
       "name": "climbing_attempts_session_id_climbing_sessions_id_fkey",
       "entityType": "fks",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -375,7 +375,7 @@
       "columns": [
         "boulder_id"
       ],
-      "schemaTo": "climbing",
+      "schemaTo": "kryno_climbing",
       "tableTo": "boulders",
       "columnsTo": [
         "id"
@@ -384,7 +384,7 @@
       "onDelete": "CASCADE",
       "name": "climbing_attempts_boulder_id_boulders_id_fkey",
       "entityType": "fks",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts"
     },
     {
@@ -393,7 +393,7 @@
       ],
       "nameExplicit": false,
       "name": "boulders_pkey",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "boulders",
       "entityType": "pks"
     },
@@ -403,7 +403,7 @@
       ],
       "nameExplicit": false,
       "name": "climbing_attempts_pkey",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_attempts",
       "entityType": "pks"
     },
@@ -413,7 +413,7 @@
       ],
       "nameExplicit": false,
       "name": "climbing_sessions_pkey",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions",
       "entityType": "pks"
     }

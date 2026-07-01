@@ -10,25 +10,25 @@
       "isRlsEnabled": false,
       "name": "gym_areas",
       "entityType": "tables",
-      "schema": "gym"
+      "schema": "kryno_gym"
     },
     {
       "isRlsEnabled": false,
       "name": "gym_memberships",
       "entityType": "tables",
-      "schema": "gym"
+      "schema": "kryno_gym"
     },
     {
       "isRlsEnabled": false,
       "name": "gym_routes",
       "entityType": "tables",
-      "schema": "gym"
+      "schema": "kryno_gym"
     },
     {
       "isRlsEnabled": false,
       "name": "gyms",
       "entityType": "tables",
-      "schema": "gym"
+      "schema": "kryno_gym"
     },
     {
       "type": "char(24)",
@@ -40,7 +40,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_areas"
     },
     {
@@ -53,7 +53,7 @@
       "identity": null,
       "name": "gym_id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_areas"
     },
     {
@@ -66,7 +66,7 @@
       "identity": null,
       "name": "name",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_areas"
     },
     {
@@ -79,7 +79,7 @@
       "identity": null,
       "name": "gym_id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -92,7 +92,7 @@
       "identity": null,
       "name": "member_id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -105,7 +105,7 @@
       "identity": null,
       "name": "joined_at",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -118,7 +118,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes"
     },
     {
@@ -131,7 +131,7 @@
       "identity": null,
       "name": "area_id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes"
     },
     {
@@ -144,7 +144,7 @@
       "identity": null,
       "name": "order",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes"
     },
     {
@@ -157,7 +157,7 @@
       "identity": null,
       "name": "position_label",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes"
     },
     {
@@ -170,7 +170,7 @@
       "identity": null,
       "name": "set_on",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes"
     },
     {
@@ -183,7 +183,7 @@
       "identity": null,
       "name": "setter_name",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes"
     },
     {
@@ -196,7 +196,7 @@
       "identity": null,
       "name": "boulder_id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes"
     },
     {
@@ -209,7 +209,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gyms"
     },
     {
@@ -222,7 +222,7 @@
       "identity": null,
       "name": "name",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gyms"
     },
     {
@@ -250,7 +250,7 @@
       "concurrently": false,
       "name": "gym_areas_gym_id_lower_name_unique",
       "entityType": "indexes",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_areas"
     },
     {
@@ -271,7 +271,7 @@
       "concurrently": false,
       "name": "gym_memberships_member_id_index",
       "entityType": "indexes",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -299,7 +299,7 @@
       "concurrently": false,
       "name": "gym_routes_area_id_order_unique",
       "entityType": "indexes",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes"
     },
     {
@@ -307,7 +307,7 @@
       "columns": [
         "gym_id"
       ],
-      "schemaTo": "gym",
+      "schemaTo": "kryno_gym",
       "tableTo": "gyms",
       "columnsTo": [
         "id"
@@ -316,7 +316,7 @@
       "onDelete": "CASCADE",
       "name": "gym_areas_gym_id_gyms_id_fkey",
       "entityType": "fks",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_areas"
     },
     {
@@ -324,7 +324,7 @@
       "columns": [
         "gym_id"
       ],
-      "schemaTo": "gym",
+      "schemaTo": "kryno_gym",
       "tableTo": "gyms",
       "columnsTo": [
         "id"
@@ -333,7 +333,7 @@
       "onDelete": "CASCADE",
       "name": "gym_memberships_gym_id_gyms_id_fkey",
       "entityType": "fks",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -341,7 +341,7 @@
       "columns": [
         "area_id"
       ],
-      "schemaTo": "gym",
+      "schemaTo": "kryno_gym",
       "tableTo": "gym_areas",
       "columnsTo": [
         "id"
@@ -350,7 +350,7 @@
       "onDelete": "CASCADE",
       "name": "gym_routes_area_id_gym_areas_id_fkey",
       "entityType": "fks",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes"
     },
     {
@@ -361,7 +361,7 @@
       "nameExplicit": false,
       "name": "gym_memberships_pkey",
       "entityType": "pks",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_memberships"
     },
     {
@@ -370,7 +370,7 @@
       ],
       "nameExplicit": false,
       "name": "gym_areas_pkey",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_areas",
       "entityType": "pks"
     },
@@ -380,7 +380,7 @@
       ],
       "nameExplicit": false,
       "name": "gym_routes_pkey",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gym_routes",
       "entityType": "pks"
     },
@@ -390,7 +390,7 @@
       ],
       "nameExplicit": false,
       "name": "gyms_pkey",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gyms",
       "entityType": "pks"
     }

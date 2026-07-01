@@ -10,7 +10,7 @@
       "isRlsEnabled": false,
       "name": "climbing_sessions",
       "entityType": "tables",
-      "schema": "climbing"
+      "schema": "kryno_climbing"
     },
     {
       "type": "char(24)",
@@ -22,7 +22,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -35,7 +35,7 @@
       "identity": null,
       "name": "climber_id",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -48,7 +48,7 @@
       "identity": null,
       "name": "started_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -61,7 +61,7 @@
       "identity": null,
       "name": "ended_at",
       "entityType": "columns",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -82,7 +82,7 @@
       "concurrently": false,
       "name": "climbing_sessions_one_active_per_climber",
       "entityType": "indexes",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions"
     },
     {
@@ -91,7 +91,7 @@
       ],
       "nameExplicit": false,
       "name": "climbing_sessions_pkey",
-      "schema": "climbing",
+      "schema": "kryno_climbing",
       "table": "climbing_sessions",
       "entityType": "pks"
     }

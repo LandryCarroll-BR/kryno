@@ -4,6 +4,10 @@ import { types } from "pg"
 import { Config } from "effect"
 import { type CustomTypesConfig } from "pg"
 
+const maxConnections = Config.int("DATABASE_MAX_CONNECTIONS").pipe(
+  Config.withDefault(2)
+)
+
 const pgTypes: CustomTypesConfig = {
   getTypeParser: (typeId, format) => {
     if (
@@ -20,6 +24,7 @@ export const PgClientFactory = {
   create: (url: Config.Config<Redacted.Redacted<string>>) =>
     PgClient.layerConfig({
       url,
+      maxConnections,
       types: Config.succeed(pgTypes),
     }),
 }

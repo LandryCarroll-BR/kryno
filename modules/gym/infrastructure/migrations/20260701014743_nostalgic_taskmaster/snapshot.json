@@ -10,7 +10,7 @@
       "isRlsEnabled": false,
       "name": "gyms",
       "entityType": "tables",
-      "schema": "gym"
+      "schema": "kryno_gym"
     },
     {
       "type": "char(24)",
@@ -22,7 +22,7 @@
       "identity": null,
       "name": "id",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gyms"
     },
     {
@@ -35,7 +35,7 @@
       "identity": null,
       "name": "name",
       "entityType": "columns",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gyms"
     },
     {
@@ -44,7 +44,7 @@
       ],
       "nameExplicit": false,
       "name": "gyms_pkey",
-      "schema": "gym",
+      "schema": "kryno_gym",
       "table": "gyms",
       "entityType": "pks"
     }
