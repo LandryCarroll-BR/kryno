@@ -30,6 +30,7 @@ export class GetCurrentUserPresenter extends Service<
           onSome: (user) => ({
             ...getCurrentUserInitialViewModel,
             status: "success",
+            role: user.role,
             fields: {
               username: {
                 ...getCurrentUserInitialViewModel.fields.username,

@@ -1,7 +1,9 @@
 import { Layer, ManagedRuntime } from "effect"
 import { GymLayer } from "@gym/component"
 
-export const PresenterLayer = Layer.empty
+import { CreateGymPresenter } from "./presenters/create-gym.presenter"
+
+export const PresenterLayer = Layer.mergeAll(CreateGymPresenter.Live)
 
 export const AdapterLayer = Layer.mergeAll(GymLayer, PresenterLayer)
 

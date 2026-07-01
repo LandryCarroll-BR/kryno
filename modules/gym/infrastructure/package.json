@@ -15,6 +15,8 @@
     "./test": "./test/index.ts"
   },
   "dependencies": {
+    "@auth/application": "workspace:*",
+    "@auth/component": "workspace:*",
     "effect": "4.0.0-beta.70",
     "drizzle-orm": "1.0.0-rc.4-5d5b77c",
     "@gym/application": "workspace:*",

@@ -32,15 +32,17 @@ Create the required local environment files:
 cp apps/web/.env.example apps/web/.env
 cp modules/auth/infrastructure/.env.example modules/auth/infrastructure/.env
 cp modules/climbing/infrastructure/.env.example modules/climbing/infrastructure/.env
+cp modules/gym/infrastructure/.env.example modules/gym/infrastructure/.env
 ```
 
-`AUTH_DATABASE_URL` connects the web app and auth migrations to PostgreSQL. `CLIMBING_DATABASE_URL` connects the climbing migrations. The examples contain the credentials created by `docker-compose.yml`.
+`AUTH_DATABASE_URL`, `CLIMBING_DATABASE_URL`, and `GYM_DATABASE_URL` connect the web app and each module's migrations to PostgreSQL. The examples contain the credentials created by `docker-compose.yml`.
 
 ```sh
 pnpm install
 pnpm run db:up
 pnpm run db:auth:migrate
 pnpm run db:climbing:migrate
+pnpm run db:gym:migrate
 pnpm run dev
 ```
 

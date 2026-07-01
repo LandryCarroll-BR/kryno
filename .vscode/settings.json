@@ -63,7 +63,8 @@
     "modules/gym/application/node_modules": true,
     "modules/gym/adapters/next/node_modules": true,
     "modules/gym/component/node_modules": true,
-    "modules/gym/infrastructure/node_modules": true
+    "modules/gym/infrastructure/node_modules": true,
+    "modules/gym/application/.turbo": true
   },
   "hide-files.files": [
     ".gitignore",
@@ -122,7 +123,8 @@
     "modules/gym/application/node_modules",
     "modules/gym/adapters/next/node_modules",
     "modules/gym/component/node_modules",
-    "modules/gym/infrastructure/node_modules"
+    "modules/gym/infrastructure/node_modules",
+    "modules/gym/application/.turbo"
   ],
   "typescript.preferences.importModuleSpecifier": "relative",
   "javascript.preferences.importModuleSpecifier": "relative"

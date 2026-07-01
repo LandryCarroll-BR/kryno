@@ -1,6 +1,7 @@
 export type GetCurrentUserViewModel = {
   readonly status: "idle" | "success" | "invalid" | "error"
   readonly message: string
+  readonly role: CurrentUserRole | null
   readonly fields: {
     readonly username: FieldViewModel
   }
@@ -10,6 +11,7 @@ export type GetCurrentUserViewModel = {
 export const getCurrentUserInitialViewModel = {
   status: "idle",
   message: "",
+  role: null,
   fields: {
     username: {
       label: "Username",
@@ -20,6 +22,8 @@ export const getCurrentUserInitialViewModel = {
     username: "",
   },
 } satisfies GetCurrentUserViewModel
+
+export type CurrentUserRole = "user" | "admin"
 
 type FieldViewModel = {
   readonly label: string

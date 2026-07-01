@@ -1,3 +1,5 @@
 import { Layer } from "effect"
 
-export const ApplicationLayer = Layer.empty
+import { CreateGymUseCase } from "./use-cases/create-gym.use-case"
+
+export const ApplicationLayer = Layer.mergeAll(CreateGymUseCase.Live)
