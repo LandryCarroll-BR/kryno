@@ -1,6 +1,6 @@
 import { Effect, Layer, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
-import type { UnauthorizedGymCreatorError } from "@gym/application/errors/gym"
+import type { UnauthorizedGymAdministratorError } from "@gym/application/errors/gym"
 import type { CreateGymOutput } from "@gym/application/use-cases/create-gym"
 import type { SchemaError } from "effect/Schema"
 
@@ -23,7 +23,7 @@ export class CreateGymPresenter extends Service<
 
     readonly presentUnauthorizedError: (
       previousState: CreateGymViewModel,
-      error: UnauthorizedGymCreatorError
+      error: UnauthorizedGymAdministratorError
     ) => Effect.Effect<CreateGymViewModel>
 
     readonly presentUnexpectedError: (

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Effect, Schema } from "effect"
-import { UnauthorizedGymCreatorError } from "@gym/application/errors/gym"
+import { UnauthorizedGymAdministratorError } from "@gym/application/errors/gym"
 import { Gym, GymId, GymName } from "@gym/application/models/gym"
 import { CreateGymInputSchema } from "@gym/application/use-cases/create-gym"
 
@@ -53,7 +53,7 @@ describe("CreateGymPresenter", () => {
       const presenter = yield* CreateGymPresenter
       const viewModel = yield* presenter.presentUnauthorizedError(
         createGymInitialViewModel,
-        new UnauthorizedGymCreatorError()
+        new UnauthorizedGymAdministratorError()
       )
 
       expect(viewModel.status).toBe("forbidden")

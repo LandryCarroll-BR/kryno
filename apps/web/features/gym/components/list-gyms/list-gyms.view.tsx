@@ -1,4 +1,6 @@
+import Link from "next/link"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
+import { buttonVariants } from "@packages/ui/components/button"
 import {
   Card,
   CardContent,
@@ -20,9 +22,11 @@ type JoinGymAction = (
 export async function ListGymsView({
   query,
   joinAction,
+  canManage,
 }: {
   query: ListGymsQuery
   joinAction: JoinGymAction
+  canManage: boolean
 }) {
   const gymList = await query()
   const gyms = gymList.fields.gyms.value
@@ -30,7 +34,14 @@ export async function ListGymsView({
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle>{gymList.fields.gyms.label}</CardTitle>
+        <div className="flex items-center justify-between gap-4">
+          <CardTitle>{gymList.fields.gyms.label}</CardTitle>
+          {canManage && (
+            <Link href="/gyms/new" className={buttonVariants()}>
+              Create gym
+            </Link>
+          )}
+        </div>
         <CardDescription>
           Find the places where you climb and join their communities.
         </CardDescription>
@@ -57,11 +68,21 @@ export async function ListGymsView({
                       : "Join this gym to make it part of your profile."}
                   </p>
                 </div>
-                <JoinGymView
-                  action={joinAction}
-                  gymId={gym.id}
-                  isMember={gym.isMember}
-                />
+                <div className="flex items-center gap-2">
+                  {canManage && (
+                    <Link
+                      href={`/gyms/${gym.id}/manage`}
+                      className={buttonVariants({ variant: "outline" })}
+                    >
+                      Manage
+                    </Link>
+                  )}
+                  <JoinGymView
+                    action={joinAction}
+                    gymId={gym.id}
+                    isMember={gym.isMember}
+                  />
+                </div>
               </article>
             ))}
           </div>

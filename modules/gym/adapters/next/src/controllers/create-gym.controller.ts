@@ -43,8 +43,8 @@ export const CreateGymController = Effect.fn("CreateGymController.make")(
         Effect.catchTags({
           SchemaError: (error) =>
             presenter.presentSchemaError(previousState, error),
-          UnauthenticatedGymCreatorError: () => redirectToSignIn,
-          UnauthorizedGymCreatorError: (error) =>
+          UnauthenticatedGymAdministratorError: () => redirectToSignIn,
+          UnauthorizedGymAdministratorError: (error) =>
             presenter.presentUnauthorizedError(previousState, error),
         }),
         Effect.catchDefect(() =>

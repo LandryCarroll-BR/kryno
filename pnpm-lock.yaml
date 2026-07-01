@@ -357,6 +357,9 @@ importers:
 
   modules/gym/application:
     dependencies:
+      '@climbing/application':
+        specifier: workspace:*
+        version: link:../../climbing/application
       effect:
         specifier: 4.0.0-beta.70
         version: 4.0.0-beta.70
@@ -413,6 +416,12 @@ importers:
       '@auth/component':
         specifier: workspace:*
         version: link:../../auth/component
+      '@climbing/application':
+        specifier: workspace:*
+        version: link:../../climbing/application
+      '@climbing/component':
+        specifier: workspace:*
+        version: link:../../climbing/component
       '@gym/application':
         specifier: workspace:*
         version: link:../application

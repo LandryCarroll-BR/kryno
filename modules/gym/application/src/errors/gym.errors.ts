@@ -1,9 +1,9 @@
 import { Data } from "effect"
 
-export class UnauthenticatedGymCreatorError extends Data.TaggedError(
-  "UnauthenticatedGymCreatorError"
+export class UnauthenticatedGymAdministratorError extends Data.TaggedError(
+  "UnauthenticatedGymAdministratorError"
 ) {}
 
-export class UnauthorizedGymCreatorError extends Data.TaggedError(
-  "UnauthorizedGymCreatorError"
+export class UnauthorizedGymAdministratorError extends Data.TaggedError(
+  "UnauthorizedGymAdministratorError"
 ) {}

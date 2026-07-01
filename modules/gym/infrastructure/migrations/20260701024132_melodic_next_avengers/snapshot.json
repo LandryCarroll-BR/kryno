@@ -1,0 +1,399 @@
+{
+  "version": "8",
+  "dialect": "postgres",
+  "id": "9dc91b29-a47e-4e4d-8ef1-6f7303c6ffdd",
+  "prevIds": [
+    "7951470e-bade-41c1-91e5-f1b1a0bb3ba5"
+  ],
+  "ddl": [
+    {
+      "isRlsEnabled": false,
+      "name": "gym_areas",
+      "entityType": "tables",
+      "schema": "gym"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_memberships",
+      "entityType": "tables",
+      "schema": "gym"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_routes",
+      "entityType": "tables",
+      "schema": "gym"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gyms",
+      "entityType": "tables",
+      "schema": "gym"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_areas"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "gym_id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_areas"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_areas"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "gym_id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "member_id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "joined_at",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_routes"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "area_id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_routes"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "order",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_routes"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "position_label",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_routes"
+    },
+    {
+      "type": "date",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "set_on",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_routes"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "setter_name",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_routes"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "boulder_id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gym_routes"
+    },
+    {
+      "type": "char(24)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gyms"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "gym",
+      "table": "gyms"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "gym_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "lower(\"name\")",
+          "isExpression": true,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "gym_areas_gym_id_lower_name_unique",
+      "entityType": "indexes",
+      "schema": "gym",
+      "table": "gym_areas"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "member_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "gym_memberships_member_id_index",
+      "entityType": "indexes",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "area_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "order",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "gym_routes_area_id_order_unique",
+      "entityType": "indexes",
+      "schema": "gym",
+      "table": "gym_routes"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "gym_id"
+      ],
+      "schemaTo": "gym",
+      "tableTo": "gyms",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "gym_areas_gym_id_gyms_id_fkey",
+      "entityType": "fks",
+      "schema": "gym",
+      "table": "gym_areas"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "gym_id"
+      ],
+      "schemaTo": "gym",
+      "tableTo": "gyms",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "gym_memberships_gym_id_gyms_id_fkey",
+      "entityType": "fks",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "area_id"
+      ],
+      "schemaTo": "gym",
+      "tableTo": "gym_areas",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "gym_routes_area_id_gym_areas_id_fkey",
+      "entityType": "fks",
+      "schema": "gym",
+      "table": "gym_routes"
+    },
+    {
+      "columns": [
+        "gym_id",
+        "member_id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_memberships_pkey",
+      "entityType": "pks",
+      "schema": "gym",
+      "table": "gym_memberships"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_areas_pkey",
+      "schema": "gym",
+      "table": "gym_areas",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_routes_pkey",
+      "schema": "gym",
+      "table": "gym_routes",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "gyms_pkey",
+      "schema": "gym",
+      "table": "gyms",
+      "entityType": "pks"
+    }
+  ],
+  "renames": []
+}

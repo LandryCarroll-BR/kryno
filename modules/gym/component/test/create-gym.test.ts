@@ -54,9 +54,9 @@ describe("Gym.createGym", () => {
         })
       )
 
-      expect(Predicate.isTagged(error, "UnauthenticatedGymCreatorError")).toBe(
-        true
-      )
+      expect(
+        Predicate.isTagged(error, "UnauthenticatedGymAdministratorError")
+      ).toBe(true)
 
       const created = yield* gym.createGym({
         token: "admin-token",
@@ -76,9 +76,9 @@ describe("Gym.createGym", () => {
         })
       )
 
-      expect(Predicate.isTagged(error, "UnauthorizedGymCreatorError")).toBe(
-        true
-      )
+      expect(
+        Predicate.isTagged(error, "UnauthorizedGymAdministratorError")
+      ).toBe(true)
 
       const created = yield* gym.createGym({
         token: "admin-token",

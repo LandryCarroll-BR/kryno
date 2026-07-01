@@ -17,6 +17,7 @@
     "./use-cases/*": "./src/use-cases/*.use-case.ts"
   },
   "dependencies": {
+    "@climbing/application": "workspace:*",
     "effect": "4.0.0-beta.70"
   },
   "devDependencies": {
