@@ -34,7 +34,7 @@ export function StartClimbingSessionView({
 
   if (state.status === "success") {
     return (
-      <Card className="w-[min(28rem,calc(100vw-2rem))]">
+      <Card>
         <CardHeader>
           <CardTitle>Session started</CardTitle>
           <CardDescription>{state.message}</CardDescription>

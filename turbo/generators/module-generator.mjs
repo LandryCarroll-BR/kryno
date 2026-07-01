@@ -20,9 +20,22 @@ const PLACEHOLDER_DIRECTORIES = {
     "src/services",
     "src/use-cases",
   ],
-  infrastructure: ["src/repositories", "src/services", "test/repositories"],
+  infrastructure: [
+    "migrations",
+    "src/repositories",
+    "src/services",
+    "test/repositories",
+    "test/services",
+  ],
   component: [],
-  "adapters/next": ["src/controllers", "src/presenters"],
+  "adapters/next": [
+    "src/controllers",
+    "src/factories",
+    "src/models",
+    "src/presenters",
+    "src/utils",
+    "src/view-models",
+  ],
 }
 
 const json = (value) => `${JSON.stringify(value, null, 2)}\n`
@@ -128,12 +141,18 @@ const packageJson = (name, packageName) => {
   if (packageName === "application") {
     common.exports = {
       ...common.exports,
-      "./errors/*": "./src/errors/*",
-      "./factories/*": "./src/factories/*",
-      "./models/*": "./src/models/*",
-      "./repositories/*": "./src/repositories/*",
-      "./services/*": "./src/services/*",
-      "./use-cases/*": "./src/use-cases/*",
+      "./errors/*": "./src/errors/*.errors.ts",
+      "./factories/*": "./src/factories/*.factory.ts",
+      "./models/*": "./src/models/*.models.ts",
+      "./repositories/*": "./src/repositories/*.repository.ts",
+      "./services/*": "./src/services/*.service.ts",
+      "./use-cases/*": "./src/use-cases/*.use-case.ts",
+    }
+  } else if (packageName === "adapters-next") {
+    common.exports = {
+      ...common.exports,
+      "./view-models": "./src/view-models/index.ts",
+      "./test": "./test/index.ts",
     }
   } else {
     common.exports = {
@@ -201,7 +220,6 @@ const packageJson = (name, packageName) => {
       effect: EFFECT_VERSION,
       [`@${name}/application`]: "workspace:*",
       [`@${name}/component`]: "workspace:*",
-      [`@${name}/infrastructure`]: "workspace:*",
       "@packages/effect-next": "workspace:*",
     },
     devDependencies,
@@ -317,9 +335,117 @@ export const ${service}ContextLive = ${service}Live.pipe(
 `
 }
 
-const infrastructureIndex = (name) => {
-  const service = `${pascalCase(name)}DB`
-  return `export { ${service}, ${service}ContextLive } from "./db/context"\n`
+const applicationIndex = `import { Layer } from "effect"
+
+export const ApplicationLayer = Layer.empty
+`
+
+const infrastructureIndex = `import { Layer } from "effect"
+
+export const InfrastructureLayer = Layer.empty
+`
+
+const infrastructureTestIndex = `import { Layer } from "effect"
+
+export const InfrastructureTestLayer = Layer.empty
+`
+
+const componentIndex = (name) => {
+  const module = pascalCase(name)
+
+  return `import { Layer } from "effect"
+import { Service } from "effect/Context"
+import { ApplicationLayer } from "@${name}/application"
+import { InfrastructureLayer } from "@${name}/infrastructure"
+
+export class ${module} extends Service<
+  ${module},
+  Record<never, never>
+>()("@${name}/component/${module}") {
+  static Live = Layer.succeed(${module}, {})
+}
+
+const ComponentLayer = Layer.provideMerge(ApplicationLayer, InfrastructureLayer)
+
+export const ${module}Layer = ${module}.Live.pipe(Layer.provide(ComponentLayer))
+`
+}
+
+const componentTestIndex = (name) => {
+  const module = pascalCase(name)
+
+  return `import { Layer } from "effect"
+import { ApplicationLayer } from "@${name}/application"
+import { InfrastructureTestLayer } from "@${name}/infrastructure/test"
+
+import { ${module} } from "../src/index"
+
+const ComponentTestLayer = Layer.provideMerge(
+  ApplicationLayer,
+  InfrastructureTestLayer
+)
+
+export const ${module}TestLayer = ${module}.Live.pipe(
+  Layer.provide(ComponentTestLayer)
+)
+`
+}
+
+const adapterIndex = (name) => {
+  const module = pascalCase(name)
+
+  return `import { Layer, ManagedRuntime } from "effect"
+import { ${module}Layer } from "@${name}/component"
+
+export const PresenterLayer = Layer.empty
+
+export const AdapterLayer = Layer.mergeAll(${module}Layer, PresenterLayer)
+
+export const ${module}AdapterRuntime = ManagedRuntime.make(AdapterLayer)
+`
+}
+
+const adapterTestIndex = (name) => {
+  const module = pascalCase(name)
+
+  return `import { Layer, ManagedRuntime } from "effect"
+import { ${module}TestLayer } from "@${name}/component/test"
+
+import { PresenterLayer } from "../src/index"
+
+export const AdapterTestLayer = Layer.mergeAll(
+  ${module}TestLayer,
+  PresenterLayer
+)
+
+export const ${module}AdapterTestRuntime = ManagedRuntime.make(AdapterTestLayer)
+`
+}
+
+const sourceIndex = (name, packagePath) => {
+  switch (packagePath) {
+    case "application":
+      return applicationIndex
+    case "infrastructure":
+      return infrastructureIndex
+    case "component":
+      return componentIndex(name)
+    case "adapters/next":
+      return adapterIndex(name)
+  }
+}
+
+const testIndex = (name, packagePath) => {
+  switch (packagePath) {
+    case "infrastructure":
+      return infrastructureTestIndex
+    case "component":
+      return componentTestIndex(name)
+    case "adapters/next":
+      return adapterTestIndex(name)
+    default:
+      return ""
+  }
 }
 
 export function validateModuleName(name, root = process.cwd()) {
@@ -376,15 +502,18 @@ export function scaffoldModule({
       writeFileSync(join(packageRoot, directory, ".gitkeep"), "")
     }
 
-    const hasTestEntrypoint = packagePath !== "application"
-
     writeFileSync(
       join(packageRoot, "src", "index.ts"),
-      packagePath === "infrastructure" ? infrastructureIndex(name) : ""
+      sourceIndex(name, packagePath)
     )
+    const packageTestIndex = testIndex(name, packagePath)
     writeFileSync(
-      join(packageRoot, "test", hasTestEntrypoint ? "index.ts" : ".gitkeep"),
-      hasTestEntrypoint ? "export {}\n" : ""
+      join(
+        packageRoot,
+        "test",
+        packageTestIndex.length > 0 ? "index.ts" : ".gitkeep"
+      ),
+      packageTestIndex
     )
     writeFileSync(
       join(packageRoot, "package.json"),
@@ -403,6 +532,10 @@ export function scaffoldModule({
         `${envPrefix(name)}_DATABASE_URL=postgres://${databaseName(name)}_role:${databaseName(name)}_local@localhost:5432/kryno\n`
       )
       writeFileSync(
+        join(packageRoot, ".env.example"),
+        `${envPrefix(name)}_DATABASE_URL=postgres://${databaseName(name)}_role:${databaseName(name)}_local@localhost:5432/kryno\n`
+      )
+      writeFileSync(
         join(packageRoot, "src", "db", "context.ts"),
         databaseContext(name)
       )
@@ -413,6 +546,11 @@ export function scaffoldModule({
       writeFileSync(
         join(packageRoot, "src", "schemas", "relations.schema.ts"),
         relations
+      )
+    } else if (packagePath === "adapters/next") {
+      writeFileSync(
+        join(packageRoot, "src", "view-models", "index.ts"),
+        "export {}\n"
       )
     }
   }
@@ -426,7 +564,7 @@ export function scaffoldModule({
 
 export function registerModuleGenerator(plop, root = process.cwd()) {
   plop.setGenerator("module", {
-    description: "Scaffold a blank auth-shaped module",
+    description: "Scaffold a blank module-architecture workspace family",
     prompts: [
       {
         type: "input",

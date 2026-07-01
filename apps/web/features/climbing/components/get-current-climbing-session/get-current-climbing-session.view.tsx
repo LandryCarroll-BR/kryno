@@ -7,7 +7,8 @@ import type { StartClimbingSessionViewModel } from "@climbing/adapters-next/view
 import { EndClimbingSessionView } from "../end-climbing-session/end-climbing-session.view"
 import { StartClimbingSessionView } from "../start-climbing-session/start-climbing-session.view"
 
-type GetCurrentClimbingSessionQuery = () => Promise<GetCurrentClimbingSessionViewModel>
+type GetCurrentClimbingSessionQuery =
+  () => Promise<GetCurrentClimbingSessionViewModel>
 
 type StartClimbingSessionAction = (
   previousState: StartClimbingSessionViewModel,

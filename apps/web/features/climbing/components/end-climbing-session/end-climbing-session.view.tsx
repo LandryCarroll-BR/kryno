@@ -44,7 +44,8 @@ export function EndClimbingSessionView({
         </CardHeader>
         <CardContent>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            {state.fields.endedAt.label} {formatDate(state.fields.endedAt.value)}
+            {state.fields.endedAt.label}{" "}
+            {formatDate(state.fields.endedAt.value)}
           </p>
         </CardContent>
       </Card>
@@ -52,7 +53,7 @@ export function EndClimbingSessionView({
   }
 
   return (
-    <Card className="w-[min(28rem,calc(100vw-2rem))]">
+    <Card>
       <CardHeader>
         <CardTitle>Active session</CardTitle>
         <CardDescription>{session.message}</CardDescription>
