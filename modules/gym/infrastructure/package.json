@@ -1,0 +1,31 @@
+{
+  "name": "@gym/infrastructure",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate --config drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config drizzle.config.ts",
+    "db:studio": "drizzle-kit studio --config drizzle.config.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./test": "./test/index.ts"
+  },
+  "dependencies": {
+    "effect": "4.0.0-beta.70",
+    "drizzle-orm": "1.0.0-rc.4-5d5b77c",
+    "@gym/application": "workspace:*",
+    "@packages/effect-drizzle": "workspace:*"
+  },
+  "devDependencies": {
+    "@effect/vitest": "4.0.0-beta.70",
+    "@packages/tsconfig": "workspace:*",
+    "@types/node": "^25.1.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15",
+    "drizzle-kit": "1.0.0-rc.4-5d5b77c"
+  }
+}

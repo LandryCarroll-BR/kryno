@@ -1,0 +1,3 @@
+CREATE ROLE gym_role LOGIN PASSWORD 'gym_local';
+
+GRANT CONNECT, CREATE ON DATABASE kryno TO gym_role;

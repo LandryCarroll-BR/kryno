@@ -46,7 +46,7 @@ importers:
         version: 4.0.0-beta.70
       next:
         specifier: 16.2.9
-        version: 16.2.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.2.9(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -290,6 +290,121 @@ importers:
         specifier: workspace:*
         version: link:../../auth/component
       '@climbing/application':
+        specifier: workspace:*
+        version: link:../application
+      '@packages/effect-drizzle':
+        specifier: workspace:*
+        version: link:../../../packages/effect-drizzle
+      drizzle-orm:
+        specifier: 1.0.0-rc.4-5d5b77c
+        version: 1.0.0-rc.4-5d5b77c(@effect/sql-pg@4.0.0-beta.70(effect@4.0.0-beta.70))(@types/pg@8.20.0)(effect@4.0.0-beta.70)(pg@8.22.0)(zod@3.25.76)
+      effect:
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70
+    devDependencies:
+      '@effect/vitest':
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70(effect@4.0.0-beta.70)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))
+      '@packages/tsconfig':
+        specifier: workspace:*
+        version: link:../../../packages/tsconfig
+      '@types/node':
+        specifier: ^25.1.0
+        version: 25.9.1
+      drizzle-kit:
+        specifier: 1.0.0-rc.4-5d5b77c
+        version: 1.0.0-rc.4-5d5b77c
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.15
+        version: 4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
+
+  modules/gym/adapters/next:
+    dependencies:
+      '@gym/application':
+        specifier: workspace:*
+        version: link:../../application
+      '@gym/component':
+        specifier: workspace:*
+        version: link:../../component
+      '@packages/effect-next':
+        specifier: workspace:*
+        version: link:../../../../packages/effect-next
+      effect:
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70
+    devDependencies:
+      '@effect/vitest':
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70(effect@4.0.0-beta.70)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))
+      '@packages/tsconfig':
+        specifier: workspace:*
+        version: link:../../../../packages/tsconfig
+      '@types/node':
+        specifier: ^25.1.0
+        version: 25.9.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.15
+        version: 4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
+
+  modules/gym/application:
+    dependencies:
+      effect:
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70
+    devDependencies:
+      '@effect/vitest':
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70(effect@4.0.0-beta.70)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))
+      '@packages/tsconfig':
+        specifier: workspace:*
+        version: link:../../../packages/tsconfig
+      '@types/node':
+        specifier: ^25.1.0
+        version: 25.9.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.15
+        version: 4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
+
+  modules/gym/component:
+    dependencies:
+      '@gym/application':
+        specifier: workspace:*
+        version: link:../application
+      '@gym/infrastructure':
+        specifier: workspace:*
+        version: link:../infrastructure
+      effect:
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70
+    devDependencies:
+      '@effect/vitest':
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70(effect@4.0.0-beta.70)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))
+      '@packages/tsconfig':
+        specifier: workspace:*
+        version: link:../../../packages/tsconfig
+      '@types/node':
+        specifier: ^25.1.0
+        version: 25.9.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.15
+        version: 4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
+
+  modules/gym/infrastructure:
+    dependencies:
+      '@gym/application':
         specifier: workspace:*
         version: link:../application
       '@packages/effect-drizzle':
@@ -8680,7 +8795,7 @@ snapshots:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  next@16.2.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  next@16.2.9(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@next/env': 16.2.9
       '@swc/helpers': 0.5.15
@@ -8689,7 +8804,7 @@ snapshots:
       postcss: 8.4.31
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
-      styled-jsx: 5.1.6(react@19.2.4)
+      styled-jsx: 5.1.6(@babel/core@7.29.7)(react@19.2.4)
     optionalDependencies:
       '@next/swc-darwin-arm64': 16.2.9
       '@next/swc-darwin-x64': 16.2.9
@@ -9573,10 +9688,12 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  styled-jsx@5.1.6(react@19.2.4):
+  styled-jsx@5.1.6(@babel/core@7.29.7)(react@19.2.4):
     dependencies:
       client-only: 0.0.1
       react: 19.2.4
+    optionalDependencies:
+      '@babel/core': 7.29.7
 
   styled-jsx@5.1.6(react@19.2.7):
     dependencies:

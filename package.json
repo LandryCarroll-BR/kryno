@@ -15,6 +15,9 @@
     "db:climbing:generate": "pnpm --filter @climbing/infrastructure run db:generate",
     "db:climbing:migrate": "pnpm --filter @climbing/infrastructure run db:migrate",
     "db:climbing:studio": "pnpm --filter @climbing/infrastructure run db:studio",
+    "db:gym:generate": "pnpm --filter @gym/infrastructure run db:generate",
+    "db:gym:migrate": "pnpm --filter @gym/infrastructure run db:migrate",
+    "db:gym:studio": "pnpm --filter @gym/infrastructure run db:studio",
     "format": "turbo format",
     "prepare": "effect-language-service patch",
     "typecheck": "turbo typecheck"
