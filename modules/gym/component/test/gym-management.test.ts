@@ -72,7 +72,7 @@ describe("Gym management", () => {
     }).pipe(Effect.provide(GymTestLayer))
   )
 
-  it.effect("creates assigned and unassigned routes ordered within an area", () =>
+  it.effect("creates uniquely assigned routes ordered within an area", () =>
     Effect.gen(function* () {
       const gym = yield* Gym
       const createdGym = yield* createGym(gym)
@@ -100,12 +100,12 @@ describe("Gym management", () => {
         positionLabel: null,
         setOn: GymRouteSetDate.make("2026-06-30"),
         setterName: "",
-        boulderId: "",
+        boulderId: BoulderId.make("admin-boulder-2"),
       })
 
       expect(second.id).toBe("route-1")
       expect(Option.getOrNull(second.positionLabel)).toBe("Right")
-      expect(Option.getOrNull(second.boulderId)).toBe("admin-boulder-1")
+      expect(second.boulderId).toBe("admin-boulder-1")
 
       const management = yield* gym.getGymManagement({
         token: "admin-token",
@@ -114,13 +114,11 @@ describe("Gym management", () => {
       expect(management.areas[0]?.routes.map(({ order }) => order)).toEqual([
         1, 2,
       ])
-      expect(
-        Option.isNone(management.areas[0]!.routes[0]!.boulderId)
-      ).toBe(true)
+      expect(management.assignableBoulders).toEqual([])
     }).pipe(Effect.provide(GymTestLayer))
   )
 
-  it.effect("rejects duplicate route order and unowned boulders", () =>
+  it.effect("rejects duplicate route order, reused boulders, and unowned boulders", () =>
     Effect.gen(function* () {
       const gym = yield* Gym
       const createdGym = yield* createGym(gym)
@@ -137,13 +135,31 @@ describe("Gym management", () => {
         positionLabel: null,
         setOn: GymRouteSetDate.make("2026-06-30"),
         setterName: null,
-        boulderId: null,
+        boulderId: BoulderId.make("admin-boulder-1"),
       }
       yield* gym.createGymRoute(baseInput)
 
-      const duplicate = yield* Effect.flip(gym.createGymRoute(baseInput))
+      const duplicate = yield* Effect.flip(
+        gym.createGymRoute({
+          ...baseInput,
+          boulderId: BoulderId.make("admin-boulder-2"),
+        })
+      )
       expect(
         Predicate.isTagged(duplicate, "GymRouteOrderAlreadyExistsError")
+      ).toBe(true)
+
+      const reusedBoulder = yield* Effect.flip(
+        gym.createGymRoute({
+          ...baseInput,
+          order: GymRouteOrder.make(2),
+        })
+      )
+      expect(
+        Predicate.isTagged(
+          reusedBoulder,
+          "GymRouteBoulderAlreadyAssignedError"
+        )
       ).toBe(true)
 
       const unowned = yield* Effect.flip(
@@ -191,7 +207,7 @@ describe("Gym management", () => {
           positionLabel: null,
           setOn: GymRouteSetDate.make("2026-06-30"),
           setterName: null,
-          boulderId: null,
+          boulderId: BoulderId.make("admin-boulder-1"),
         })
       )
       expect(

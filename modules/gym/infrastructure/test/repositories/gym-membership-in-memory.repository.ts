@@ -1,5 +1,5 @@
 import { Effect, Layer, Option, Ref } from "effect"
-import type {
+import {
   GymMembership,
 } from "@gym/application/models/gym-membership"
 import { GymMembershipRepository } from "@gym/application/repositories/gym-membership"
@@ -22,6 +22,23 @@ export const GymMembershipInMemoryRepository = Layer.effect(
           )
         }
       ),
+
+      findByGymIdAndMemberId: Effect.fn(
+        "GymMembershipRepository.findByGymIdAndMemberId"
+      )(function* (gymId, memberId) {
+        const memberships = yield* Ref.get(store)
+        return Option.fromNullishOr(
+          memberships.get(
+            membershipKey(
+              GymMembership.make({
+                gymId,
+                memberId,
+                joinedAt: new Date(0),
+              })
+            )
+          )
+        )
+      }),
 
       insert: Effect.fn("GymMembershipRepository.insert")(
         function* (membership) {

@@ -19,3 +19,10 @@ export class GymMembershipAlreadyExistsError extends Data.TaggedError(
   readonly gymId: GymId
   readonly memberId: GymMemberId
 }> {}
+
+export class GymMembershipRequiredError extends Data.TaggedError(
+  "GymMembershipRequiredError"
+)<{
+  readonly gymId: GymId
+  readonly memberId: GymMemberId
+}> {}

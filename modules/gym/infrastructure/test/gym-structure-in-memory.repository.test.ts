@@ -2,6 +2,7 @@ import { describe, expect, it } from "@effect/vitest"
 import { Effect, Option } from "effect"
 import { GymArea, GymAreaId, GymAreaName } from "@gym/application/models/gym-area"
 import {
+  BoulderId,
   GymRoute,
   GymRouteId,
   GymRouteOrder,
@@ -61,7 +62,7 @@ describe("Gym structure in-memory repositories", () => {
           positionLabel: Option.none(),
           setOn: GymRouteSetDate.make("2026-06-30"),
           setterName: Option.none(),
-          boulderId: Option.none(),
+          boulderId: BoulderId.make(`boulder-${id}`),
         })
 
       yield* repository.insert(makeRoute("route-2", 2))

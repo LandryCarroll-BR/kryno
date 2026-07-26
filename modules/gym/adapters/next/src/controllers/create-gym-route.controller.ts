@@ -52,6 +52,8 @@ export const CreateGymRouteController = Effect.fn(
           presenter.presentConflict(previousState),
         GymRouteBoulderNotAssignableError: () =>
           presenter.presentBoulderNotAssignable(previousState),
+        GymRouteBoulderAlreadyAssignedError: () =>
+          presenter.presentBoulderAlreadyAssigned(previousState),
       }),
       Effect.catchDefect(() =>
         presenter.presentUnexpectedError(previousState)

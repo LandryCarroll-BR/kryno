@@ -64,5 +64,5 @@ export class GymRoute extends Schema.Class<GymRoute>("GymRoute")({
   positionLabel: Schema.OptionFromNullOr(GymRoutePositionLabel),
   setOn: GymRouteSetDate,
   setterName: Schema.OptionFromNullOr(GymRouteSetterName),
-  boulderId: Schema.OptionFromNullOr(BoulderId),
+  boulderId: BoulderId,
 }) {}

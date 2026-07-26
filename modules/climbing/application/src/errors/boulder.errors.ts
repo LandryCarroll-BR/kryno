@@ -10,6 +10,12 @@ export class SavedBoulderNotFoundError extends Data.TaggedError(
   readonly boulderId: BoulderId
 }> {}
 
+export class BoulderNotFoundError extends Data.TaggedError(
+  "BoulderNotFoundError"
+)<{
+  readonly boulderId: BoulderId
+}> {}
+
 export class CreatedBoulderNotFoundError extends Data.TaggedError(
   "CreatedBoulderNotFoundError"
 )<{

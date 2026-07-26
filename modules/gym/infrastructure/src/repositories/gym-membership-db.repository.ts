@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm"
+import { and, asc, eq } from "drizzle-orm"
 import { Effect, Layer, Option, Schema } from "effect"
 import { GymMembership } from "@gym/application/models/gym-membership"
 import { GymMembershipRepository } from "@gym/application/repositories/gym-membership"
@@ -33,6 +33,26 @@ export const GymMembershipDBRepository = Layer.effect(
           return memberships.map(toGymMembership)
         }
       ),
+
+      findByGymIdAndMemberId: Effect.fn(
+        "GymMembershipRepository.findByGymIdAndMemberId"
+      )(function* (gymId, memberId) {
+        const [membership] = yield* db
+          .select()
+          .from(gymMembershipsTable)
+          .where(
+            and(
+              eq(gymMembershipsTable.gymId, gymId),
+              eq(gymMembershipsTable.memberId, memberId)
+            )
+          )
+          .limit(1)
+          .pipe(Effect.orDie)
+
+        return Option.fromNullishOr(membership).pipe(
+          Option.map(toGymMembership)
+        )
+      }),
 
       insert: Effect.fn("GymMembershipRepository.insert")(
         function* (membership) {

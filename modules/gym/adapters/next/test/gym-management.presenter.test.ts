@@ -84,13 +84,12 @@ describe("Gym management presenters", () => {
                 positionLabel: Option.none(),
                 setOn: GymRouteSetDate.make("2026-06-30"),
                 setterName: Option.none(),
-                boulderId: Option.some(
-                  BoulderId.make("deleted-boulder")
-                ),
+                boulderId: BoulderId.make("deleted-boulder"),
               }),
             ],
           },
         ],
+        boulders: [],
         assignableBoulders: [],
       })
 

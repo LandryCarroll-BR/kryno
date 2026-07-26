@@ -33,7 +33,7 @@ export const createGymRouteInitialViewModel = {
     positionLabel: { label: "Position label (optional)", value: "" },
     setOn: { label: "Set on", value: "" },
     setterName: { label: "Setter name (optional)", value: "" },
-    boulderId: { label: "Boulder (optional)", value: "" },
+    boulderId: { label: "Boulder", value: "" },
   },
   errors: {
     gymId: "",

@@ -23,12 +23,30 @@ export const GymRouteInMemoryRepository = Layer.effect(
         }
       ),
 
+      findByBoulderIds: Effect.fn("GymRouteRepository.findByBoulderIds")(
+        function* (boulderIds) {
+          const routes = yield* Ref.get(store)
+          const included = new Set(boulderIds)
+          return [...routes.values()]
+            .filter((route) => included.has(route.boulderId))
+            .sort((left, right) => left.id.localeCompare(right.id))
+        }
+      ),
+
+      findById: Effect.fn("GymRouteRepository.findById")(
+        function* (routeId) {
+          const routes = yield* Ref.get(store)
+          return Option.fromNullishOr(routes.get(routeId))
+        }
+      ),
+
       insert: Effect.fn("GymRouteRepository.insert")(function* (route) {
         return yield* Ref.modify(store, (routes) => {
           const duplicate = [...routes.values()].some(
             (candidate) =>
               candidate.areaId === route.areaId &&
-              candidate.order === route.order
+                candidate.order === route.order ||
+              candidate.boulderId === route.boulderId
           )
 
           if (duplicate) {

@@ -77,6 +77,14 @@ export async function ListGymsView({
                       Manage
                     </Link>
                   )}
+                  {gym.isMember && (
+                    <Link
+                      href={`/gyms/${gym.id}`}
+                      className={buttonVariants({ variant: "outline" })}
+                    >
+                      View routes
+                    </Link>
+                  )}
                   <JoinGymView
                     action={joinAction}
                     gymId={gym.id}

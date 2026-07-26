@@ -21,6 +21,7 @@ export async function joinGym(
 
   if (result.status === "success") {
     revalidatePath("/gyms")
+    revalidatePath(`/gyms/${result.fields.gymId.value}`)
   }
 
   return result

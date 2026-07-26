@@ -26,3 +26,15 @@ export {
   type GymListItemViewModel,
   type ListGymsViewModel,
 } from "./list-gyms.view-model"
+export {
+  getGymRoutesInitialViewModel,
+  type GetGymRoutesViewModel,
+  type GymRouteBoulderViewModel,
+  type MemberGymAreaViewModel,
+  type MemberGymRouteViewModel,
+} from "./get-gym-routes.view-model"
+export {
+  gymAttemptOutcomeOptions,
+  logGymRouteAttemptInitialViewModel,
+  type LogGymRouteAttemptViewModel,
+} from "./log-gym-route-attempt.view-model"

@@ -35,6 +35,7 @@ export type ManagedGymArea = {
 export type GetGymManagementOutput = {
   readonly gym: Gym
   readonly areas: readonly ManagedGymArea[]
+  readonly boulders: readonly AssignableGymBoulder[]
   readonly assignableBoulders: readonly AssignableGymBoulder[]
 }
 
@@ -80,12 +81,18 @@ export class GetGymManagementUseCase extends Service<
             const areas = yield* areaRepository.findByGymId(
               parsedInput.gymId
             )
-            const [routes, assignableBoulders] = yield* Effect.all([
+            const [routes, boulders] = yield* Effect.all([
               routeRepository.findByAreaIds(
                 areas.map(({ id }) => id)
               ),
               boulderCatalog.listOwned(parsedInput.token),
             ])
+            const assignedRoutes = yield* routeRepository.findByBoulderIds(
+              boulders.map(({ id }) => id)
+            )
+            const assignedBoulderIds = new Set(
+              assignedRoutes.map(({ boulderId }) => boulderId)
+            )
 
             return {
               gym: gym.value,
@@ -95,7 +102,10 @@ export class GetGymManagementUseCase extends Service<
                   ({ areaId }) => areaId === area.id
                 ),
               })),
-              assignableBoulders,
+              boulders,
+              assignableBoulders: boulders.filter(
+                ({ id }) => !assignedBoulderIds.has(id)
+              ),
             }
           }
         ),

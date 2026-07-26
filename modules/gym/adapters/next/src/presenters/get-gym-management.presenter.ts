@@ -21,13 +21,16 @@ export class GetGymManagementPresenter extends Service<
   }
 >()("@gym/adapters/next/GetGymManagementPresenter") {
   static Live = Layer.succeed(GetGymManagementPresenter, {
-    presentSuccess: ({ gym, areas, assignableBoulders }) => {
-      const boulders = assignableBoulders.map((boulder) => ({
+    presentSuccess: ({ gym, areas, boulders, assignableBoulders }) => {
+      const boulderOptions = assignableBoulders.map((boulder) => ({
         value: boulder.id,
         label: `${boulder.name} (${boulder.grade})`,
       }))
       const labelsById = new Map(
-        boulders.map(({ label, value }) => [value, label])
+        boulders.map(({ id, name, grade }) => [
+          id,
+          `${name} (${grade})`,
+        ])
       )
 
       return Effect.succeed({
@@ -53,23 +56,19 @@ export class GetGymManagementPresenter extends Service<
                 positionLabel: Option.getOrNull(route.positionLabel),
                 setOn: route.setOn,
                 setterName: Option.getOrNull(route.setterName),
-                boulder: Option.match(route.boulderId, {
-                  onNone: () => null,
-                  onSome: (id) => {
-                    const label = labelsById.get(id)
-                    return {
-                      id,
-                      label: label ?? `Unavailable boulder (${id})`,
-                      available: label !== undefined,
-                    }
-                  },
-                }),
+                boulder: {
+                  id: route.boulderId,
+                  label:
+                    labelsById.get(route.boulderId) ??
+                    `Unavailable boulder (${route.boulderId})`,
+                  available: labelsById.has(route.boulderId),
+                },
               })),
             })),
           },
           boulders: {
             ...getGymManagementInitialViewModel.fields.boulders,
-            value: boulders,
+            value: boulderOptions,
           },
         },
       })

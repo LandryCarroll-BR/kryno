@@ -142,11 +142,15 @@ export function CreateGymRouteView({
             id={`${prefix}-boulder`}
             name="boulderId"
             className="w-full"
-            disabled={pending}
+            disabled={pending || boulders.length === 0}
             defaultValue={state.fields.boulderId.value}
             aria-invalid={Boolean(state.errors.boulderId)}
           >
-            <NativeSelectOption value="">Unassigned</NativeSelectOption>
+            <NativeSelectOption value="">
+              {boulders.length === 0
+                ? "No unassigned boulders available"
+                : "Select a boulder"}
+            </NativeSelectOption>
             {boulders.map((boulder) => (
               <NativeSelectOption key={boulder.value} value={boulder.value}>
                 {boulder.label}
@@ -156,7 +160,7 @@ export function CreateGymRouteView({
           <FieldError>{state.errors.boulderId}</FieldError>
         </Field>
         <Field>
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" disabled={pending || boulders.length === 0}>
             {pending ? "Creating route..." : "Create route"}
           </Button>
         </Field>

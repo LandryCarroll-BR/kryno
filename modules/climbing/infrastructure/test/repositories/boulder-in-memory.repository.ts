@@ -48,6 +48,21 @@ export const BoulderInMemoryRepository = Layer.effect(
         return Option.fromNullishOr(boulders.get(boulderId))
       }),
 
+      findByIds: Effect.fn("BoulderRepository.findByIds")(
+        function* (boulderIds) {
+          const boulders = yield* Ref.get(store)
+          const included = new Set(boulderIds)
+
+          return [...boulders.values()]
+            .filter((boulder) => included.has(boulder.id))
+            .sort(
+              (left, right) =>
+                left.name.localeCompare(right.name) ||
+                left.id.localeCompare(right.id)
+            )
+        }
+      ),
+
       findSavedById: Effect.fn("BoulderRepository.findSavedById")(
         function* (climberId, boulderId) {
           const boulders = yield* Ref.get(store)

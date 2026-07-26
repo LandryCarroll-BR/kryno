@@ -1,19 +1,18 @@
-import { DateTime, Effect, Layer, Option, Schema } from "effect"
+import { Effect, Layer, Option, Schema } from "effect"
 import { Service } from "effect/Context"
 import type { SchemaError } from "effect/Schema"
 
 import { SavedBoulderNotFoundError } from "../errors/boulder.errors"
 import type { UnauthenticatedClimberError } from "../errors/climber.errors"
-import { NoActiveClimbingSessionError } from "../errors/climbing-session.errors"
+import type { NoActiveClimbingSessionError } from "../errors/climbing-session.errors"
+import { ClimbingAttemptRecorder } from "../factories/climbing-attempt-recorder.factory"
 import { BoulderId } from "../models/boulder.models"
 import {
-  ClimbingAttempt,
+  type ClimbingAttempt,
   ClimbingAttemptOutcome,
 } from "../models/climbing-attempt.models"
 import { BoulderRepository } from "../repositories/boulder.repository"
-import { ClimbingSessionRepository } from "../repositories/climbing-session.repository"
 import { AuthenticatedClimber } from "../services/authenticated-climber.service"
-import { ClimbingAttemptIdService } from "../services/climbing-attempt-id.service"
 
 export const LogBoulderAttemptInputSchema = Schema.Struct({
   token: Schema.NonEmptyString,
@@ -42,9 +41,8 @@ export class LogBoulderAttemptUseCase extends Service<
     LogBoulderAttemptUseCase,
     Effect.gen(function* () {
       const authenticatedClimber = yield* AuthenticatedClimber
-      const attemptIdService = yield* ClimbingAttemptIdService
       const boulderRepository = yield* BoulderRepository
-      const sessionRepository = yield* ClimbingSessionRepository
+      const attemptRecorder = yield* ClimbingAttemptRecorder
 
       return {
         execute: Effect.fn("LogBoulderAttemptUseCase.execute")(
@@ -68,22 +66,10 @@ export class LogBoulderAttemptUseCase extends Service<
               })
             }
 
-            const id = yield* attemptIdService.generate()
-            const occurredAt = yield* DateTime.nowAsDate
-            const loggedAttempt =
-              yield* sessionRepository.insertAttemptIntoActiveSession({
-                climberId,
-                id,
-                boulderId: parsedInput.boulderId,
-                outcome: parsedInput.outcome,
-                occurredAt,
-              })
-
-            return yield* Option.match(loggedAttempt, {
-              onNone: () =>
-                Effect.fail(new NoActiveClimbingSessionError({ climberId })),
-              onSome: (attempt) =>
-                Effect.succeed(ClimbingAttempt.make(attempt)),
+            return yield* attemptRecorder.record({
+              climberId,
+              boulderId: parsedInput.boulderId,
+              outcome: parsedInput.outcome,
             })
           }
         ),

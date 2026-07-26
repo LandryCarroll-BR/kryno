@@ -1,4 +1,4 @@
-import { and, asc, desc, eq } from "drizzle-orm"
+import { and, asc, desc, eq, inArray } from "drizzle-orm"
 import { Effect, Layer, Option, Schema } from "effect"
 
 import { Boulder } from "@climbing/application/models/boulder"
@@ -65,6 +65,23 @@ export const BoulderDBRepository = Layer.effect(
             .pipe(Effect.orDie)
 
           return Option.fromNullishOr(boulder).pipe(Option.map(toBoulder))
+        }
+      ),
+
+      findByIds: Effect.fn("BoulderRepository.findByIds")(
+        function* (boulderIds) {
+          if (boulderIds.length === 0) {
+            return []
+          }
+
+          const boulders = yield* db
+            .select()
+            .from(bouldersTable)
+            .where(inArray(bouldersTable.id, [...boulderIds]))
+            .orderBy(asc(bouldersTable.name), asc(bouldersTable.id))
+            .pipe(Effect.orDie)
+
+          return boulders.map(toBoulder)
         }
       ),
 

@@ -5,6 +5,7 @@ import { BoulderId } from "@climbing/application/models/boulder"
 
 import { GymAreaNotFoundError } from "../errors/gym-area.errors"
 import {
+  GymRouteBoulderAlreadyAssignedError,
   GymRouteBoulderNotAssignableError,
   GymRouteOrderAlreadyExistsError,
 } from "../errors/gym-route.errors"
@@ -45,10 +46,6 @@ const GymRouteOrderInput = Schema.Union([
 ])
 
 const OptionalTrimmedString = Schema.NullOr(Schema.Trim)
-const OptionalBoulderId = Schema.NullOr(
-  Schema.Union([Schema.Literal(""), BoulderId])
-)
-
 export const CreateGymRouteInputSchema = Schema.Struct({
   token: Schema.NonEmptyString,
   gymId: GymId,
@@ -57,7 +54,7 @@ export const CreateGymRouteInputSchema = Schema.Struct({
   positionLabel: OptionalTrimmedString,
   setOn: GymRouteSetDate,
   setterName: OptionalTrimmedString,
-  boulderId: OptionalBoulderId,
+  boulderId: BoulderId,
 }).annotate({ identifier: "CreateGymRouteInput" })
 
 export type CreateGymRouteInput = typeof CreateGymRouteInputSchema.Type
@@ -73,11 +70,6 @@ const optionalSetterName = (value: string | null) =>
     ? Option.none<GymRouteSetterName>()
     : Option.some(GymRouteSetterName.make(value))
 
-const optionalBoulderId = (value: BoulderId | "" | null) =>
-  value === null || value === ""
-    ? Option.none<BoulderId>()
-    : Option.some(value)
-
 export class CreateGymRouteUseCase extends Service<
   CreateGymRouteUseCase,
   {
@@ -92,6 +84,7 @@ export class CreateGymRouteUseCase extends Service<
       | GymAreaNotFoundError
       | GymRouteOrderAlreadyExistsError
       | GymRouteBoulderNotAssignableError
+      | GymRouteBoulderAlreadyAssignedError
     >
   }
 >()("@gym/application/CreateGymRouteUseCase") {
@@ -132,18 +125,27 @@ export class CreateGymRouteUseCase extends Service<
             })
           }
 
-          const boulderId = optionalBoulderId(parsedInput.boulderId)
-          if (Option.isSome(boulderId)) {
-            const ownedBoulders = yield* boulderCatalog.listOwned(
-              parsedInput.token
-            )
-            if (
-              !ownedBoulders.some(({ id }) => id === boulderId.value)
-            ) {
-              return yield* new GymRouteBoulderNotAssignableError({
-                boulderId: boulderId.value,
-              })
-            }
+          const ownedBoulders = yield* boulderCatalog.listOwned(
+            parsedInput.token
+          )
+          if (
+            !ownedBoulders.some(({ id }) => id === parsedInput.boulderId)
+          ) {
+            return yield* new GymRouteBoulderNotAssignableError({
+              boulderId: parsedInput.boulderId,
+            })
+          }
+
+          if (
+            (
+              yield* routeRepository.findByBoulderIds([
+                parsedInput.boulderId,
+              ])
+            ).length > 0
+          ) {
+            return yield* new GymRouteBoulderAlreadyAssignedError({
+              boulderId: parsedInput.boulderId,
+            })
           }
 
           const id = yield* routeIdService.generate()
@@ -157,11 +159,23 @@ export class CreateGymRouteUseCase extends Service<
               ),
               setOn: parsedInput.setOn,
               setterName: optionalSetterName(parsedInput.setterName),
-              boulderId,
+              boulderId: parsedInput.boulderId,
             })
           )
 
           if (Option.isNone(inserted)) {
+            if (
+              (
+                yield* routeRepository.findByBoulderIds([
+                  parsedInput.boulderId,
+                ])
+              ).length > 0
+            ) {
+              return yield* new GymRouteBoulderAlreadyAssignedError({
+                boulderId: parsedInput.boulderId,
+              })
+            }
+
             return yield* new GymRouteOrderAlreadyExistsError({
               areaId: parsedInput.areaId,
               order: parsedInput.order,

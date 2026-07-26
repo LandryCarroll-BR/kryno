@@ -24,12 +24,13 @@ export const gymRoutesTable = gymSchema.table(
     positionLabel: t.text().$type<GymRoutePositionLabel>(),
     setOn: t.date().$type<GymRouteSetDate>().notNull(),
     setterName: t.text().$type<GymRouteSetterName>(),
-    boulderId: t.char({ length: 24 }).$type<BoulderId>(),
+    boulderId: t.char({ length: 24 }).$type<BoulderId>().notNull(),
   }),
   (table) => [
     uniqueIndex("gym_routes_area_id_order_unique").on(
       table.areaId,
       table.order
     ),
+    uniqueIndex("gym_routes_boulder_id_unique").on(table.boulderId),
   ]
 )

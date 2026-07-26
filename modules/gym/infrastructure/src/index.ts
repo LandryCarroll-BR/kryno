@@ -11,6 +11,7 @@ import { AuthenticatedGymMemberAuth } from "./services/authenticated-gym-member-
 import { GymAdministratorAuthorizationAuth } from "./services/gym-administrator-authorization-auth.service"
 import { GymAreaIdServiceLive } from "./services/gym-area-id.service"
 import { GymBoulderCatalogClimbing } from "./services/gym-boulder-catalog-climbing.service"
+import { GymBoulderAttemptsClimbing } from "./services/gym-boulder-attempts-climbing.service"
 import { GymIdServiceLive } from "./services/gym-id.service"
 import { GymRouteIdServiceLive } from "./services/gym-route-id.service"
 
@@ -32,5 +33,8 @@ const GymAuthenticationLayer = Layer.mergeAll(
 export const InfrastructureLayer = Layer.mergeAll(
   GymInfrastructureLayer,
   GymAuthenticationLayer,
-  GymBoulderCatalogClimbing.pipe(Layer.provide(ClimbingLayer))
+  Layer.mergeAll(
+    GymBoulderCatalogClimbing,
+    GymBoulderAttemptsClimbing
+  ).pipe(Layer.provide(ClimbingLayer))
 )

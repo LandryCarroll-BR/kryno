@@ -8,6 +8,7 @@ import { AuthenticatedGymMemberTest } from "./services/authenticated-gym-member-
 import { GymAdministratorAuthorizationTest } from "./services/gym-administrator-authorization-test.service"
 import { GymAreaIdServiceTest } from "./services/gym-area-id-test.service"
 import { GymBoulderCatalogTest } from "./services/gym-boulder-catalog-test.service"
+import { GymBoulderAttemptsTest } from "./services/gym-boulder-attempts-test.service"
 import { GymIdServiceTest } from "./services/gym-id-test.service"
 import { GymRouteIdServiceTest } from "./services/gym-route-id-test.service"
 
@@ -20,6 +21,7 @@ export const InfrastructureTestLayer = Layer.mergeAll(
   GymAdministratorAuthorizationTest,
   GymAreaIdServiceTest,
   GymBoulderCatalogTest,
+  GymBoulderAttemptsTest,
   GymIdServiceTest,
   GymRouteIdServiceTest
 )

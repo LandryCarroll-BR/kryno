@@ -30,6 +30,9 @@ export class CreateGymRoutePresenter extends Service<
     readonly presentBoulderNotAssignable: (
       previous: CreateGymRouteViewModel
     ) => Effect.Effect<CreateGymRouteViewModel>
+    readonly presentBoulderAlreadyAssigned: (
+      previous: CreateGymRouteViewModel
+    ) => Effect.Effect<CreateGymRouteViewModel>
     readonly presentUnexpectedError: (
       previous: CreateGymRouteViewModel
     ) => Effect.Effect<CreateGymRouteViewModel>
@@ -79,6 +82,16 @@ export class CreateGymRoutePresenter extends Service<
         errors: {
           ...previous.errors,
           boulderId: "Choose one of your existing boulders.",
+        },
+      }),
+    presentBoulderAlreadyAssigned: (previous) =>
+      Effect.succeed({
+        ...previous,
+        status: "conflict",
+        message: "That boulder is already assigned to another route.",
+        errors: {
+          ...previous.errors,
+          boulderId: "Choose an unassigned boulder.",
         },
       }),
     presentUnexpectedError: (previous) =>
