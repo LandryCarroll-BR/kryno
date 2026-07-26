@@ -1,0 +1,1 @@
+ALTER TABLE "kryno_climbing"."boulders" ADD COLUMN "color" text DEFAULT 'UNSPECIFIED' NOT NULL;

@@ -5,6 +5,7 @@ import {
   BoulderGrade,
   BoulderId,
   BoulderName,
+  BoulderColor,
   MovementStyle,
   WallAngle,
 } from "@climbing/application/models/boulder"
@@ -60,14 +61,14 @@ export const CreateGymRouteInputSchema = Schema.Struct({
   token: Schema.NonEmptyString,
   gymId: GymId,
   areaId: GymAreaId,
-  order: GymRouteOrderInput,
+  order: Schema.optional(GymRouteOrderInput),
   positionLabel: OptionalTrimmedString,
   setOn: GymRouteSetDate,
   setterName: OptionalTrimmedString,
   boulderSource: Schema.optional(GymRouteBoulderSource),
   boulderId: Schema.optional(BoulderId),
-  boulderName: Schema.optional(BoulderName),
   boulderGrade: Schema.optional(BoulderGrade),
+  boulderColor: Schema.optional(BoulderColor),
   boulderWallAngle: Schema.optional(WallAngle),
   boulderMovementStyle: Schema.optional(MovementStyle),
 }).annotate({ identifier: "CreateGymRouteInput" })
@@ -77,8 +78,8 @@ const ExistingGymRouteBoulderInputSchema = Schema.Struct({
 }).annotate({ identifier: "ExistingGymRouteBoulderInput" })
 
 const NewGymRouteBoulderInputSchema = Schema.Struct({
-  boulderName: BoulderName,
   boulderGrade: BoulderGrade,
+  boulderColor: BoulderColor,
   boulderWallAngle: WallAngle,
   boulderMovementStyle: MovementStyle,
 }).annotate({ identifier: "NewGymRouteBoulderInput" })
@@ -95,6 +96,31 @@ const optionalSetterName = (value: string | null) =>
   value === null || value === ""
     ? Option.none<GymRouteSetterName>()
     : Option.some(GymRouteSetterName.make(value))
+
+const boulderColorLabels = {
+  UNSPECIFIED: "Unspecified",
+  WHITE: "White",
+  BLACK: "Black",
+  RED: "Red",
+  ORANGE: "Orange",
+  YELLOW: "Yellow",
+  GREEN: "Green",
+  BLUE: "Blue",
+  PURPLE: "Purple",
+  PINK: "Pink",
+  GRAY: "Gray",
+} satisfies Record<BoulderColor, string>
+
+const deriveBoulderName = ({
+  areaName,
+  color,
+  grade,
+}: {
+  readonly areaName: string
+  readonly color: BoulderColor
+  readonly grade: BoulderGrade
+}): BoulderName =>
+  BoulderName.make(`${areaName} ${boulderColorLabels[color]} ${grade}`)
 
 export class CreateGymRouteUseCase extends Service<
   CreateGymRouteUseCase,
@@ -154,12 +180,19 @@ export class CreateGymRouteUseCase extends Service<
           const routesInArea = yield* routeRepository.findByAreaIds([
             parsedInput.areaId,
           ])
-          if (
-            routesInArea.some(({ order }) => order === parsedInput.order)
-          ) {
+          const routeOrder =
+            parsedInput.order ??
+            GymRouteOrder.make(
+              routesInArea.reduce(
+                (max, route) => Math.max(max, route.order),
+                0
+              ) + 1
+            )
+
+          if (routesInArea.some(({ order }) => order === routeOrder)) {
             return yield* new GymRouteOrderAlreadyExistsError({
               areaId: parsedInput.areaId,
-              order: parsedInput.order,
+              order: routeOrder,
             })
           }
 
@@ -172,8 +205,13 @@ export class CreateGymRouteUseCase extends Service<
             )(parsedInput, { errors: "all" })
             createdBoulder = yield* boulderCatalog.createOwned({
               token: parsedInput.token,
-              name: boulderInput.boulderName,
+              name: deriveBoulderName({
+                areaName: area.value.name,
+                color: boulderInput.boulderColor,
+                grade: boulderInput.boulderGrade,
+              }),
               grade: boulderInput.boulderGrade,
+              color: boulderInput.boulderColor,
               wallAngle: boulderInput.boulderWallAngle,
               movementStyle: boulderInput.boulderMovementStyle,
             })
@@ -214,7 +252,7 @@ export class CreateGymRouteUseCase extends Service<
             GymRoute.make({
               id,
               areaId: parsedInput.areaId,
-              order: parsedInput.order,
+              order: routeOrder,
               positionLabel: optionalPositionLabel(
                 parsedInput.positionLabel
               ),
@@ -244,7 +282,7 @@ export class CreateGymRouteUseCase extends Service<
 
             return yield* new GymRouteOrderAlreadyExistsError({
               areaId: parsedInput.areaId,
-              order: parsedInput.order,
+              order: routeOrder,
             })
           }
 

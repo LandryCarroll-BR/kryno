@@ -13,6 +13,7 @@ describe("Climbing gym integration", () => {
         token: "valid-token",
         name: BoulderName.make("First"),
         grade: "V2",
+        color: "BLUE",
         wallAngle: "SLAB",
         movementStyle: "TECHNICAL",
       })
@@ -20,6 +21,7 @@ describe("Climbing gym integration", () => {
         token: "other-valid-token",
         name: BoulderName.make("Second"),
         grade: "V5",
+        color: "RED",
         wallAngle: "OVERHANG",
         movementStyle: "POWER",
       })
@@ -41,6 +43,7 @@ describe("Climbing gym integration", () => {
           token: "other-valid-token",
           name: BoulderName.make("Gym problem"),
           grade: "V5",
+          color: "WHITE",
           wallAngle: "OVERHANG",
           movementStyle: "POWER",
         })
@@ -77,6 +80,7 @@ describe("Climbing gym integration", () => {
         token: "other-valid-token",
         name: BoulderName.make("Requested gym boulder"),
         grade: "V5",
+        color: "WHITE",
         wallAngle: "OVERHANG",
         movementStyle: "POWER",
       })
@@ -84,6 +88,7 @@ describe("Climbing gym integration", () => {
         token: "other-valid-token",
         name: BoulderName.make("Unrequested gym boulder"),
         grade: "V3",
+        color: "BLACK",
         wallAngle: "VERTICAL",
         movementStyle: "TECHNICAL",
       })
@@ -127,6 +132,7 @@ describe("Climbing gym integration", () => {
         token: "valid-token",
         name: BoulderName.make("Session test"),
         grade: "V1",
+        color: "GREEN",
         wallAngle: "VERTICAL",
         movementStyle: "TECHNICAL",
       })

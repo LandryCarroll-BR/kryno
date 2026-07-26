@@ -2,6 +2,7 @@ import type {
   BoulderGrade,
   BoulderId,
   BoulderName,
+  BoulderColor,
   MovementStyle,
   WallAngle,
 } from "@climbing/application/models/boulder"
@@ -14,6 +15,7 @@ export const bouldersTable = climbingSchema.table("boulders", (t) => ({
   creatorClimberId: t.char({ length: 24 }).$type<ClimberId>().notNull(),
   name: t.text().$type<BoulderName>().notNull(),
   grade: t.text().$type<BoulderGrade>().notNull(),
+  color: t.text().$type<BoulderColor>().notNull().default("UNSPECIFIED"),
   wallAngle: t.text().$type<WallAngle>().notNull(),
   movementStyle: t.text().$type<MovementStyle>().notNull(),
   createdAt: t.timestamp({ withTimezone: true }).notNull(),

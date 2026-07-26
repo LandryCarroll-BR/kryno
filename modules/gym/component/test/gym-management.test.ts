@@ -4,7 +4,6 @@ import { GymAreaName } from "@gym/application/models/gym-area"
 import {
   BoulderGrade,
   BoulderId,
-  BoulderName,
   GymRouteOrder,
   GymRouteSetDate,
   MovementStyle,
@@ -122,6 +121,40 @@ describe("Gym management", () => {
     }).pipe(Effect.provide(GymTestLayer))
   )
 
+  it.effect("defaults route order to the next area increment", () =>
+    Effect.gen(function* () {
+      const gym = yield* Gym
+      const createdGym = yield* createGym(gym)
+      const area = yield* gym.createGymArea({
+        token: "admin-token",
+        gymId: createdGym.id,
+        name: GymAreaName.make("Barrel"),
+      })
+
+      const first = yield* gym.createGymRoute({
+        token: "admin-token",
+        gymId: createdGym.id,
+        areaId: area.id,
+        positionLabel: null,
+        setOn: GymRouteSetDate.make("2026-07-08"),
+        setterName: null,
+        boulderId: BoulderId.make("admin-boulder-1"),
+      })
+      const second = yield* gym.createGymRoute({
+        token: "admin-token",
+        gymId: createdGym.id,
+        areaId: area.id,
+        positionLabel: null,
+        setOn: GymRouteSetDate.make("2026-07-08"),
+        setterName: null,
+        boulderId: BoulderId.make("admin-boulder-2"),
+      })
+
+      expect(first.order).toBe(1)
+      expect(second.order).toBe(2)
+    }).pipe(Effect.provide(GymTestLayer))
+  )
+
   it.effect("creates a route with an inline boulder and links it", () =>
     Effect.gen(function* () {
       const gym = yield* Gym
@@ -141,8 +174,8 @@ describe("Gym management", () => {
         setOn: GymRouteSetDate.make("2026-07-10"),
         setterName: "Jordan",
         boulderSource: "new",
-        boulderName: BoulderName.make("Green Circuit 4"),
         boulderGrade: BoulderGrade.make("V5"),
+        boulderColor: "GREEN",
         boulderWallAngle: WallAngle.make("VERTICAL"),
         boulderMovementStyle: MovementStyle.make("TECHNICAL"),
       })
@@ -159,8 +192,9 @@ describe("Gym management", () => {
       expect(
         management.boulders.find(({ id }) => id === route.boulderId)
       ).toMatchObject({
-        name: "Green Circuit 4",
+        name: "Moonboard Green V5",
         grade: "V5",
+        color: "GREEN",
       })
       expect(
         management.assignableBoulders.some(({ id }) => id === route.boulderId)
@@ -198,8 +232,8 @@ describe("Gym management", () => {
           setOn: GymRouteSetDate.make("2026-07-12"),
           setterName: null,
           boulderSource: "new",
-          boulderName: BoulderName.make("Purple Circuit 8"),
           boulderGrade: BoulderGrade.make("V3"),
+          boulderColor: "PURPLE",
           boulderWallAngle: WallAngle.make("SLAB"),
           boulderMovementStyle: MovementStyle.make("COORDINATION"),
         })
@@ -213,7 +247,7 @@ describe("Gym management", () => {
         gymId: createdGym.id,
       })
       expect(
-        management.boulders.some(({ name }) => name === "Purple Circuit 8")
+        management.boulders.some(({ name }) => name === "Spray Wall Purple V3")
       ).toBe(false)
       expect(management.assignableBoulders.map(({ id }) => id)).toEqual([
         "admin-boulder-2",

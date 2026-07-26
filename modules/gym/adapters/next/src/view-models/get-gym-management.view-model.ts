@@ -1,6 +1,7 @@
 export type GymBoulderOptionViewModel = {
   readonly label: string
   readonly value: string
+  readonly color: string
 }
 
 export type ManagedGymRouteViewModel = {
@@ -13,6 +14,7 @@ export type ManagedGymRouteViewModel = {
     | {
         readonly id: string
         readonly label: string
+        readonly color: string
         readonly available: boolean
       }
     | null
@@ -22,6 +24,7 @@ export type ManagedGymAreaViewModel = {
   readonly id: string
   readonly name: string
   readonly routes: readonly ManagedGymRouteViewModel[]
+  readonly nextOrder: number
 }
 
 export type GetGymManagementViewModel = {

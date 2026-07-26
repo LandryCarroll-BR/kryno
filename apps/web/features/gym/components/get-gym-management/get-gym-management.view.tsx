@@ -15,6 +15,7 @@ import type { DeleteGymRouteViewModel } from "@gym/adapters-next/view-models"
 import { CreateGymAreaView } from "../create-gym-area/create-gym-area.view"
 import { CreateGymRouteView } from "../create-gym-route/create-gym-route.view"
 import { DeleteGymRouteView } from "../delete-gym-route/delete-gym-route.view"
+import { BoulderColorBadge } from "@/features/climbing/components/boulder-color-badge/boulder-color-badge.view"
 
 type ManagementQuery = (gymId: string) => Promise<GetGymManagementViewModel>
 type AreaAction = (
@@ -106,13 +107,15 @@ export async function GetGymManagementView({
                       </p>
                     </div>
                     {route.boulder && (
-                      <Badge
-                        variant={
-                          route.boulder.available ? "secondary" : "destructive"
-                        }
-                      >
-                        {route.boulder.label}
-                      </Badge>
+                      route.boulder.available ? (
+                        <BoulderColorBadge color={route.boulder.color}>
+                          {route.boulder.label}
+                        </BoulderColorBadge>
+                      ) : (
+                        <Badge variant="destructive">
+                          {route.boulder.label}
+                        </Badge>
+                      )
                     )}
                     <DeleteGymRouteView
                       action={deleteRouteAction}
@@ -126,6 +129,8 @@ export async function GetGymManagementView({
                 action={createRouteAction}
                 gymId={gym.id}
                 areaId={area.id}
+                areaName={area.name}
+                nextOrder={area.nextOrder}
                 boulders={boulders}
               />
             </CardContent>

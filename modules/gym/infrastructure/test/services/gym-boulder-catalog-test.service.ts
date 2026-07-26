@@ -3,6 +3,7 @@ import {
   BoulderGrade,
   BoulderId,
   BoulderName,
+  BoulderColor,
   MovementStyle,
   WallAngle,
 } from "@climbing/application/models/boulder"
@@ -13,6 +14,7 @@ const boulders = [
     id: BoulderId.make("admin-boulder-1"),
     name: BoulderName.make("Blue 12"),
     grade: BoulderGrade.make("V4"),
+    color: BoulderColor.make("BLUE"),
     wallAngle: WallAngle.make("OVERHANG"),
     movementStyle: MovementStyle.make("POWER"),
   },
@@ -20,6 +22,7 @@ const boulders = [
     id: BoulderId.make("admin-boulder-2"),
     name: BoulderName.make("Red 7"),
     grade: BoulderGrade.make("V6"),
+    color: BoulderColor.make("RED"),
     wallAngle: WallAngle.make("VERTICAL"),
     movementStyle: MovementStyle.make("TECHNICAL"),
   },
@@ -33,7 +36,7 @@ export const GymBoulderCatalogTest = Layer.effect(
 
     return {
       createOwned: Effect.fn("GymBoulderCatalog.createOwned")(
-        function* ({ name, grade, wallAngle, movementStyle }) {
+        function* ({ name, grade, color, wallAngle, movementStyle }) {
           const id = yield* Ref.getAndUpdate(counter, (value) => value + 1).pipe(
             Effect.map((value) => BoulderId.make(`created-boulder-${value}`))
           )
@@ -41,6 +44,7 @@ export const GymBoulderCatalogTest = Layer.effect(
             id,
             name,
             grade,
+            color,
             wallAngle,
             movementStyle,
           }

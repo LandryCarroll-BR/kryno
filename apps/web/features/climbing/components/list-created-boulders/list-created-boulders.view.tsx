@@ -18,6 +18,7 @@ import type { DeleteClimbingSessionViewModel } from "@climbing/adapters-next/vie
 import type { LogBoulderAttemptViewModel } from "@climbing/adapters-next/view-models/log-boulder-attempt"
 
 import { DeleteBoulderView } from "../delete-boulder/delete-boulder.view"
+import { BoulderColorBadge } from "../boulder-color-badge/boulder-color-badge.view"
 import { DeleteClimbingSessionView } from "../delete-climbing-session/delete-climbing-session.view"
 import { LogBoulderAttemptView } from "../log-boulder-attempt/log-boulder-attempt.view"
 
@@ -83,7 +84,9 @@ export async function ListCreatedBouldersView({
                       <h2 className="truncate text-base font-medium">
                         {boulder.name}
                       </h2>
-                      <Badge variant="secondary">{boulder.grade}</Badge>
+                      <BoulderColorBadge color={boulder.color}>
+                        {boulder.grade}
+                      </BoulderColorBadge>
                     </div>
                     <div className="flex flex-wrap divide-x text-xs text-muted-foreground">
                       <span className="pr-2">{boulder.wallAngle}</span>

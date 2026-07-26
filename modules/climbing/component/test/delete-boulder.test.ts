@@ -13,6 +13,7 @@ describe("Climbing.deleteBoulder", () => {
         token: "valid-token",
         name: BoulderName.make("Test boulder"),
         grade: "V3",
+        color: "BLUE",
         wallAngle: "VERTICAL",
         movementStyle: "TECHNICAL",
       })
@@ -37,6 +38,7 @@ describe("Climbing.deleteBoulder", () => {
         token: "valid-token",
         name: BoulderName.make("Test boulder"),
         grade: "V3",
+        color: "BLUE",
         wallAngle: "VERTICAL",
         movementStyle: "TECHNICAL",
       })
@@ -63,6 +65,7 @@ describe("Climbing.deleteBoulder", () => {
         token: "valid-token",
         name: BoulderName.make("Test boulder"),
         grade: "V3",
+        color: "BLUE",
         wallAngle: "VERTICAL",
         movementStyle: "TECHNICAL",
       })

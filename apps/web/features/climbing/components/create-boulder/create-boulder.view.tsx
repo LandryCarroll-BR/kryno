@@ -28,6 +28,7 @@ import {
 
 import {
   createBoulderInitialViewModel,
+  boulderColorOptions,
   gradeOptions,
   movementStyleOptions,
   type CreateBoulderViewModel,
@@ -79,6 +80,32 @@ export function CreateBoulderView({ action }: { action: CreateBoulderAction }) {
               />
               <FieldError id="boulder-name-error">
                 {state.errors.name}
+              </FieldError>
+            </Field>
+
+            <Field data-invalid={Boolean(state.errors.color)}>
+              <FieldLabel htmlFor="boulder-color">
+                {state.fields.color.label}
+              </FieldLabel>
+              <NativeSelect
+                id="boulder-color"
+                name="color"
+                className="w-full"
+                disabled={pending}
+                defaultValue={state.fields.color.value}
+                aria-invalid={Boolean(state.errors.color)}
+                aria-describedby={
+                  state.errors.color ? "boulder-color-error" : undefined
+                }
+              >
+                {boulderColorOptions.map((color) => (
+                  <NativeSelectOption key={color.value} value={color.value}>
+                    {color.label}
+                  </NativeSelectOption>
+                ))}
+              </NativeSelect>
+              <FieldError id="boulder-color-error">
+                {state.errors.color}
               </FieldError>
             </Field>
 

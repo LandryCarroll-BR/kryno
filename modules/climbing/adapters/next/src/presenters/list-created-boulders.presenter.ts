@@ -38,6 +38,7 @@ export class ListCreatedBouldersPresenter extends Service<
               id: boulder.id,
               name: boulder.name,
               grade: boulder.grade,
+              color: boulder.color,
               wallAngle: boulder.wallAngle,
               movementStyle: boulder.movementStyle,
               createdAt: boulder.createdAt.toISOString(),

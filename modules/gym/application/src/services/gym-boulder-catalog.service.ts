@@ -4,6 +4,7 @@ import type {
   BoulderGrade,
   BoulderId,
   BoulderName,
+  BoulderColor,
   MovementStyle,
   WallAngle,
 } from "@climbing/application/models/boulder"
@@ -14,6 +15,7 @@ export type AssignableGymBoulder = {
   readonly id: BoulderId
   readonly name: BoulderName
   readonly grade: BoulderGrade
+  readonly color: BoulderColor
   readonly wallAngle: WallAngle
   readonly movementStyle: MovementStyle
 }
@@ -22,6 +24,7 @@ export type CreateOwnedGymBoulderInput = {
   readonly token: string
   readonly name: BoulderName
   readonly grade: BoulderGrade
+  readonly color: BoulderColor
   readonly wallAngle: WallAngle
   readonly movementStyle: MovementStyle
 }

@@ -19,6 +19,7 @@ import {
   RadioGroupItem,
 } from "@packages/ui/components/radio-group"
 import {
+  boulderColorOptions,
   boulderGradeOptions,
   boulderMovementStyleOptions,
   boulderSourceOptions,
@@ -44,17 +45,27 @@ export function CreateGymRouteView({
   action,
   gymId,
   areaId,
+  areaName,
+  nextOrder,
   boulders,
 }: {
   action: CreateGymRouteAction
   gymId: string
   areaId: string
+  areaName: string
+  nextOrder: number
   boulders: readonly GymBoulderOptionViewModel[]
 }) {
   const initialBoulderSource = boulders.length === 0 ? "new" : "existing"
   const [boulderSource, setBoulderSource] = useState<
     "existing" | "new"
   >(initialBoulderSource)
+  const [boulderGrade, setBoulderGrade] = useState(
+    createGymRouteInitialViewModel.fields.boulderGrade.value
+  )
+  const [boulderColor, setBoulderColor] = useState(
+    createGymRouteInitialViewModel.fields.boulderColor.value
+  )
   const [state, formAction, pending] = useActionState(action, {
     ...createGymRouteInitialViewModel,
     fields: {
@@ -66,6 +77,10 @@ export function CreateGymRouteView({
       areaId: {
         ...createGymRouteInitialViewModel.fields.areaId,
         value: areaId,
+      },
+      order: {
+        ...createGymRouteInitialViewModel.fields.order,
+        value: String(nextOrder),
       },
       setOn: {
         ...createGymRouteInitialViewModel.fields.setOn,
@@ -80,6 +95,10 @@ export function CreateGymRouteView({
   const prefix = `route-${areaId}`
   const usingExistingBoulder = boulderSource === "existing"
   const cannotSubmit = pending || (usingExistingBoulder && boulders.length === 0)
+  const selectedColorLabel =
+    boulderColorOptions.find(({ value }) => value === boulderColor)?.label ??
+    "White"
+  const derivedBoulderName = `${areaName} ${selectedColorLabel} ${boulderGrade}`
 
   return (
     <form action={formAction} className="mt-6 border-t pt-6">
@@ -105,7 +124,7 @@ export function CreateGymRouteView({
               type="number"
               min={1}
               disabled={pending}
-              defaultValue={state.fields.order.value}
+              defaultValue={state.fields.order.value || String(nextOrder)}
               aria-invalid={Boolean(state.errors.order)}
             />
             <FieldError>{state.errors.order}</FieldError>
@@ -209,19 +228,15 @@ export function CreateGymRouteView({
           </Field>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field data-invalid={Boolean(state.errors.boulderName)}>
+            <Field>
               <FieldLabel htmlFor={`${prefix}-boulder-name`}>
-                {state.fields.boulderName.label}
+                Boulder name
               </FieldLabel>
               <Input
                 id={`${prefix}-boulder-name`}
-                name="boulderName"
-                placeholder="Blue Circuit 12"
-                disabled={pending}
-                defaultValue={state.fields.boulderName.value}
-                aria-invalid={Boolean(state.errors.boulderName)}
+                disabled
+                value={derivedBoulderName}
               />
-              <FieldError>{state.errors.boulderName}</FieldError>
             </Field>
             <Field data-invalid={Boolean(state.errors.boulderGrade)}>
               <FieldLabel htmlFor={`${prefix}-boulder-grade`}>
@@ -233,6 +248,7 @@ export function CreateGymRouteView({
                 className="w-full"
                 disabled={pending}
                 defaultValue={state.fields.boulderGrade.value}
+                onChange={(event) => setBoulderGrade(event.currentTarget.value)}
                 aria-invalid={Boolean(state.errors.boulderGrade)}
               >
                 {boulderGradeOptions.map((grade) => (
@@ -242,6 +258,27 @@ export function CreateGymRouteView({
                 ))}
               </NativeSelect>
               <FieldError>{state.errors.boulderGrade}</FieldError>
+            </Field>
+            <Field data-invalid={Boolean(state.errors.boulderColor)}>
+              <FieldLabel htmlFor={`${prefix}-boulder-color`}>
+                {state.fields.boulderColor.label}
+              </FieldLabel>
+              <NativeSelect
+                id={`${prefix}-boulder-color`}
+                name="boulderColor"
+                className="w-full"
+                disabled={pending}
+                defaultValue={state.fields.boulderColor.value}
+                onChange={(event) => setBoulderColor(event.currentTarget.value)}
+                aria-invalid={Boolean(state.errors.boulderColor)}
+              >
+                {boulderColorOptions.map((color) => (
+                  <NativeSelectOption key={color.value} value={color.value}>
+                    {color.label}
+                  </NativeSelectOption>
+                ))}
+              </NativeSelect>
+              <FieldError>{state.errors.boulderColor}</FieldError>
             </Field>
             <Field data-invalid={Boolean(state.errors.boulderWallAngle)}>
               <FieldLabel htmlFor={`${prefix}-boulder-wall-angle`}>

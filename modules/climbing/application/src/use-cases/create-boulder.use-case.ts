@@ -4,6 +4,7 @@ import type { SchemaError } from "effect/Schema"
 
 import {
   Boulder,
+  BoulderColor,
   BoulderGrade,
   BoulderName,
   MovementStyle,
@@ -19,6 +20,7 @@ export const CreateBoulderInputSchema = Schema.Struct({
   token: Schema.NonEmptyString,
   name: BoulderName,
   grade: BoulderGrade,
+  color: BoulderColor,
   wallAngle: WallAngle,
   movementStyle: MovementStyle,
 }).annotate({ identifier: "CreateBoulderInput" })
@@ -62,6 +64,7 @@ export class CreateBoulderUseCase extends Service<
               creatorClimberId,
               name: parsedInput.name,
               grade: parsedInput.grade,
+              color: parsedInput.color,
               wallAngle: parsedInput.wallAngle,
               movementStyle: parsedInput.movementStyle,
               createdAt: now,

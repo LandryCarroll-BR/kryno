@@ -155,6 +155,7 @@ describe("Gym routes presenters", () => {
                   id: BoulderId.make("boulder-1"),
                   name: BoulderName.make("Blue 12"),
                   grade: BoulderGrade.make("V4"),
+                  color: "BLUE",
                   wallAngle: WallAngle.make("OVERHANG"),
                   movementStyle: MovementStyle.make("POWER"),
                 }),

@@ -24,6 +24,7 @@ describe("DeleteBoulderPresenter", () => {
         creatorClimberId: ClimberId.make("climber-1"),
         name: BoulderName.make("Test boulder"),
         grade: "V3",
+        color: "BLUE",
         wallAngle: "VERTICAL",
         movementStyle: "TECHNICAL",
         createdAt: new Date("2026-01-01T00:00:00.000Z"),

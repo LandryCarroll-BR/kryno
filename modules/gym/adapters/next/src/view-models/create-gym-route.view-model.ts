@@ -17,8 +17,8 @@ export type CreateGymRouteViewModel = {
     readonly setterName: FieldViewModel
     readonly boulderSource: FieldViewModel
     readonly boulderId: FieldViewModel
-    readonly boulderName: FieldViewModel
     readonly boulderGrade: FieldViewModel
+    readonly boulderColor: FieldViewModel
     readonly boulderWallAngle: FieldViewModel
     readonly boulderMovementStyle: FieldViewModel
   }
@@ -37,8 +37,8 @@ export const createGymRouteInitialViewModel = {
     setterName: { label: "Setter name (optional)", value: "" },
     boulderSource: { label: "Boulder source", value: "existing" },
     boulderId: { label: "Boulder", value: "" },
-    boulderName: { label: "Boulder name", value: "" },
     boulderGrade: { label: "Boulder grade", value: "V4" },
+    boulderColor: { label: "Boulder color", value: "WHITE" },
     boulderWallAngle: { label: "Wall angle", value: "OVERHANG" },
     boulderMovementStyle: { label: "Movement style", value: "POWER" },
   },
@@ -51,8 +51,8 @@ export const createGymRouteInitialViewModel = {
     setterName: "",
     boulderSource: "",
     boulderId: "",
-    boulderName: "",
     boulderGrade: "",
+    boulderColor: "",
     boulderWallAngle: "",
     boulderMovementStyle: "",
   },
@@ -83,6 +83,19 @@ export const boulderGradeOptions = [
   { label: "V15", value: "V15" },
   { label: "V16", value: "V16" },
   { label: "V17", value: "V17" },
+] as const satisfies readonly FieldViewModel[]
+
+export const boulderColorOptions = [
+  { label: "White", value: "WHITE" },
+  { label: "Black", value: "BLACK" },
+  { label: "Red", value: "RED" },
+  { label: "Orange", value: "ORANGE" },
+  { label: "Yellow", value: "YELLOW" },
+  { label: "Green", value: "GREEN" },
+  { label: "Blue", value: "BLUE" },
+  { label: "Purple", value: "PURPLE" },
+  { label: "Pink", value: "PINK" },
+  { label: "Gray", value: "GRAY" },
 ] as const satisfies readonly FieldViewModel[]
 
 export const boulderWallAngleOptions = [

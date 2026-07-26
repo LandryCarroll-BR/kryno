@@ -76,8 +76,8 @@ describe("Gym management presenters", () => {
             setOn: "2026-07-10",
             setterName: "",
             boulderSource: "new",
-            boulderName: "",
             boulderGrade: "VX",
+            boulderColor: "CHARTREUSE",
             boulderWallAngle: "SIDEWAYS",
             boulderMovementStyle: "LUCK",
           },
@@ -90,8 +90,8 @@ describe("Gym management presenters", () => {
       )
 
       expect(viewModel.status).toBe("invalid")
-      expect(viewModel.errors.boulderName).not.toBe("")
       expect(viewModel.errors.boulderGrade).not.toBe("")
+      expect(viewModel.errors.boulderColor).not.toBe("")
       expect(viewModel.errors.boulderWallAngle).not.toBe("")
       expect(viewModel.errors.boulderMovementStyle).not.toBe("")
     }).pipe(Effect.provide(CreateGymRoutePresenter.Live))
@@ -136,6 +136,7 @@ describe("Gym management presenters", () => {
         viewModel.fields.areas.value[0]?.routes[0]?.boulder
       ).toMatchObject({
         id: "deleted-boulder",
+        color: "UNSPECIFIED",
         available: false,
       })
     }).pipe(Effect.provide(GetGymManagementPresenter.Live))

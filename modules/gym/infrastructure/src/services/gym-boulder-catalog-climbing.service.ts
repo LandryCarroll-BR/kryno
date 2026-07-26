@@ -15,24 +15,27 @@ export const GymBoulderCatalogClimbing = Layer.effect(
       id,
       name,
       grade,
+      color,
       wallAngle,
       movementStyle,
     }: AssignableGymBoulder): AssignableGymBoulder => ({
       id,
       name,
       grade,
+      color,
       wallAngle,
       movementStyle,
     })
 
     return {
       createOwned: Effect.fn("GymBoulderCatalog.createOwned")(
-        function* ({ token, name, grade, wallAngle, movementStyle }) {
+        function* ({ token, name, grade, color, wallAngle, movementStyle }) {
           return yield* climbing
             .createBoulder({
               token,
               name,
               grade,
+              color,
               wallAngle,
               movementStyle,
             })

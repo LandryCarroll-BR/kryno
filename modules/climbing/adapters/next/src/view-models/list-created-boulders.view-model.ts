@@ -2,6 +2,7 @@ export type CreatedBoulderViewModel = {
   readonly id: string
   readonly name: string
   readonly grade: string
+  readonly color: string
   readonly wallAngle: string
   readonly movementStyle: string
   readonly createdAt: string

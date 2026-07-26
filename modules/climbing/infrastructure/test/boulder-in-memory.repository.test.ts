@@ -21,6 +21,7 @@ describe("BoulderInMemoryRepository.deleteByCreatorClimberId", () => {
         creatorClimberId: ownerId,
         name: BoulderName.make("Owner's boulder"),
         grade: "V4",
+        color: "BLUE",
         wallAngle: "OVERHANG",
         movementStyle: "POWER",
         createdAt: new Date("2026-01-01T00:00:00.000Z"),

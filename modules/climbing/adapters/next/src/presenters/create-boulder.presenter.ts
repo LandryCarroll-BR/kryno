@@ -61,6 +61,7 @@ export class CreateBoulderPresenter extends Service<
     return {
       name: fieldError("name"),
       grade: fieldError("grade"),
+      color: fieldError("color"),
       wallAngle: fieldError("wallAngle"),
       movementStyle: fieldError("movementStyle"),
     } satisfies CreateBoulderViewModel["errors"]

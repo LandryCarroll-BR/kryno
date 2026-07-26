@@ -41,6 +41,21 @@ export const BoulderGrade = Schema.Literals([
 ])
 export type BoulderGrade = typeof BoulderGrade.Type
 
+export const BoulderColor = Schema.Literals([
+  "UNSPECIFIED",
+  "WHITE",
+  "BLACK",
+  "RED",
+  "ORANGE",
+  "YELLOW",
+  "GREEN",
+  "BLUE",
+  "PURPLE",
+  "PINK",
+  "GRAY",
+])
+export type BoulderColor = typeof BoulderColor.Type
+
 export const WallAngle = Schema.Enum({
   SLAB: "SLAB",
   VERTICAL: "VERTICAL",
@@ -61,6 +76,7 @@ export class Boulder extends Schema.Class<Boulder>("Boulder")({
   creatorClimberId: ClimberId,
   name: BoulderName,
   grade: BoulderGrade,
+  color: BoulderColor,
   wallAngle: WallAngle,
   movementStyle: MovementStyle,
   createdAt: Schema.Date,

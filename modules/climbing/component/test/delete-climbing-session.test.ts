@@ -14,6 +14,7 @@ describe("Climbing.deleteClimbingSession", () => {
         token: "valid-token",
         name: BoulderName.make("Past session boulder"),
         grade: "V3",
+        color: "GRAY",
         wallAngle: "VERTICAL",
         movementStyle: "TECHNICAL",
       })

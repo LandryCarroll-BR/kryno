@@ -16,6 +16,7 @@ describe("Climbing.listCreatedBoulders", () => {
           token: "valid-token",
           name: BoulderName.make("History test"),
           grade: "V4",
+          color: "BLUE",
           wallAngle: "OVERHANG",
           movementStyle: "POWER",
         })
@@ -59,6 +60,7 @@ describe("Climbing.listCreatedBoulders", () => {
         token: "valid-token",
         name: BoulderName.make("Attempted"),
         grade: "V4",
+        color: "BLUE",
         wallAngle: "OVERHANG",
         movementStyle: "POWER",
       })
@@ -66,6 +68,7 @@ describe("Climbing.listCreatedBoulders", () => {
         token: "valid-token",
         name: BoulderName.make("Fresh"),
         grade: "V2",
+        color: "GREEN",
         wallAngle: "SLAB",
         movementStyle: "TECHNICAL",
       })
@@ -97,6 +100,7 @@ describe("Climbing.listCreatedBoulders", () => {
         token: "valid-token",
         name: BoulderName.make("Owner boulder"),
         grade: "V3",
+        color: "PURPLE",
         wallAngle: "VERTICAL",
         movementStyle: "TECHNICAL",
       })
@@ -104,6 +108,7 @@ describe("Climbing.listCreatedBoulders", () => {
         token: "other-valid-token",
         name: BoulderName.make("Other boulder"),
         grade: "V6",
+        color: "RED",
         wallAngle: "OVERHANG",
         movementStyle: "POWER",
       })

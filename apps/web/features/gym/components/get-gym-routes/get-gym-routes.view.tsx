@@ -17,6 +17,7 @@ import type { ListGymRouteAttemptHistoryViewModel } from "@gym/adapters-next/vie
 import type { LogGymRouteAttemptViewModel } from "@gym/adapters-next/view-models/log-gym-route-attempt"
 
 import { GetCurrentClimbingSessionView } from "@/features/climbing/components/get-current-climbing-session/get-current-climbing-session.view"
+import { BoulderColorBadge } from "@/features/climbing/components/boulder-color-badge/boulder-color-badge.view"
 import { JoinGymView } from "../join-gym/join-gym.view"
 import { LogGymRouteAttemptView } from "../log-gym-route-attempt/log-gym-route-attempt.view"
 
@@ -143,9 +144,9 @@ export async function GetGymRoutesView({
                         <div className="flex flex-wrap items-center gap-2">
                           <h2 className="font-medium">{route.boulder.name}</h2>
                           {route.boulder.available ? (
-                            <Badge variant="secondary">
+                            <BoulderColorBadge color={route.boulder.color}>
                               {route.boulder.grade}
-                            </Badge>
+                            </BoulderColorBadge>
                           ) : (
                             <Badge variant="destructive">Unavailable</Badge>
                           )}

@@ -4,6 +4,7 @@ export type CreateBoulderViewModel = {
   readonly fields: {
     readonly name: FieldViewModel
     readonly grade: FieldViewModel
+    readonly color: FieldViewModel
     readonly wallAngle: FieldViewModel
     readonly movementStyle: FieldViewModel
   }
@@ -39,6 +40,20 @@ export const wallAngleOptions = [
   { label: "Roof", value: "ROOF" },
 ] as const satisfies readonly FieldViewModel[]
 
+export const boulderColorOptions = [
+  { label: "Unspecified", value: "UNSPECIFIED" },
+  { label: "White", value: "WHITE" },
+  { label: "Black", value: "BLACK" },
+  { label: "Red", value: "RED" },
+  { label: "Orange", value: "ORANGE" },
+  { label: "Yellow", value: "YELLOW" },
+  { label: "Green", value: "GREEN" },
+  { label: "Blue", value: "BLUE" },
+  { label: "Purple", value: "PURPLE" },
+  { label: "Pink", value: "PINK" },
+  { label: "Gray", value: "GRAY" },
+] as const satisfies readonly FieldViewModel[]
+
 export const movementStyleOptions = [
   { label: "Coordination", value: "COORDINATION" },
   { label: "Power", value: "POWER" },
@@ -57,6 +72,10 @@ export const createBoulderInitialViewModel = {
       value: "V4",
       label: "Grade",
     },
+    color: {
+      value: "UNSPECIFIED",
+      label: "Color",
+    },
     wallAngle: {
       value: "OVERHANG",
       label: "Wall angle",
@@ -67,6 +86,7 @@ export const createBoulderInitialViewModel = {
     },
   },
   errors: {
+    color: "",
     grade: "",
     movementStyle: "",
     name: "",
