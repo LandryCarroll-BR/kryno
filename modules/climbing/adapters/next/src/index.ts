@@ -3,6 +3,7 @@ import { ClimbingLayer } from "@climbing/component"
 
 import { CreateBoulderPresenter } from "./presenters/create-boulder.presenter"
 import { DeleteBoulderPresenter } from "./presenters/delete-boulder.presenter"
+import { DeleteClimbingSessionPresenter } from "./presenters/delete-climbing-session.presenter"
 import { EndClimbingSessionPresenter } from "./presenters/end-climbing-session.presenter"
 import { GetCurrentClimbingSessionPresenter } from "./presenters/get-current-climbing-session.presenter"
 import { ListCreatedBouldersPresenter } from "./presenters/list-created-boulders.presenter"
@@ -12,6 +13,7 @@ import { StartClimbingSessionPresenter } from "./presenters/start-climbing-sessi
 export const PresenterLayer = Layer.mergeAll(
   CreateBoulderPresenter.Live,
   DeleteBoulderPresenter.Live,
+  DeleteClimbingSessionPresenter.Live,
   EndClimbingSessionPresenter.Live,
   GetCurrentClimbingSessionPresenter.Live,
   ListCreatedBouldersPresenter.Live,

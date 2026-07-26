@@ -46,6 +46,26 @@ export const ClimbingSessionInMemoryRepository = Layer.effect(
         return Option.fromNullishOr(findActive(sessions, climberId))
       }),
 
+      deleteCompletedByClimberId: Effect.fn(
+        "ClimbingSessionRepository.deleteCompletedByClimberId"
+      )(function* (climberId, sessionId) {
+        return yield* Ref.modify(store, (sessions) => {
+          const session = sessions.get(sessionId)
+
+          if (
+            session?.climberId !== climberId ||
+            !Predicate.isTagged(session, "CompletedClimbingSession")
+          ) {
+            return [Option.none(), sessions]
+          }
+
+          const next = new Map(sessions)
+          next.delete(sessionId)
+
+          return [Option.some(session), next]
+        })
+      }),
+
       insertActive: Effect.fn("ClimbingSessionRepository.insertActive")(
         function* (session) {
           return yield* Ref.modify(store, (sessions) => {

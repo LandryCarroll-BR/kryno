@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import Link from "next/link"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Badge } from "@packages/ui/components/badge"
@@ -77,17 +76,10 @@ export async function GetGymRoutesView({
           <CardDescription>{result.message}</CardDescription>
         </CardHeader>
         <CardContent className="flex items-start justify-between gap-4">
-          <Link
-            href="/gyms"
-            className={buttonVariants({ variant: "outline" })}
-          >
+          <Link href="/gyms" className={buttonVariants({ variant: "outline" })}>
             Back to gyms
           </Link>
-          <JoinGymView
-            action={joinAction}
-            gymId={gym.id}
-            isMember={false}
-          />
+          <JoinGymView action={joinAction} gymId={gym.id} isMember={false} />
         </CardContent>
       </Card>
     )
@@ -104,21 +96,16 @@ export async function GetGymRoutesView({
             Current boulders, grouped by area.
           </p>
         </div>
-        <Link
-          href="/gyms"
-          className={buttonVariants({ variant: "outline" })}
-        >
+        <Link href="/gyms" className={buttonVariants({ variant: "outline" })}>
           Back to gyms
         </Link>
       </div>
 
-      <Suspense>
-        <GetCurrentClimbingSessionView
-          query={currentSessionQuery}
-          startAction={startSessionAction}
-          endAction={endSessionAction}
-        />
-      </Suspense>
+      <GetCurrentClimbingSessionView
+        query={currentSessionQuery}
+        startAction={startSessionAction}
+        endAction={endSessionAction}
+      />
 
       {areas.length === 0 ? (
         <Alert>
@@ -152,9 +139,7 @@ export async function GetGymRoutesView({
                       <Badge>#{route.order}</Badge>
                       <div className="min-w-52 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h2 className="font-medium">
-                            {route.boulder.name}
-                          </h2>
+                          <h2 className="font-medium">{route.boulder.name}</h2>
                           {route.boulder.available ? (
                             <Badge variant="secondary">
                               {route.boulder.grade}

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm"
+import { and, asc, desc, eq, inArray, isNotNull, isNull } from "drizzle-orm"
 import { Effect, Layer, Option, Schema } from "effect"
 
 import {
@@ -120,6 +120,48 @@ export const ClimbingSessionDBRepository = Layer.effect(
                 sessionAttempts
               )
         })
+      }),
+
+      deleteCompletedByClimberId: Effect.fn(
+        "ClimbingSessionRepository.deleteCompletedByClimberId"
+      )(function* (climberId, sessionId) {
+        const [session] = yield* db
+          .select()
+          .from(climbingSessionsTable)
+          .where(
+            and(
+              eq(climbingSessionsTable.climberId, climberId),
+              eq(climbingSessionsTable.id, sessionId),
+              isNotNull(climbingSessionsTable.endedAt)
+            )
+          )
+          .limit(1)
+          .pipe(Effect.orDie)
+
+        if (session === undefined || session.endedAt === null) {
+          return Option.none()
+        }
+
+        const attempts = yield* findAttemptsBySessionId(session.id)
+        const [deleted] = yield* db
+          .delete(climbingSessionsTable)
+          .where(
+            and(
+              eq(climbingSessionsTable.climberId, climberId),
+              eq(climbingSessionsTable.id, sessionId),
+              isNotNull(climbingSessionsTable.endedAt)
+            )
+          )
+          .returning()
+          .pipe(Effect.orDie)
+
+        if (deleted === undefined || deleted.endedAt === null) {
+          return Option.none()
+        }
+
+        return Option.some(
+          toCompletedSession({ ...deleted, endedAt: deleted.endedAt }, attempts)
+        )
       }),
 
       findActiveByClimberId: Effect.fn(

@@ -5,6 +5,7 @@ import { InfrastructureLayer } from "@climbing/infrastructure"
 import { ApplicationLayer } from "@climbing/application"
 import { CreateBoulderUseCase } from "@climbing/application/use-cases/create-boulder"
 import { DeleteBoulderUseCase } from "@climbing/application/use-cases/delete-boulder"
+import { DeleteClimbingSessionUseCase } from "@climbing/application/use-cases/delete-climbing-session"
 import { EndClimbingSessionUseCase } from "@climbing/application/use-cases/end-climbing-session"
 import { GetBouldersByIdsUseCase } from "@climbing/application/use-cases/get-boulders-by-ids"
 import { GetCurrentClimbingSessionUseCase } from "@climbing/application/use-cases/get-current-climbing-session"
@@ -18,6 +19,7 @@ export class Climbing extends Service<
   {
     readonly createBoulder: CreateBoulderUseCase["Service"]["execute"]
     readonly deleteBoulder: DeleteBoulderUseCase["Service"]["execute"]
+    readonly deleteClimbingSession: DeleteClimbingSessionUseCase["Service"]["execute"]
     readonly endClimbingSession: EndClimbingSessionUseCase["Service"]["execute"]
     readonly getBouldersByIds: GetBouldersByIdsUseCase["Service"]["execute"]
     readonly getCurrentClimbingSession: GetCurrentClimbingSessionUseCase["Service"]["execute"]
@@ -32,6 +34,7 @@ export class Climbing extends Service<
     Effect.gen(function* () {
       const createBoulder = yield* CreateBoulderUseCase
       const deleteBoulder = yield* DeleteBoulderUseCase
+      const deleteClimbingSession = yield* DeleteClimbingSessionUseCase
       const endClimbingSession = yield* EndClimbingSessionUseCase
       const getBouldersByIds = yield* GetBouldersByIdsUseCase
       const getCurrentClimbingSession = yield* GetCurrentClimbingSessionUseCase
@@ -44,6 +47,7 @@ export class Climbing extends Service<
       return {
         createBoulder: createBoulder.execute,
         deleteBoulder: deleteBoulder.execute,
+        deleteClimbingSession: deleteClimbingSession.execute,
         endClimbingSession: endClimbingSession.execute,
         getBouldersByIds: getBouldersByIds.execute,
         getCurrentClimbingSession: getCurrentClimbingSession.execute,

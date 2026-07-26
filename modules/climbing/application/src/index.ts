@@ -3,6 +3,7 @@ import { Layer } from "effect"
 import { ClimbingAttemptRecorder } from "./factories/climbing-attempt-recorder.factory"
 import { CreateBoulderUseCase } from "./use-cases/create-boulder.use-case"
 import { DeleteBoulderUseCase } from "./use-cases/delete-boulder.use-case"
+import { DeleteClimbingSessionUseCase } from "./use-cases/delete-climbing-session.use-case"
 import { EndClimbingSessionUseCase } from "./use-cases/end-climbing-session.use-case"
 import { GetBouldersByIdsUseCase } from "./use-cases/get-boulders-by-ids.use-case"
 import { GetCurrentClimbingSessionUseCase } from "./use-cases/get-current-climbing-session.use-case"
@@ -14,6 +15,7 @@ import { StartClimbingSessionUseCase } from "./use-cases/start-climbing-session.
 const UseCaseLayer = Layer.mergeAll(
   CreateBoulderUseCase.Live,
   DeleteBoulderUseCase.Live,
+  DeleteClimbingSessionUseCase.Live,
   EndClimbingSessionUseCase.Live,
   GetBouldersByIdsUseCase.Live,
   GetCurrentClimbingSessionUseCase.Live,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest"
-import { Effect, Predicate } from "effect"
+import { Effect, Option, Predicate } from "effect"
 import { ClimbingAttemptId } from "@climbing/application/models/climbing-attempt"
 import { BoulderId } from "@climbing/application/models/boulder"
 import { ClimberId } from "@climbing/application/models/climber"
@@ -69,5 +69,74 @@ describe("ClimbingSessionInMemoryRepository.findAllByClimberId", () => {
           true
         )
       }).pipe(Effect.provide(ClimbingSessionInMemoryRepository))
+  )
+})
+
+describe("ClimbingSessionInMemoryRepository.deleteCompletedByClimberId", () => {
+  it.effect("deletes only a completed session owned by the climber", () =>
+    Effect.gen(function* () {
+      const repository = yield* ClimbingSessionRepository
+      const climberId = ClimberId.make("climber-1")
+      const otherClimberId = ClimberId.make("climber-2")
+      const session = ActiveClimbingSession.make({
+        id: ClimbingSessionId.make("session-1"),
+        climberId,
+        attempts: [],
+        startedAt: new Date("2026-01-01T09:00:00.000Z"),
+      })
+      const activeSession = ActiveClimbingSession.make({
+        id: ClimbingSessionId.make("session-active"),
+        climberId,
+        attempts: [],
+        startedAt: new Date("2026-01-02T09:00:00.000Z"),
+      })
+      const otherSession = ActiveClimbingSession.make({
+        id: ClimbingSessionId.make("session-other"),
+        climberId: otherClimberId,
+        attempts: [],
+        startedAt: new Date("2026-01-01T09:00:00.000Z"),
+      })
+
+      yield* repository.insertActive(session)
+      yield* repository.insertAttemptIntoActiveSession({
+        id: ClimbingAttemptId.make("attempt-1"),
+        climberId,
+        boulderId: BoulderId.make("boulder-1"),
+        outcome: "FELL",
+        occurredAt: new Date("2026-01-01T10:00:00.000Z"),
+      })
+      const completed = yield* repository.endActiveByClimberId(
+        climberId,
+        new Date("2026-01-01T11:00:00.000Z")
+      )
+      yield* repository.insertActive(activeSession)
+      yield* repository.insertActive(otherSession)
+
+      const deleted = yield* repository.deleteCompletedByClimberId(
+        climberId,
+        session.id
+      )
+      const activeDelete = yield* repository.deleteCompletedByClimberId(
+        climberId,
+        activeSession.id
+      )
+      const otherDelete = yield* repository.deleteCompletedByClimberId(
+        climberId,
+        otherSession.id
+      )
+      const ownerSessions = yield* repository.findAllByClimberId(climberId)
+      const otherSessions =
+        yield* repository.findAllByClimberId(otherClimberId)
+
+      expect(deleted).toEqual(completed)
+      expect(Option.isNone(activeDelete)).toBe(true)
+      expect(Option.isNone(otherDelete)).toBe(true)
+      expect(ownerSessions.map((remaining) => remaining.id)).toEqual([
+        "session-active",
+      ])
+      expect(otherSessions.map((remaining) => remaining.id)).toEqual([
+        "session-other",
+      ])
+    }).pipe(Effect.provide(ClimbingSessionInMemoryRepository))
   )
 })

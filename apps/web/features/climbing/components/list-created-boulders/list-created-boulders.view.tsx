@@ -14,9 +14,11 @@ import type {
   ListCreatedBouldersViewModel,
 } from "@climbing/adapters-next/view-models/list-created-boulders"
 import type { DeleteBoulderViewModel } from "@climbing/adapters-next/view-models/delete-boulder"
+import type { DeleteClimbingSessionViewModel } from "@climbing/adapters-next/view-models/delete-climbing-session"
 import type { LogBoulderAttemptViewModel } from "@climbing/adapters-next/view-models/log-boulder-attempt"
 
 import { DeleteBoulderView } from "../delete-boulder/delete-boulder.view"
+import { DeleteClimbingSessionView } from "../delete-climbing-session/delete-climbing-session.view"
 import { LogBoulderAttemptView } from "../log-boulder-attempt/log-boulder-attempt.view"
 
 type ListCreatedBouldersQuery = () => Promise<ListCreatedBouldersViewModel>
@@ -31,14 +33,21 @@ type DeleteBoulderAction = (
   formData: FormData
 ) => Promise<DeleteBoulderViewModel>
 
+type DeleteClimbingSessionAction = (
+  previousState: DeleteClimbingSessionViewModel,
+  formData: FormData
+) => Promise<DeleteClimbingSessionViewModel>
+
 export async function ListCreatedBouldersView({
   query,
   logAttemptAction,
   deleteAction,
+  deleteSessionAction,
 }: {
   query: ListCreatedBouldersQuery
   logAttemptAction: LogBoulderAttemptAction
   deleteAction: DeleteBoulderAction
+  deleteSessionAction: DeleteClimbingSessionAction
 }) {
   const createdBoulders = await query()
   const boulders = createdBoulders.fields.boulders.value
@@ -98,7 +107,10 @@ export async function ListCreatedBouldersView({
                     </div>
                   </div>
                 </div>
-                <BoulderAttemptHistory boulder={boulder} />
+                <BoulderAttemptHistory
+                  boulder={boulder}
+                  deleteSessionAction={deleteSessionAction}
+                />
               </article>
             ))}
           </div>
@@ -110,8 +122,10 @@ export async function ListCreatedBouldersView({
 
 function BoulderAttemptHistory({
   boulder,
+  deleteSessionAction,
 }: {
   boulder: CreatedBoulderViewModel
+  deleteSessionAction: DeleteClimbingSessionAction
 }) {
   return (
     <details className="group rounded-lg border bg-muted/20">
@@ -131,14 +145,23 @@ function BoulderAttemptHistory({
         ) : (
           boulder.sessions.map((session) => (
             <section key={session.id} className="space-y-2">
-              <div>
-                <h3 className="text-sm font-medium">{session.label}</h3>
-                <p className="text-xs text-muted-foreground">
-                  Started {formatDate(session.startedAt)}
-                  {session.endedAt === null
-                    ? ""
-                    : ` · Ended ${formatDate(session.endedAt)}`}
-                </p>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h3 className="text-sm font-medium">{session.label}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Started {formatDate(session.startedAt)}
+                    {session.endedAt === null
+                      ? ""
+                      : ` · Ended ${formatDate(session.endedAt)}`}
+                  </p>
+                </div>
+                {session.status === "completed" && (
+                  <DeleteClimbingSessionView
+                    action={deleteSessionAction}
+                    climbingSessionId={session.id}
+                    startedAt={session.startedAt}
+                  />
+                )}
               </div>
               <ol className="space-y-2">
                 {session.attempts.map((attempt) => (
