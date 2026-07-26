@@ -75,4 +75,30 @@ describe("Gym structure in-memory repositories", () => {
       ).toEqual([1, 2])
     }).pipe(Effect.provide(GymRouteInMemoryRepository))
   )
+
+  it.effect("deletes routes by id and returns the deleted route", () =>
+    Effect.gen(function* () {
+      const repository = yield* GymRouteRepository
+      const areaId = GymAreaId.make("area-1")
+      const route = GymRoute.make({
+        id: GymRouteId.make("route-1"),
+        areaId,
+        order: GymRouteOrder.make(1),
+        positionLabel: Option.none(),
+        setOn: GymRouteSetDate.make("2026-06-30"),
+        setterName: Option.none(),
+        boulderId: BoulderId.make("boulder-1"),
+      })
+
+      yield* repository.insert(route)
+
+      const deleted = yield* repository.deleteById(route.id)
+      const missing = yield* repository.findById(route.id)
+      const deletedAgain = yield* repository.deleteById(route.id)
+
+      expect(Option.getOrNull(deleted)).toEqual(route)
+      expect(Option.isNone(missing)).toBe(true)
+      expect(Option.isNone(deletedAgain)).toBe(true)
+    }).pipe(Effect.provide(GymRouteInMemoryRepository))
+  )
 })

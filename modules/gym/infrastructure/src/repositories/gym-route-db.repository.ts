@@ -68,6 +68,18 @@ export const GymRouteDBRepository = Layer.effect(
         }
       ),
 
+      deleteById: Effect.fn("GymRouteRepository.deleteById")(
+        function* (routeId) {
+          const [deleted] = yield* db
+            .delete(gymRoutesTable)
+            .where(eq(gymRoutesTable.id, routeId))
+            .returning()
+            .pipe(Effect.orDie)
+
+          return Option.fromNullishOr(deleted).pipe(Option.map(toGymRoute))
+        }
+      ),
+
       insert: Effect.fn("GymRouteRepository.insert")(function* (route) {
         const [created] = yield* db
           .insert(gymRoutesTable)

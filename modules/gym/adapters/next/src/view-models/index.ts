@@ -15,6 +15,10 @@ export {
   type CreateGymRouteViewModel,
 } from "./create-gym-route.view-model"
 export {
+  deleteGymRouteInitialViewModel,
+  type DeleteGymRouteViewModel,
+} from "./delete-gym-route.view-model"
+export {
   getGymManagementInitialViewModel,
   type GetGymManagementViewModel,
   type GymBoulderOptionViewModel,

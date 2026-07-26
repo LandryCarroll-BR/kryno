@@ -40,6 +40,21 @@ export const GymRouteInMemoryRepository = Layer.effect(
         }
       ),
 
+      deleteById: Effect.fn("GymRouteRepository.deleteById")(
+        function* (routeId) {
+          return yield* Ref.modify(store, (routes) => {
+            const route = routes.get(routeId)
+            if (route === undefined) {
+              return [Option.none<GymRoute>(), routes]
+            }
+
+            const next = new Map(routes)
+            next.delete(routeId)
+            return [Option.some(route), next]
+          })
+        }
+      ),
+
       insert: Effect.fn("GymRouteRepository.insert")(function* (route) {
         return yield* Ref.modify(store, (routes) => {
           const duplicate = [...routes.values()].some(

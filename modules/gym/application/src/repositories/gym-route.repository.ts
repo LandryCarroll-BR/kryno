@@ -20,6 +20,9 @@ export class GymRouteRepository extends Service<
     readonly findById: (
       routeId: GymRouteId
     ) => Effect.Effect<Option.Option<GymRoute>>
+    readonly deleteById: (
+      routeId: GymRouteId
+    ) => Effect.Effect<Option.Option<GymRoute>>
     readonly insert: (
       route: GymRoute
     ) => Effect.Effect<Option.Option<GymRoute>>
