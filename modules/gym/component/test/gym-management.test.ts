@@ -2,9 +2,13 @@ import { describe, expect, it } from "@effect/vitest"
 import { Effect, Option, Predicate } from "effect"
 import { GymAreaName } from "@gym/application/models/gym-area"
 import {
+  BoulderGrade,
   BoulderId,
+  BoulderName,
   GymRouteOrder,
   GymRouteSetDate,
+  MovementStyle,
+  WallAngle,
 } from "@gym/application/models/gym-route"
 import { GymId, GymName } from "@gym/application/models/gym"
 
@@ -115,6 +119,105 @@ describe("Gym management", () => {
         1, 2,
       ])
       expect(management.assignableBoulders).toEqual([])
+    }).pipe(Effect.provide(GymTestLayer))
+  )
+
+  it.effect("creates a route with an inline boulder and links it", () =>
+    Effect.gen(function* () {
+      const gym = yield* Gym
+      const createdGym = yield* createGym(gym)
+      const area = yield* gym.createGymArea({
+        token: "admin-token",
+        gymId: createdGym.id,
+        name: GymAreaName.make("Moonboard"),
+      })
+
+      const route = yield* gym.createGymRoute({
+        token: "admin-token",
+        gymId: createdGym.id,
+        areaId: area.id,
+        order: GymRouteOrder.make(1),
+        positionLabel: "Center",
+        setOn: GymRouteSetDate.make("2026-07-10"),
+        setterName: "Jordan",
+        boulderSource: "new",
+        boulderName: BoulderName.make("Green Circuit 4"),
+        boulderGrade: BoulderGrade.make("V5"),
+        boulderWallAngle: WallAngle.make("VERTICAL"),
+        boulderMovementStyle: MovementStyle.make("TECHNICAL"),
+      })
+
+      expect(route.boulderId).toBe("created-boulder-1")
+
+      const management = yield* gym.getGymManagement({
+        token: "admin-token",
+        gymId: createdGym.id,
+      })
+      expect(management.areas[0]?.routes[0]?.boulderId).toBe(
+        "created-boulder-1"
+      )
+      expect(
+        management.boulders.find(({ id }) => id === route.boulderId)
+      ).toMatchObject({
+        name: "Green Circuit 4",
+        grade: "V5",
+      })
+      expect(
+        management.assignableBoulders.some(({ id }) => id === route.boulderId)
+      ).toBe(false)
+    }).pipe(Effect.provide(GymTestLayer))
+  )
+
+  it.effect("does not leave a new boulder behind when route order conflicts", () =>
+    Effect.gen(function* () {
+      const gym = yield* Gym
+      const createdGym = yield* createGym(gym)
+      const area = yield* gym.createGymArea({
+        token: "admin-token",
+        gymId: createdGym.id,
+        name: GymAreaName.make("Spray Wall"),
+      })
+      yield* gym.createGymRoute({
+        token: "admin-token",
+        gymId: createdGym.id,
+        areaId: area.id,
+        order: GymRouteOrder.make(1),
+        positionLabel: null,
+        setOn: GymRouteSetDate.make("2026-07-11"),
+        setterName: null,
+        boulderId: BoulderId.make("admin-boulder-1"),
+      })
+
+      const conflict = yield* Effect.flip(
+        gym.createGymRoute({
+          token: "admin-token",
+          gymId: createdGym.id,
+          areaId: area.id,
+          order: GymRouteOrder.make(1),
+          positionLabel: null,
+          setOn: GymRouteSetDate.make("2026-07-12"),
+          setterName: null,
+          boulderSource: "new",
+          boulderName: BoulderName.make("Purple Circuit 8"),
+          boulderGrade: BoulderGrade.make("V3"),
+          boulderWallAngle: WallAngle.make("SLAB"),
+          boulderMovementStyle: MovementStyle.make("COORDINATION"),
+        })
+      )
+      expect(
+        Predicate.isTagged(conflict, "GymRouteOrderAlreadyExistsError")
+      ).toBe(true)
+
+      const management = yield* gym.getGymManagement({
+        token: "admin-token",
+        gymId: createdGym.id,
+      })
+      expect(
+        management.boulders.some(({ name }) => name === "Purple Circuit 8")
+      ).toBe(false)
+      expect(management.assignableBoulders.map(({ id }) => id)).toEqual([
+        "admin-boulder-2",
+      ])
     }).pipe(Effect.provide(GymTestLayer))
   )
 

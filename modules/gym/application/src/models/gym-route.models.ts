@@ -1,14 +1,18 @@
 import { Schema } from "effect"
-import { BoulderId } from "@climbing/application/models/boulder"
+import {
+  BoulderGrade,
+  BoulderId,
+  BoulderName,
+  MovementStyle,
+  WallAngle,
+} from "@climbing/application/models/boulder"
 
 import { GymAreaId } from "./gym-area.models"
 
-export { BoulderId }
+export { BoulderGrade, BoulderId, BoulderName, MovementStyle, WallAngle }
 
 export type GymRouteId = typeof GymRouteId.Type
-export const GymRouteId = Schema.NonEmptyString.pipe(
-  Schema.brand("GymRouteId")
-)
+export const GymRouteId = Schema.NonEmptyString.pipe(Schema.brand("GymRouteId"))
 
 export type GymRouteOrder = typeof GymRouteOrder.Type
 export const GymRouteOrder = Schema.Int.pipe(
@@ -49,7 +53,7 @@ export const GymRouteSetDate = Schema.String.pipe(
     Schema.makeFilter((value) => {
       const date = new Date(`${value}T00:00:00.000Z`)
       return !Number.isNaN(date.getTime()) &&
-          date.toISOString().slice(0, 10) === value
+        date.toISOString().slice(0, 10) === value
         ? undefined
         : "Set date must be a valid calendar date."
     })

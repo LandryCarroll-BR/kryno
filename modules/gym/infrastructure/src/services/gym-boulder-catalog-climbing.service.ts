@@ -1,28 +1,67 @@
 import { Effect, Layer } from "effect"
 import { Climbing } from "@climbing/component"
-import { GymBoulderCatalog } from "@gym/application/services/gym-boulder-catalog"
+import { UnauthenticatedGymAdministratorError } from "@gym/application/errors/gym"
+import {
+  type AssignableGymBoulder,
+  GymBoulderCatalog,
+} from "@gym/application/services/gym-boulder-catalog"
 
 export const GymBoulderCatalogClimbing = Layer.effect(
   GymBoulderCatalog,
   Effect.gen(function* () {
     const climbing = yield* Climbing
 
+    const toAssignableBoulder = ({
+      id,
+      name,
+      grade,
+      wallAngle,
+      movementStyle,
+    }: AssignableGymBoulder): AssignableGymBoulder => ({
+      id,
+      name,
+      grade,
+      wallAngle,
+      movementStyle,
+    })
+
     return {
+      createOwned: Effect.fn("GymBoulderCatalog.createOwned")(
+        function* ({ token, name, grade, wallAngle, movementStyle }) {
+          return yield* climbing
+            .createBoulder({
+              token,
+              name,
+              grade,
+              wallAngle,
+              movementStyle,
+            })
+            .pipe(
+              Effect.map(toAssignableBoulder),
+              Effect.catchTags({
+                SchemaError: Effect.die,
+                UnauthenticatedClimberError: () =>
+                  new UnauthenticatedGymAdministratorError(),
+              })
+            )
+        }
+      ),
+
+      deleteOwned: Effect.fn("GymBoulderCatalog.deleteOwned")(
+        function* ({ token, boulderId }) {
+          yield* climbing
+            .deleteBoulder({ token, boulderId })
+            .pipe(Effect.catch(() => Effect.void))
+        }
+      ),
+
       getByIds: Effect.fn("GymBoulderCatalog.getByIds")(
         function* (boulderIds) {
           const boulders = yield* climbing
             .getBouldersByIds({ boulderIds: [...boulderIds] })
             .pipe(Effect.orDie)
 
-          return boulders.map(
-            ({ id, name, grade, wallAngle, movementStyle }) => ({
-              id,
-              name,
-              grade,
-              wallAngle,
-              movementStyle,
-            })
-          )
+          return boulders.map(toAssignableBoulder)
         }
       ),
 
@@ -31,15 +70,7 @@ export const GymBoulderCatalogClimbing = Layer.effect(
           .listCreatedBoulders({ token })
           .pipe(Effect.orDie)
 
-        return created.map(
-          ({ boulder: { id, name, grade, wallAngle, movementStyle } }) => ({
-            id,
-            name,
-            grade,
-            wallAngle,
-            movementStyle,
-          })
-        )
+        return created.map(({ boulder }) => toAssignableBoulder(boulder))
       }),
     }
   })

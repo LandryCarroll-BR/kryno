@@ -106,8 +106,7 @@ export class CreateGymRoutePresenter extends Service<
     const { issues } = CreateGymRoutePresenter.toStandardSchema(error.issue)
     const fieldError = (
       field: keyof CreateGymRouteViewModel["fields"]
-    ): string =>
-      issues.find(({ path }) => path?.[0] === field)?.message ?? ""
+    ): string => issues.find(({ path }) => path?.[0] === field)?.message ?? ""
 
     return {
       gymId: fieldError("gymId"),
@@ -116,7 +115,12 @@ export class CreateGymRoutePresenter extends Service<
       positionLabel: fieldError("positionLabel"),
       setOn: fieldError("setOn"),
       setterName: fieldError("setterName"),
+      boulderSource: fieldError("boulderSource"),
       boulderId: fieldError("boulderId"),
+      boulderName: fieldError("boulderName"),
+      boulderGrade: fieldError("boulderGrade"),
+      boulderWallAngle: fieldError("boulderWallAngle"),
+      boulderMovementStyle: fieldError("boulderMovementStyle"),
     } satisfies CreateGymRouteViewModel["errors"]
   }
 

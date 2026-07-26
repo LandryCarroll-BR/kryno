@@ -1,4 +1,4 @@
-import { Effect, Layer } from "effect"
+import { Effect, Layer, Ref } from "effect"
 import {
   BoulderGrade,
   BoulderId,
@@ -25,13 +25,49 @@ const boulders = [
   },
 ] as const
 
-export const GymBoulderCatalogTest = Layer.succeed(GymBoulderCatalog, {
-  getByIds: Effect.fn("GymBoulderCatalog.getByIds")((boulderIds) => {
-    const included = new Set(boulderIds)
-    return Effect.succeed(boulders.filter(({ id }) => included.has(id)))
-  }),
+export const GymBoulderCatalogTest = Layer.effect(
+  GymBoulderCatalog,
+  Effect.gen(function* () {
+    const store = yield* Ref.make([...boulders])
+    const counter = yield* Ref.make(1)
 
-  listOwned: Effect.fn("GymBoulderCatalog.listOwned")((token) =>
-    Effect.succeed(token === "admin-token" ? boulders : [])
-  ),
-})
+    return {
+      createOwned: Effect.fn("GymBoulderCatalog.createOwned")(
+        function* ({ name, grade, wallAngle, movementStyle }) {
+          const id = yield* Ref.getAndUpdate(counter, (value) => value + 1).pipe(
+            Effect.map((value) => BoulderId.make(`created-boulder-${value}`))
+          )
+          const boulder = {
+            id,
+            name,
+            grade,
+            wallAngle,
+            movementStyle,
+          }
+
+          yield* Ref.update(store, (current) => [...current, boulder])
+          return boulder
+        }
+      ),
+
+      deleteOwned: Effect.fn("GymBoulderCatalog.deleteOwned")(
+        function* ({ boulderId }) {
+          yield* Ref.update(store, (current) =>
+            current.filter(({ id }) => id !== boulderId)
+          )
+        }
+      ),
+
+      getByIds: Effect.fn("GymBoulderCatalog.getByIds")(function* (boulderIds) {
+        const current = yield* Ref.get(store)
+        const included = new Set(boulderIds)
+        return current.filter(({ id }) => included.has(id))
+      }),
+
+      listOwned: Effect.fn("GymBoulderCatalog.listOwned")(function* (token) {
+        const current = yield* Ref.get(store)
+        return token === "admin-token" ? current : []
+      }),
+    }
+  })
+)

@@ -59,6 +59,41 @@ describe("Gym management presenters", () => {
     }).pipe(Effect.provide(CreateGymRoutePresenter.Live))
   )
 
+  it.effect("maps inline boulder schema issues to their fields", () =>
+    Effect.gen(function* () {
+      const presenter = yield* CreateGymRoutePresenter
+      const error = yield* Effect.flip(
+        Schema.decodeUnknownEffect(CreateGymRouteInputSchema)(
+          {
+            token: "admin-token",
+            gymId: "gym-1",
+            areaId: "area-1",
+            order: "1",
+            positionLabel: "",
+            setOn: "2026-07-10",
+            setterName: "",
+            boulderSource: "new",
+            boulderName: "",
+            boulderGrade: "VX",
+            boulderWallAngle: "SIDEWAYS",
+            boulderMovementStyle: "LUCK",
+          },
+          { errors: "all" }
+        )
+      )
+      const viewModel = yield* presenter.presentSchemaError(
+        createGymRouteInitialViewModel,
+        error
+      )
+
+      expect(viewModel.status).toBe("invalid")
+      expect(viewModel.errors.boulderName).not.toBe("")
+      expect(viewModel.errors.boulderGrade).not.toBe("")
+      expect(viewModel.errors.boulderWallAngle).not.toBe("")
+      expect(viewModel.errors.boulderMovementStyle).not.toBe("")
+    }).pipe(Effect.provide(CreateGymRoutePresenter.Live))
+  )
+
   it.effect("presents nested routes and unavailable boulders", () =>
     Effect.gen(function* () {
       const presenter = yield* GetGymManagementPresenter

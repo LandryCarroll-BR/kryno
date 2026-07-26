@@ -7,6 +7,10 @@ export {
   type CreateGymAreaViewModel,
 } from "./create-gym-area.view-model"
 export {
+  boulderGradeOptions,
+  boulderMovementStyleOptions,
+  boulderSourceOptions,
+  boulderWallAngleOptions,
   createGymRouteInitialViewModel,
   type CreateGymRouteViewModel,
 } from "./create-gym-route.view-model"

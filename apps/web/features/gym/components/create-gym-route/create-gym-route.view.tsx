@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState } from "react"
+import { useActionState, useState } from "react"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
 import {
@@ -15,6 +15,14 @@ import {
   NativeSelectOption,
 } from "@packages/ui/components/native-select"
 import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@packages/ui/components/radio-group"
+import {
+  boulderGradeOptions,
+  boulderMovementStyleOptions,
+  boulderSourceOptions,
+  boulderWallAngleOptions,
   createGymRouteInitialViewModel,
   type CreateGymRouteViewModel,
 } from "@gym/adapters-next/view-models/create-gym-route"
@@ -43,6 +51,10 @@ export function CreateGymRouteView({
   areaId: string
   boulders: readonly GymBoulderOptionViewModel[]
 }) {
+  const initialBoulderSource = boulders.length === 0 ? "new" : "existing"
+  const [boulderSource, setBoulderSource] = useState<
+    "existing" | "new"
+  >(initialBoulderSource)
   const [state, formAction, pending] = useActionState(action, {
     ...createGymRouteInitialViewModel,
     fields: {
@@ -59,14 +71,21 @@ export function CreateGymRouteView({
         ...createGymRouteInitialViewModel.fields.setOn,
         value: localToday(),
       },
+      boulderSource: {
+        ...createGymRouteInitialViewModel.fields.boulderSource,
+        value: initialBoulderSource,
+      },
     },
   })
   const prefix = `route-${areaId}`
+  const usingExistingBoulder = boulderSource === "existing"
+  const cannotSubmit = pending || (usingExistingBoulder && boulders.length === 0)
 
   return (
     <form action={formAction} className="mt-6 border-t pt-6">
       <input type="hidden" name="gymId" value={gymId} />
       <input type="hidden" name="areaId" value={areaId} />
+      <input type="hidden" name="boulderSource" value={boulderSource} />
       <FieldGroup>
         {state.message !== "" && (
           <Alert
@@ -134,33 +153,140 @@ export function CreateGymRouteView({
             <FieldError>{state.errors.setterName}</FieldError>
           </Field>
         </div>
-        <Field data-invalid={Boolean(state.errors.boulderId)}>
-          <FieldLabel htmlFor={`${prefix}-boulder`}>
-            {state.fields.boulderId.label}
-          </FieldLabel>
-          <NativeSelect
-            id={`${prefix}-boulder`}
-            name="boulderId"
-            className="w-full"
-            disabled={pending || boulders.length === 0}
-            defaultValue={state.fields.boulderId.value}
-            aria-invalid={Boolean(state.errors.boulderId)}
+        <Field data-invalid={Boolean(state.errors.boulderSource)}>
+          <FieldLabel>{state.fields.boulderSource.label}</FieldLabel>
+          <RadioGroup
+            className="grid gap-3 sm:grid-cols-2"
+            value={boulderSource}
+            onValueChange={(value) => {
+              if (value === "existing" || value === "new") {
+                setBoulderSource(value)
+              }
+            }}
+            aria-invalid={Boolean(state.errors.boulderSource)}
           >
-            <NativeSelectOption value="">
-              {boulders.length === 0
-                ? "No unassigned boulders available"
-                : "Select a boulder"}
-            </NativeSelectOption>
-            {boulders.map((boulder) => (
-              <NativeSelectOption key={boulder.value} value={boulder.value}>
-                {boulder.label}
-              </NativeSelectOption>
+            {boulderSourceOptions.map((option) => (
+              <label
+                key={option.value}
+                className="flex items-center gap-3 rounded-md border p-3 text-sm font-medium"
+              >
+                <RadioGroupItem
+                  value={option.value}
+                  disabled={pending}
+                  aria-label={option.label}
+                />
+                {option.label}
+              </label>
             ))}
-          </NativeSelect>
-          <FieldError>{state.errors.boulderId}</FieldError>
+          </RadioGroup>
+          <FieldError>{state.errors.boulderSource}</FieldError>
         </Field>
+        {usingExistingBoulder ? (
+          <Field data-invalid={Boolean(state.errors.boulderId)}>
+            <FieldLabel htmlFor={`${prefix}-boulder`}>
+              {state.fields.boulderId.label}
+            </FieldLabel>
+            <NativeSelect
+              id={`${prefix}-boulder`}
+              name="boulderId"
+              className="w-full"
+              disabled={pending || boulders.length === 0}
+              defaultValue={state.fields.boulderId.value}
+              aria-invalid={Boolean(state.errors.boulderId)}
+            >
+              <NativeSelectOption value="">
+                {boulders.length === 0
+                  ? "No unassigned boulders available"
+                  : "Select a boulder"}
+              </NativeSelectOption>
+              {boulders.map((boulder) => (
+                <NativeSelectOption key={boulder.value} value={boulder.value}>
+                  {boulder.label}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+            <FieldError>{state.errors.boulderId}</FieldError>
+          </Field>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field data-invalid={Boolean(state.errors.boulderName)}>
+              <FieldLabel htmlFor={`${prefix}-boulder-name`}>
+                {state.fields.boulderName.label}
+              </FieldLabel>
+              <Input
+                id={`${prefix}-boulder-name`}
+                name="boulderName"
+                placeholder="Blue Circuit 12"
+                disabled={pending}
+                defaultValue={state.fields.boulderName.value}
+                aria-invalid={Boolean(state.errors.boulderName)}
+              />
+              <FieldError>{state.errors.boulderName}</FieldError>
+            </Field>
+            <Field data-invalid={Boolean(state.errors.boulderGrade)}>
+              <FieldLabel htmlFor={`${prefix}-boulder-grade`}>
+                {state.fields.boulderGrade.label}
+              </FieldLabel>
+              <NativeSelect
+                id={`${prefix}-boulder-grade`}
+                name="boulderGrade"
+                className="w-full"
+                disabled={pending}
+                defaultValue={state.fields.boulderGrade.value}
+                aria-invalid={Boolean(state.errors.boulderGrade)}
+              >
+                {boulderGradeOptions.map((grade) => (
+                  <NativeSelectOption key={grade.value} value={grade.value}>
+                    {grade.label}
+                  </NativeSelectOption>
+                ))}
+              </NativeSelect>
+              <FieldError>{state.errors.boulderGrade}</FieldError>
+            </Field>
+            <Field data-invalid={Boolean(state.errors.boulderWallAngle)}>
+              <FieldLabel htmlFor={`${prefix}-boulder-wall-angle`}>
+                {state.fields.boulderWallAngle.label}
+              </FieldLabel>
+              <NativeSelect
+                id={`${prefix}-boulder-wall-angle`}
+                name="boulderWallAngle"
+                className="w-full"
+                disabled={pending}
+                defaultValue={state.fields.boulderWallAngle.value}
+                aria-invalid={Boolean(state.errors.boulderWallAngle)}
+              >
+                {boulderWallAngleOptions.map((angle) => (
+                  <NativeSelectOption key={angle.value} value={angle.value}>
+                    {angle.label}
+                  </NativeSelectOption>
+                ))}
+              </NativeSelect>
+              <FieldError>{state.errors.boulderWallAngle}</FieldError>
+            </Field>
+            <Field data-invalid={Boolean(state.errors.boulderMovementStyle)}>
+              <FieldLabel htmlFor={`${prefix}-boulder-movement-style`}>
+                {state.fields.boulderMovementStyle.label}
+              </FieldLabel>
+              <NativeSelect
+                id={`${prefix}-boulder-movement-style`}
+                name="boulderMovementStyle"
+                className="w-full"
+                disabled={pending}
+                defaultValue={state.fields.boulderMovementStyle.value}
+                aria-invalid={Boolean(state.errors.boulderMovementStyle)}
+              >
+                {boulderMovementStyleOptions.map((style) => (
+                  <NativeSelectOption key={style.value} value={style.value}>
+                    {style.label}
+                  </NativeSelectOption>
+                ))}
+              </NativeSelect>
+              <FieldError>{state.errors.boulderMovementStyle}</FieldError>
+            </Field>
+          </div>
+        )}
         <Field>
-          <Button type="submit" disabled={pending || boulders.length === 0}>
+          <Button type="submit" disabled={cannotSubmit}>
             {pending ? "Creating route..." : "Create route"}
           </Button>
         </Field>
