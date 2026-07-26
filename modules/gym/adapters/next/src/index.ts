@@ -8,6 +8,7 @@ import { DeleteGymRoutePresenter } from "./presenters/delete-gym-route.presenter
 import { GetGymManagementPresenter } from "./presenters/get-gym-management.presenter"
 import { GetGymRoutesPresenter } from "./presenters/get-gym-routes.presenter"
 import { JoinGymPresenter } from "./presenters/join-gym.presenter"
+import { ListGymRouteAttemptHistoryPresenter } from "./presenters/list-gym-route-attempt-history.presenter"
 import { ListGymsPresenter } from "./presenters/list-gyms.presenter"
 import { LogGymRouteAttemptPresenter } from "./presenters/log-gym-route-attempt.presenter"
 
@@ -19,6 +20,7 @@ export const PresenterLayer = Layer.mergeAll(
   GetGymManagementPresenter.Live,
   GetGymRoutesPresenter.Live,
   JoinGymPresenter.Live,
+  ListGymRouteAttemptHistoryPresenter.Live,
   ListGymsPresenter.Live,
   LogGymRouteAttemptPresenter.Live
 )

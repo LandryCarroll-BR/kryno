@@ -7,6 +7,7 @@ import { DeleteGymRouteUseCase } from "./use-cases/delete-gym-route.use-case"
 import { GetGymManagementUseCase } from "./use-cases/get-gym-management.use-case"
 import { GetGymRoutesUseCase } from "./use-cases/get-gym-routes.use-case"
 import { JoinGymUseCase } from "./use-cases/join-gym.use-case"
+import { ListGymRouteAttemptHistoryUseCase } from "./use-cases/list-gym-route-attempt-history.use-case"
 import { ListGymsUseCase } from "./use-cases/list-gyms.use-case"
 import { LogGymRouteAttemptUseCase } from "./use-cases/log-gym-route-attempt.use-case"
 
@@ -18,6 +19,7 @@ export const ApplicationLayer = Layer.mergeAll(
   GetGymManagementUseCase.Live,
   GetGymRoutesUseCase.Live,
   JoinGymUseCase.Live,
+  ListGymRouteAttemptHistoryUseCase.Live,
   ListGymsUseCase.Live,
   LogGymRouteAttemptUseCase.Live
 )

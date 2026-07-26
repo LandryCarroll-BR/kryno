@@ -9,6 +9,7 @@ import { DeleteClimbingSessionUseCase } from "@climbing/application/use-cases/de
 import { EndClimbingSessionUseCase } from "@climbing/application/use-cases/end-climbing-session"
 import { GetBouldersByIdsUseCase } from "@climbing/application/use-cases/get-boulders-by-ids"
 import { GetCurrentClimbingSessionUseCase } from "@climbing/application/use-cases/get-current-climbing-session"
+import { ListBoulderAttemptHistoryUseCase } from "@climbing/application/use-cases/list-boulder-attempt-history"
 import { ListCreatedBouldersUseCase } from "@climbing/application/use-cases/list-created-boulders"
 import { LogBoulderAttemptUseCase } from "@climbing/application/use-cases/log-boulder-attempt"
 import { LogExistingBoulderAttemptUseCase } from "@climbing/application/use-cases/log-existing-boulder-attempt"
@@ -23,6 +24,7 @@ export class Climbing extends Service<
     readonly endClimbingSession: EndClimbingSessionUseCase["Service"]["execute"]
     readonly getBouldersByIds: GetBouldersByIdsUseCase["Service"]["execute"]
     readonly getCurrentClimbingSession: GetCurrentClimbingSessionUseCase["Service"]["execute"]
+    readonly listBoulderAttemptHistory: ListBoulderAttemptHistoryUseCase["Service"]["execute"]
     readonly listCreatedBoulders: ListCreatedBouldersUseCase["Service"]["execute"]
     readonly logBoulderAttempt: LogBoulderAttemptUseCase["Service"]["execute"]
     readonly logExistingBoulderAttempt: LogExistingBoulderAttemptUseCase["Service"]["execute"]
@@ -38,10 +40,10 @@ export class Climbing extends Service<
       const endClimbingSession = yield* EndClimbingSessionUseCase
       const getBouldersByIds = yield* GetBouldersByIdsUseCase
       const getCurrentClimbingSession = yield* GetCurrentClimbingSessionUseCase
+      const listBoulderAttemptHistory = yield* ListBoulderAttemptHistoryUseCase
       const listCreatedBoulders = yield* ListCreatedBouldersUseCase
       const logBoulderAttempt = yield* LogBoulderAttemptUseCase
-      const logExistingBoulderAttempt =
-        yield* LogExistingBoulderAttemptUseCase
+      const logExistingBoulderAttempt = yield* LogExistingBoulderAttemptUseCase
       const startClimbingSession = yield* StartClimbingSessionUseCase
 
       return {
@@ -51,6 +53,7 @@ export class Climbing extends Service<
         endClimbingSession: endClimbingSession.execute,
         getBouldersByIds: getBouldersByIds.execute,
         getCurrentClimbingSession: getCurrentClimbingSession.execute,
+        listBoulderAttemptHistory: listBoulderAttemptHistory.execute,
         listCreatedBoulders: listCreatedBoulders.execute,
         logBoulderAttempt: logBoulderAttempt.execute,
         logExistingBoulderAttempt: logExistingBoulderAttempt.execute,

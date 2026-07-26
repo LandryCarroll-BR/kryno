@@ -11,30 +11,50 @@ export const GymBoulderAttemptsClimbing = Layer.effect(
     const climbing = yield* Climbing
 
     return {
-      log: Effect.fn("GymBoulderAttempts.log")(
-        function* ({ token, memberId, routeId, boulderId, outcome }) {
+      listForBoulders: Effect.fn("GymBoulderAttempts.listForBoulders")(
+        function* ({ token, boulderIds }) {
           return yield* climbing
-            .logExistingBoulderAttempt({
+            .listBoulderAttemptHistory({
               token,
-              boulderId,
-              outcome,
+              boulderIds: [...boulderIds],
             })
             .pipe(
               Effect.catchTags({
                 SchemaError: Effect.die,
                 UnauthenticatedClimberError: () =>
                   new UnauthenticatedGymMemberError(),
-                BoulderNotFoundError: () =>
-                  new GymRouteBoulderUnavailableError({
-                    routeId,
-                    boulderId,
-                  }),
-                NoActiveClimbingSessionError: () =>
-                  new NoActiveGymClimbingSessionError({ memberId }),
               })
             )
         }
       ),
+      log: Effect.fn("GymBoulderAttempts.log")(function* ({
+        token,
+        memberId,
+        routeId,
+        boulderId,
+        outcome,
+      }) {
+        return yield* climbing
+          .logExistingBoulderAttempt({
+            token,
+            boulderId,
+            outcome,
+          })
+          .pipe(
+            Effect.catchTags({
+              SchemaError: Effect.die,
+              UnauthenticatedClimberError: () =>
+                new UnauthenticatedGymMemberError(),
+              BoulderNotFoundError: () =>
+                new GymRouteBoulderUnavailableError({
+                  routeId,
+                  boulderId,
+                }),
+              NoActiveClimbingSessionError: () =>
+                new NoActiveGymClimbingSessionError({ memberId }),
+            })
+          )
+      }),
     }
   })
 )

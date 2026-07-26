@@ -1,21 +1,33 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Effect, Option } from "effect"
-import { GymArea, GymAreaId, GymAreaName } from "@gym/application/models/gym-area"
+import type { ListGymRouteAttemptHistoryOutput } from "@gym/application/use-cases/list-gym-route-attempt-history"
 import {
+  GymArea,
+  GymAreaId,
+  GymAreaName,
+} from "@gym/application/models/gym-area"
+import {
+  BoulderGrade,
   BoulderId,
+  BoulderName,
   GymRoute,
   GymRouteId,
   GymRouteOrder,
   GymRouteSetDate,
+  MovementStyle,
+  WallAngle,
 } from "@gym/application/models/gym-route"
 import { Gym, GymId, GymName } from "@gym/application/models/gym"
 
 import { GetGymRoutesPresenter } from "../src/presenters/get-gym-routes.presenter"
+import { ListGymRouteAttemptHistoryPresenter } from "../src/presenters/list-gym-route-attempt-history.presenter"
 import { LogGymRouteAttemptPresenter } from "../src/presenters/log-gym-route-attempt.presenter"
 import { logGymRouteAttemptInitialViewModel } from "../src/view-models/log-gym-route-attempt.view-model"
 
 const gymId = GymId.make("gym-1")
 const gym = Gym.make({ id: gymId, name: GymName.make("Movement") })
+type RouteAttempt =
+  ListGymRouteAttemptHistoryOutput["areas"][number]["routes"][number]["attempts"][number]
 
 describe("Gym routes presenters", () => {
   it.effect("presents a join prompt without leaking routes to nonmembers", () =>
@@ -110,5 +122,74 @@ describe("Gym routes presenters", () => {
       expect(forbidden.status).toBe("forbidden")
       expect(noSession.message).toContain("Start a climbing session")
     }).pipe(Effect.provide(LogGymRouteAttemptPresenter.Live))
+  )
+
+  it.effect("presents route attempt history with recent attempts first", () =>
+    Effect.gen(function* () {
+      const presenter = yield* ListGymRouteAttemptHistoryPresenter
+      const areaId = GymAreaId.make("area-1")
+      const route = GymRoute.make({
+        id: GymRouteId.make("route-1"),
+        areaId,
+        order: GymRouteOrder.make(1),
+        positionLabel: Option.none(),
+        setOn: GymRouteSetDate.make("2026-07-02"),
+        setterName: Option.none(),
+        boulderId: BoulderId.make("boulder-1"),
+      })
+
+      const result = yield* presenter.presentSuccess({
+        gym,
+        isMember: true,
+        areas: [
+          {
+            area: GymArea.make({
+              id: areaId,
+              gymId,
+              name: GymAreaName.make("Cave"),
+            }),
+            routes: [
+              {
+                route,
+                boulder: Option.some({
+                  id: BoulderId.make("boulder-1"),
+                  name: BoulderName.make("Blue 12"),
+                  grade: BoulderGrade.make("V4"),
+                  wallAngle: WallAngle.make("OVERHANG"),
+                  movementStyle: MovementStyle.make("POWER"),
+                }),
+                attempts: [
+                  {
+                    id: "attempt-old" as RouteAttempt["id"],
+                    boulderId: BoulderId.make("boulder-1"),
+                    ordinal: 1 as RouteAttempt["ordinal"],
+                    outcome: "FELL",
+                    occurredAt: new Date(1_000),
+                  },
+                  {
+                    id: "attempt-new" as RouteAttempt["id"],
+                    boulderId: BoulderId.make("boulder-1"),
+                    ordinal: 2 as RouteAttempt["ordinal"],
+                    outcome: "TOPPED",
+                    occurredAt: new Date(2_000),
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const viewRoute = result.fields.areas.value[0]?.routes[0]
+      expect(viewRoute?.attemptCount).toBe(2)
+      expect(viewRoute?.attempts.map(({ id }) => id)).toEqual([
+        "attempt-new",
+        "attempt-old",
+      ])
+      expect(viewRoute?.attempts[0]?.outcome).toEqual({
+        label: "Topped",
+        value: "TOPPED",
+      })
+    }).pipe(Effect.provide(ListGymRouteAttemptHistoryPresenter.Live))
   )
 })

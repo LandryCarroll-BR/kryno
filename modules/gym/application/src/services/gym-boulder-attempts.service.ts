@@ -5,6 +5,8 @@ import type {
   ClimbingAttempt,
   ClimbingAttemptOutcome,
 } from "@climbing/application/models/climbing-attempt"
+import type { ClimbingSessionId } from "@climbing/application/models/climbing-session"
+import type { Option } from "effect"
 
 import type { NoActiveGymClimbingSessionError } from "../errors/gym-climbing.errors"
 import type { UnauthenticatedGymMemberError } from "../errors/gym-membership.errors"
@@ -15,6 +17,14 @@ import type { GymRouteId } from "../models/gym-route.models"
 export class GymBoulderAttempts extends Service<
   GymBoulderAttempts,
   {
+    readonly listForBoulders: (input: {
+      readonly token: string
+      readonly memberId: GymMemberId
+      readonly boulderIds: readonly BoulderId[]
+    }) => Effect.Effect<
+      readonly GymBoulderAttemptHistory[],
+      UnauthenticatedGymMemberError
+    >
     readonly log: (input: {
       readonly token: string
       readonly memberId: GymMemberId
@@ -29,3 +39,15 @@ export class GymBoulderAttempts extends Service<
     >
   }
 >()("@gym/application/GymBoulderAttempts") {}
+
+export type GymBoulderAttemptHistorySession = {
+  readonly id: ClimbingSessionId
+  readonly startedAt: Date
+  readonly endedAt: Option.Option<Date>
+  readonly attempts: readonly ClimbingAttempt[]
+}
+
+export type GymBoulderAttemptHistory = {
+  readonly boulderId: BoulderId
+  readonly sessions: readonly GymBoulderAttemptHistorySession[]
+}

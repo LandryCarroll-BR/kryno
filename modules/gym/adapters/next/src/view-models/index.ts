@@ -30,6 +30,13 @@ export {
   type JoinGymViewModel,
 } from "./join-gym.view-model"
 export {
+  listGymRouteAttemptHistoryInitialViewModel,
+  type GymRouteAttemptHistoryAreaViewModel,
+  type GymRouteAttemptHistoryRouteViewModel,
+  type GymRouteAttemptViewModel,
+  type ListGymRouteAttemptHistoryViewModel,
+} from "./list-gym-route-attempt-history.view-model"
+export {
   listGymsInitialViewModel,
   type GymListItemViewModel,
   type ListGymsViewModel,

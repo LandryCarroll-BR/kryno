@@ -12,15 +12,17 @@ import {
 import type { EndClimbingSessionViewModel } from "@climbing/adapters-next/view-models/end-climbing-session"
 import type { GetCurrentClimbingSessionViewModel } from "@climbing/adapters-next/view-models/get-current-climbing-session"
 import type { StartClimbingSessionViewModel } from "@climbing/adapters-next/view-models/start-climbing-session"
-import type { GetGymRoutesViewModel } from "@gym/adapters-next/view-models/get-gym-routes"
 import type { JoinGymViewModel } from "@gym/adapters-next/view-models/join-gym"
+import type { ListGymRouteAttemptHistoryViewModel } from "@gym/adapters-next/view-models/list-gym-route-attempt-history"
 import type { LogGymRouteAttemptViewModel } from "@gym/adapters-next/view-models/log-gym-route-attempt"
 
 import { GetCurrentClimbingSessionView } from "@/features/climbing/components/get-current-climbing-session/get-current-climbing-session.view"
 import { JoinGymView } from "../join-gym/join-gym.view"
 import { LogGymRouteAttemptView } from "../log-gym-route-attempt/log-gym-route-attempt.view"
 
-type GetGymRoutesQuery = (gymId: string) => Promise<GetGymRoutesViewModel>
+type GetGymRoutesQuery = (
+  gymId: string
+) => Promise<ListGymRouteAttemptHistoryViewModel>
 type JoinGymAction = (
   previousState: JoinGymViewModel,
   formData: FormData
@@ -134,7 +136,7 @@ export async function GetGymRoutesView({
                   {area.routes.map((route) => (
                     <article
                       key={route.id}
-                      className="flex flex-wrap items-center gap-4 py-5 first:pt-0 last:pb-0"
+                      className="flex flex-wrap items-start gap-4 py-5 first:pt-0 last:pb-0"
                     >
                       <Badge>#{route.order}</Badge>
                       <div className="min-w-52 flex-1">
@@ -159,6 +161,49 @@ export async function GetGymRoutesView({
                             {humanize(route.boulder.movementStyle)}
                           </p>
                         )}
+                        <div className="mt-3 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-muted-foreground uppercase">
+                            <span>Attempts</span>
+                            <Badge variant="outline">
+                              {route.attemptCount}
+                            </Badge>
+                          </div>
+                          {route.attemptCount === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                              No attempts yet.
+                            </p>
+                          ) : (
+                            <div className="grid grid-cols-3 gap-2">
+                              {route.attempts.map((attempt) => (
+                                <div
+                                  key={attempt.id}
+                                  className="rounded-md border bg-background px-3 py-2 text-sm"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium">
+                                      Attempt {attempt.ordinal}
+                                    </span>
+                                    <Badge
+                                      variant={
+                                        attempt.outcome.value === "TOPPED"
+                                          ? "default"
+                                          : "secondary"
+                                      }
+                                    >
+                                      {attempt.outcome.label}
+                                    </Badge>
+                                  </div>
+                                  <time
+                                    className="mt-1 block text-xs text-muted-foreground"
+                                    dateTime={attempt.occurredAt}
+                                  >
+                                    {formatDate(attempt.occurredAt)}
+                                  </time>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                       {route.boulder.available ? (
                         <LogGymRouteAttemptView
@@ -189,3 +234,11 @@ const humanize = (value: string): string =>
     .split("_")
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(" ")
+
+const formatDate = (value: string): string =>
+  new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(value))

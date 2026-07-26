@@ -7,6 +7,7 @@ import { DeleteClimbingSessionUseCase } from "./use-cases/delete-climbing-sessio
 import { EndClimbingSessionUseCase } from "./use-cases/end-climbing-session.use-case"
 import { GetBouldersByIdsUseCase } from "./use-cases/get-boulders-by-ids.use-case"
 import { GetCurrentClimbingSessionUseCase } from "./use-cases/get-current-climbing-session.use-case"
+import { ListBoulderAttemptHistoryUseCase } from "./use-cases/list-boulder-attempt-history.use-case"
 import { ListCreatedBouldersUseCase } from "./use-cases/list-created-boulders.use-case"
 import { LogBoulderAttemptUseCase } from "./use-cases/log-boulder-attempt.use-case"
 import { LogExistingBoulderAttemptUseCase } from "./use-cases/log-existing-boulder-attempt.use-case"
@@ -19,6 +20,7 @@ const UseCaseLayer = Layer.mergeAll(
   EndClimbingSessionUseCase.Live,
   GetBouldersByIdsUseCase.Live,
   GetCurrentClimbingSessionUseCase.Live,
+  ListBoulderAttemptHistoryUseCase.Live,
   ListCreatedBouldersUseCase.Live,
   LogBoulderAttemptUseCase.Live,
   LogExistingBoulderAttemptUseCase.Live,

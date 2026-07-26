@@ -8,6 +8,7 @@ import { DeleteGymRouteUseCase } from "@gym/application/use-cases/delete-gym-rou
 import { GetGymManagementUseCase } from "@gym/application/use-cases/get-gym-management"
 import { GetGymRoutesUseCase } from "@gym/application/use-cases/get-gym-routes"
 import { JoinGymUseCase } from "@gym/application/use-cases/join-gym"
+import { ListGymRouteAttemptHistoryUseCase } from "@gym/application/use-cases/list-gym-route-attempt-history"
 import { ListGymsUseCase } from "@gym/application/use-cases/list-gyms"
 import { LogGymRouteAttemptUseCase } from "@gym/application/use-cases/log-gym-route-attempt"
 import { InfrastructureLayer } from "@gym/infrastructure"
@@ -22,6 +23,7 @@ export class Gym extends Service<
     readonly getGymManagement: GetGymManagementUseCase["Service"]["execute"]
     readonly getGymRoutes: GetGymRoutesUseCase["Service"]["execute"]
     readonly joinGym: JoinGymUseCase["Service"]["execute"]
+    readonly listGymRouteAttemptHistory: ListGymRouteAttemptHistoryUseCase["Service"]["execute"]
     readonly listGyms: ListGymsUseCase["Service"]["execute"]
     readonly logGymRouteAttempt: LogGymRouteAttemptUseCase["Service"]["execute"]
   }
@@ -36,6 +38,8 @@ export class Gym extends Service<
       const getGymManagement = yield* GetGymManagementUseCase
       const getGymRoutes = yield* GetGymRoutesUseCase
       const joinGym = yield* JoinGymUseCase
+      const listGymRouteAttemptHistory =
+        yield* ListGymRouteAttemptHistoryUseCase
       const listGyms = yield* ListGymsUseCase
       const logGymRouteAttempt = yield* LogGymRouteAttemptUseCase
 
@@ -47,6 +51,7 @@ export class Gym extends Service<
         getGymManagement: getGymManagement.execute,
         getGymRoutes: getGymRoutes.execute,
         joinGym: joinGym.execute,
+        listGymRouteAttemptHistory: listGymRouteAttemptHistory.execute,
         listGyms: listGyms.execute,
         logGymRouteAttempt: logGymRouteAttempt.execute,
       }
