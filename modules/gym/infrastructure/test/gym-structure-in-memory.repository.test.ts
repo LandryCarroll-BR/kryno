@@ -5,6 +5,7 @@ import {
   BoulderId,
   GymRoute,
   GymRouteId,
+  GymRouteImageUrl,
   GymRouteOrder,
   GymRouteSetDate,
 } from "@gym/application/models/gym-route"
@@ -88,6 +89,9 @@ describe("Gym structure in-memory repositories", () => {
         setOn: GymRouteSetDate.make("2026-06-30"),
         setterName: Option.none(),
         boulderId: BoulderId.make("boulder-1"),
+        imageUrl: Option.some(
+          GymRouteImageUrl.make("/uploads/gym-routes/route-1.png")
+        ),
       })
 
       yield* repository.insert(route)

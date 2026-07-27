@@ -4,6 +4,7 @@ import { GymAreaName } from "@gym/application/models/gym-area"
 import {
   BoulderGrade,
   BoulderId,
+  GymRouteImageBytes,
   GymRouteOrder,
   GymRouteSetDate,
   MovementStyle,
@@ -199,6 +200,38 @@ describe("Gym management", () => {
       expect(
         management.assignableBoulders.some(({ id }) => id === route.boulderId)
       ).toBe(false)
+    }).pipe(Effect.provide(GymTestLayer))
+  )
+
+  it.effect("stores an optional route image url", () =>
+    Effect.gen(function* () {
+      const gym = yield* Gym
+      const createdGym = yield* createGym(gym)
+      const area = yield* gym.createGymArea({
+        token: "admin-token",
+        gymId: createdGym.id,
+        name: GymAreaName.make("Topout"),
+      })
+
+      const route = yield* gym.createGymRoute({
+        token: "admin-token",
+        gymId: createdGym.id,
+        areaId: area.id,
+        order: GymRouteOrder.make(1),
+        positionLabel: "Left",
+        setOn: GymRouteSetDate.make("2026-07-12"),
+        setterName: "Riley",
+        boulderId: BoulderId.make("admin-boulder-1"),
+        routeImage: {
+          bytes: GymRouteImageBytes.make(new Uint8Array([1, 2, 3])),
+          contentType: "image/png",
+          fileName: "route.png",
+        },
+      })
+
+      expect(Option.getOrNull(route.imageUrl)).toBe(
+        "/uploads/gym-routes/route-1.png"
+      )
     }).pipe(Effect.provide(GymTestLayer))
   )
 

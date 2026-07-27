@@ -24,6 +24,7 @@ export type GymRouteAttemptHistoryRouteViewModel = {
   readonly positionLabel: string | null
   readonly setOn: string
   readonly setterName: string | null
+  readonly imageUrl: string | null
   readonly boulder: GymRouteAttemptBoulderViewModel
   readonly attemptCount: number
   readonly attempts: readonly GymRouteAttemptViewModel[]

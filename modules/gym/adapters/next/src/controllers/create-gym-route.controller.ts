@@ -28,12 +28,29 @@ export const CreateGymRouteController = Effect.fn(
           return yield* redirectToSignIn
         }
 
+        const routeImageFile = formData.get("routeImage")
+        const routeImage =
+          routeImageFile instanceof File && routeImageFile.size > 0
+            ? {
+                bytes: new Uint8Array(
+                  yield* Effect.tryPromise(() =>
+                    routeImageFile.arrayBuffer()
+                  ).pipe(Effect.orDie)
+                ),
+                contentType: routeImageFile.type,
+                fileName: routeImageFile.name || "route-image",
+              }
+            : undefined
+        const formValues = Object.fromEntries(formData)
+        delete formValues.routeImage
+
         const input = yield* Schema.decodeUnknownEffect(
           CreateGymRouteInputSchema
         )(
           {
             token: authToken.value,
-            ...Object.fromEntries(formData),
+            ...formValues,
+            ...(routeImage === undefined ? {} : { routeImage }),
           },
           { errors: "all" }
         )

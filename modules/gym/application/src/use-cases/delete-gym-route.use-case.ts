@@ -15,6 +15,7 @@ import { GymRouteRepository } from "../repositories/gym-route.repository"
 import { GymRepository } from "../repositories/gym.repository"
 import { GymAdministratorAuthorization } from "../services/gym-administrator-authorization.service"
 import { GymBoulderCatalog } from "../services/gym-boulder-catalog.service"
+import { GymRouteImageStorage } from "../services/gym-route-image-storage.service"
 
 export const DeleteGymRouteInputSchema = Schema.Struct({
   token: Schema.NonEmptyString,
@@ -48,6 +49,7 @@ export class DeleteGymRouteUseCase extends Service<
       const areaRepository = yield* GymAreaRepository
       const routeRepository = yield* GymRouteRepository
       const boulderCatalog = yield* GymBoulderCatalog
+      const routeImageStorage = yield* GymRouteImageStorage
 
       return {
         execute: Effect.fn("DeleteGymRouteUseCase.execute")(
@@ -105,6 +107,12 @@ export class DeleteGymRouteUseCase extends Service<
                 boulderId: deleted.value.boulderId,
               })
               .pipe(Effect.catchDefect(() => Effect.void))
+
+            if (Option.isSome(deleted.value.imageUrl)) {
+              yield* routeImageStorage
+                .delete(deleted.value.imageUrl.value)
+                .pipe(Effect.catchDefect(() => Effect.void))
+            }
 
             return deleted.value
           }

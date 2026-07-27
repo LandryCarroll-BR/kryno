@@ -10,6 +10,7 @@ import { GymAreaIdServiceTest } from "./services/gym-area-id-test.service"
 import { GymBoulderCatalogTest } from "./services/gym-boulder-catalog-test.service"
 import { GymBoulderAttemptsTest } from "./services/gym-boulder-attempts-test.service"
 import { GymIdServiceTest } from "./services/gym-id-test.service"
+import { GymRouteImageStorageTest } from "./services/gym-route-image-storage-test.service"
 import { GymRouteIdServiceTest } from "./services/gym-route-id-test.service"
 
 export const InfrastructureTestLayer = Layer.mergeAll(
@@ -23,5 +24,6 @@ export const InfrastructureTestLayer = Layer.mergeAll(
   GymBoulderCatalogTest,
   GymBoulderAttemptsTest,
   GymIdServiceTest,
-  GymRouteIdServiceTest
+  GymRouteIdServiceTest,
+  GymRouteImageStorageTest
 )

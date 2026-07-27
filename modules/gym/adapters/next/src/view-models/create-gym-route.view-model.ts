@@ -21,6 +21,7 @@ export type CreateGymRouteViewModel = {
     readonly boulderColor: FieldViewModel
     readonly boulderWallAngle: FieldViewModel
     readonly boulderMovementStyle: FieldViewModel
+    readonly routeImage: FieldViewModel
   }
   readonly errors: Record<keyof CreateGymRouteViewModel["fields"], string>
 }
@@ -41,6 +42,7 @@ export const createGymRouteInitialViewModel = {
     boulderColor: { label: "Boulder color", value: "WHITE" },
     boulderWallAngle: { label: "Wall angle", value: "OVERHANG" },
     boulderMovementStyle: { label: "Movement style", value: "POWER" },
+    routeImage: { label: "Route image (optional)", value: "" },
   },
   errors: {
     gymId: "",
@@ -55,6 +57,7 @@ export const createGymRouteInitialViewModel = {
     boulderColor: "",
     boulderWallAngle: "",
     boulderMovementStyle: "",
+    routeImage: "",
   },
 } satisfies CreateGymRouteViewModel
 

@@ -139,6 +139,13 @@ export async function GetGymRoutesView({
                       key={route.id}
                       className="flex flex-wrap items-start gap-4 py-5 first:pt-0 last:pb-0"
                     >
+                      {route.imageUrl !== null && (
+                        <img
+                          src={route.imageUrl}
+                          alt={`${route.positionLabel ?? `Route ${route.order}`} preview`}
+                          className="h-32 w-full rounded-md border object-cover sm:w-48"
+                        />
+                      )}
                       <Badge>#{route.order}</Badge>
                       <div className="min-w-52 flex-1">
                         <div className="flex flex-wrap items-center gap-2">

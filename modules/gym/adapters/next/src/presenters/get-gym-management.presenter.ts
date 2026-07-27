@@ -65,6 +65,7 @@ export class GetGymManagementPresenter extends Service<
                 positionLabel: Option.getOrNull(route.positionLabel),
                 setOn: route.setOn,
                 setterName: Option.getOrNull(route.setterName),
+                imageUrl: Option.getOrNull(route.imageUrl),
                 boulder: {
                   id: route.boulderId,
                   label:

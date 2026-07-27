@@ -14,6 +14,7 @@ export type MemberGymRouteViewModel = {
   readonly positionLabel: string | null
   readonly setOn: string
   readonly setterName: string | null
+  readonly imageUrl: string | null
   readonly boulder: GymRouteBoulderViewModel
 }
 

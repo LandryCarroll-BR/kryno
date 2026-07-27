@@ -28,6 +28,7 @@ import {
   GymRoutePositionLabel,
   GymRouteSetDate,
   GymRouteSetterName,
+  GymRouteImageUpload,
 } from "../models/gym-route.models"
 import { GymId } from "../models/gym.models"
 import { GymAreaRepository } from "../repositories/gym-area.repository"
@@ -38,6 +39,7 @@ import {
   type AssignableGymBoulder,
   GymBoulderCatalog,
 } from "../services/gym-boulder-catalog.service"
+import { GymRouteImageStorage } from "../services/gym-route-image-storage.service"
 import { GymRouteIdService } from "../services/gym-route-id.service"
 
 const GymRouteOrderFromString = Schema.NumberFromString.pipe(
@@ -71,6 +73,7 @@ export const CreateGymRouteInputSchema = Schema.Struct({
   boulderColor: Schema.optional(BoulderColor),
   boulderWallAngle: Schema.optional(WallAngle),
   boulderMovementStyle: Schema.optional(MovementStyle),
+  routeImage: Schema.optional(GymRouteImageUpload),
 }).annotate({ identifier: "CreateGymRouteInput" })
 
 const ExistingGymRouteBoulderInputSchema = Schema.Struct({
@@ -148,6 +151,7 @@ export class CreateGymRouteUseCase extends Service<
       const areaRepository = yield* GymAreaRepository
       const routeRepository = yield* GymRouteRepository
       const boulderCatalog = yield* GymBoulderCatalog
+      const routeImageStorage = yield* GymRouteImageStorage
       const routeIdService = yield* GymRouteIdService
 
       return {
@@ -248,6 +252,15 @@ export class CreateGymRouteUseCase extends Service<
           }
 
           const id = yield* routeIdService.generate()
+          const imageUrl =
+            parsedInput.routeImage === undefined
+              ? Option.none()
+              : Option.some(
+                  yield* routeImageStorage.store({
+                    routeId: id,
+                    image: parsedInput.routeImage,
+                  })
+                )
           const inserted = yield* routeRepository.insert(
             GymRoute.make({
               id,
@@ -259,10 +272,17 @@ export class CreateGymRouteUseCase extends Service<
               setOn: parsedInput.setOn,
               setterName: optionalSetterName(parsedInput.setterName),
               boulderId,
+              imageUrl,
             })
           )
 
           if (Option.isNone(inserted)) {
+            if (Option.isSome(imageUrl)) {
+              yield* routeImageStorage
+                .delete(imageUrl.value)
+                .pipe(Effect.catchDefect(() => Effect.void))
+            }
+
             if (createdBoulder !== null) {
               yield* boulderCatalog.deleteOwned({
                 token: parsedInput.token,

@@ -1,4 +1,4 @@
-import { Schema } from "effect"
+import { Effect, Option, Schema } from "effect"
 import {
   BoulderGrade,
   BoulderId,
@@ -44,6 +44,39 @@ export const GymRouteSetterName = Schema.Trim.pipe(
   Schema.brand("GymRouteSetterName")
 )
 
+export type GymRouteImageUrl = typeof GymRouteImageUrl.Type
+export const GymRouteImageUrl = Schema.NonEmptyString.pipe(
+  Schema.brand("GymRouteImageUrl")
+)
+
+export const GymRouteImageContentType = Schema.Literals([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+])
+export type GymRouteImageContentType =
+  typeof GymRouteImageContentType.Type
+
+export type GymRouteImageBytes = typeof GymRouteImageBytes.Type
+export const GymRouteImageBytes = Schema.Uint8Array.pipe(
+  Schema.check(
+    Schema.makeFilter((value) =>
+      value.byteLength > 0 && value.byteLength <= 5 * 1024 * 1024
+        ? undefined
+        : "Route image must be between 1 byte and 5 MB."
+    )
+  ),
+  Schema.brand("GymRouteImageBytes")
+)
+
+export class GymRouteImageUpload extends Schema.Class<GymRouteImageUpload>(
+  "GymRouteImageUpload"
+)({
+  bytes: GymRouteImageBytes,
+  contentType: GymRouteImageContentType,
+  fileName: Schema.NonEmptyString,
+}) {}
+
 export type GymRouteSetDate = typeof GymRouteSetDate.Type
 export const GymRouteSetDate = Schema.String.pipe(
   Schema.check(
@@ -69,4 +102,7 @@ export class GymRoute extends Schema.Class<GymRoute>("GymRoute")({
   setOn: GymRouteSetDate,
   setterName: Schema.OptionFromNullOr(GymRouteSetterName),
   boulderId: BoulderId,
+  imageUrl: Schema.OptionFromNullOr(GymRouteImageUrl).pipe(
+    Schema.withConstructorDefault(Effect.succeed(Option.none()))
+  ),
 }) {}

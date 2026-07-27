@@ -1,5 +1,11 @@
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Badge } from "@packages/ui/components/badge"
+
+import type { GetGymManagementViewModel } from "@gym/adapters-next/view-models/get-gym-management"
+import type { CreateGymAreaViewModel } from "@gym/adapters-next/view-models/create-gym-area"
+import type { CreateGymRouteViewModel } from "@gym/adapters-next/view-models/create-gym-route"
+import type { DeleteGymRouteViewModel } from "@gym/adapters-next/view-models"
+
 import {
   Card,
   CardContent,
@@ -7,10 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@packages/ui/components/card"
-import type { GetGymManagementViewModel } from "@gym/adapters-next/view-models/get-gym-management"
-import type { CreateGymAreaViewModel } from "@gym/adapters-next/view-models/create-gym-area"
-import type { CreateGymRouteViewModel } from "@gym/adapters-next/view-models/create-gym-route"
-import type { DeleteGymRouteViewModel } from "@gym/adapters-next/view-models"
 
 import { CreateGymAreaView } from "../create-gym-area/create-gym-area.view"
 import { CreateGymRouteView } from "../create-gym-route/create-gym-route.view"
@@ -96,6 +98,16 @@ export async function GetGymManagementView({
                     key={route.id}
                     className="flex flex-wrap items-center gap-3 py-4 first:pt-0"
                   >
+                    {route.imageUrl !== null && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={route.imageUrl}
+                        alt={`${route.positionLabel ?? `Route ${route.order}`} preview`}
+                        className="h-16 w-24 rounded-md border object-cover"
+                        width={96}
+                        height={64}
+                      />
+                    )}
                     <Badge>#{route.order}</Badge>
                     <div className="min-w-0 flex-1">
                       <p className="font-medium">
@@ -106,8 +118,8 @@ export async function GetGymManagementView({
                         {route.setterName ? ` by ${route.setterName}` : ""}
                       </p>
                     </div>
-                    {route.boulder && (
-                      route.boulder.available ? (
+                    {route.boulder &&
+                      (route.boulder.available ? (
                         <BoulderColorBadge color={route.boulder.color}>
                           {route.boulder.label}
                         </BoulderColorBadge>
@@ -115,8 +127,7 @@ export async function GetGymManagementView({
                         <Badge variant="destructive">
                           {route.boulder.label}
                         </Badge>
-                      )
-                    )}
+                      ))}
                     <DeleteGymRouteView
                       action={deleteRouteAction}
                       gymId={gym.id}

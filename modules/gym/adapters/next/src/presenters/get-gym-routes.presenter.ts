@@ -46,6 +46,7 @@ export class GetGymRoutesPresenter extends Service<
                 positionLabel: Option.getOrNull(route.positionLabel),
                 setOn: route.setOn,
                 setterName: Option.getOrNull(route.setterName),
+                imageUrl: Option.getOrNull(route.imageUrl),
                 boulder: Option.match(boulder, {
                   onNone: () => ({
                     id: route.boulderId,

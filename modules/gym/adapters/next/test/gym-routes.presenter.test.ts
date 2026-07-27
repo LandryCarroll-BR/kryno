@@ -12,6 +12,7 @@ import {
   BoulderName,
   GymRoute,
   GymRouteId,
+  GymRouteImageUrl,
   GymRouteOrder,
   GymRouteSetDate,
   MovementStyle,
@@ -59,6 +60,9 @@ describe("Gym routes presenters", () => {
           setOn: GymRouteSetDate.make("2026-07-02"),
           setterName: Option.none(),
           boulderId: BoulderId.make(boulderId),
+          imageUrl: Option.some(
+            GymRouteImageUrl.make(`/uploads/gym-routes/${id}.png`)
+          ),
         })
       const missingRoute = makeRoute("route-1", 1, "missing-boulder")
 
@@ -86,6 +90,9 @@ describe("Gym routes presenters", () => {
         id: "missing-boulder",
         available: false,
       })
+      expect(result.fields.areas.value[0]?.routes[0]?.imageUrl).toBe(
+        "/uploads/gym-routes/route-1.png"
+      )
     }).pipe(Effect.provide(GetGymRoutesPresenter.Live))
   )
 
@@ -136,6 +143,9 @@ describe("Gym routes presenters", () => {
         setOn: GymRouteSetDate.make("2026-07-02"),
         setterName: Option.none(),
         boulderId: BoulderId.make("boulder-1"),
+        imageUrl: Option.some(
+          GymRouteImageUrl.make("/uploads/gym-routes/route-1.png")
+        ),
       })
 
       const result = yield* presenter.presentSuccess({
@@ -191,6 +201,7 @@ describe("Gym routes presenters", () => {
         label: "Topped",
         value: "TOPPED",
       })
+      expect(viewRoute?.imageUrl).toBe("/uploads/gym-routes/route-1.png")
     }).pipe(Effect.provide(ListGymRouteAttemptHistoryPresenter.Live))
   )
 })

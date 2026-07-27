@@ -121,6 +121,7 @@ export class CreateGymRoutePresenter extends Service<
       boulderColor: fieldError("boulderColor"),
       boulderWallAngle: fieldError("boulderWallAngle"),
       boulderMovementStyle: fieldError("boulderMovementStyle"),
+      routeImage: fieldError("routeImage"),
     } satisfies CreateGymRouteViewModel["errors"]
   }
 

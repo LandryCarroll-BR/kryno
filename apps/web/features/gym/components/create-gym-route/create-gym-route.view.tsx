@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useState } from "react"
+import { useActionState, useEffect, useState } from "react"
 import { Alert, AlertDescription } from "@packages/ui/components/alert"
 import { Button } from "@packages/ui/components/button"
 import {
@@ -66,6 +66,7 @@ export function CreateGymRouteView({
   const [boulderColor, setBoulderColor] = useState(
     createGymRouteInitialViewModel.fields.boulderColor.value
   )
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
   const [state, formAction, pending] = useActionState(action, {
     ...createGymRouteInitialViewModel,
     fields: {
@@ -100,8 +101,20 @@ export function CreateGymRouteView({
     "White"
   const derivedBoulderName = `${areaName} ${selectedColorLabel} ${boulderGrade}`
 
+  useEffect(() => {
+    return () => {
+      if (imagePreviewUrl !== null) {
+        URL.revokeObjectURL(imagePreviewUrl)
+      }
+    }
+  }, [imagePreviewUrl])
+
   return (
-    <form action={formAction} className="mt-6 border-t pt-6">
+    <form
+      action={formAction}
+      className="mt-6 border-t pt-6"
+      encType="multipart/form-data"
+    >
       <input type="hidden" name="gymId" value={gymId} />
       <input type="hidden" name="areaId" value={areaId} />
       <input type="hidden" name="boulderSource" value={boulderSource} />
@@ -172,6 +185,33 @@ export function CreateGymRouteView({
             <FieldError>{state.errors.setterName}</FieldError>
           </Field>
         </div>
+        <Field data-invalid={Boolean(state.errors.routeImage)}>
+          <FieldLabel htmlFor={`${prefix}-route-image`}>
+            {state.fields.routeImage.label}
+          </FieldLabel>
+          <Input
+            id={`${prefix}-route-image`}
+            name="routeImage"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            disabled={pending}
+            aria-invalid={Boolean(state.errors.routeImage)}
+            onChange={(event) => {
+              const file = event.currentTarget.files?.[0]
+              setImagePreviewUrl(
+                file === undefined ? null : URL.createObjectURL(file)
+              )
+            }}
+          />
+          {imagePreviewUrl !== null && (
+            <img
+              src={imagePreviewUrl}
+              alt="Route preview"
+              className="h-40 w-full rounded-md border object-cover sm:w-64"
+            />
+          )}
+          <FieldError>{state.errors.routeImage}</FieldError>
+        </Field>
         <Field data-invalid={Boolean(state.errors.boulderSource)}>
           <FieldLabel>{state.fields.boulderSource.label}</FieldLabel>
           <RadioGroup

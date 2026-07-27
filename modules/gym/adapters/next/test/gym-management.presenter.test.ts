@@ -5,6 +5,7 @@ import {
   BoulderId,
   GymRoute,
   GymRouteId,
+  GymRouteImageUrl,
   GymRouteOrder,
   GymRouteSetDate,
 } from "@gym/application/models/gym-route"
@@ -97,6 +98,39 @@ describe("Gym management presenters", () => {
     }).pipe(Effect.provide(CreateGymRoutePresenter.Live))
   )
 
+  it.effect("maps route image schema issues to the image field", () =>
+    Effect.gen(function* () {
+      const presenter = yield* CreateGymRoutePresenter
+      const error = yield* Effect.flip(
+        Schema.decodeUnknownEffect(CreateGymRouteInputSchema)(
+          {
+            token: "admin-token",
+            gymId: "gym-1",
+            areaId: "area-1",
+            order: "1",
+            positionLabel: "",
+            setOn: "2026-07-10",
+            setterName: "",
+            boulderId: "boulder-1",
+            routeImage: {
+              bytes: new Uint8Array(5 * 1024 * 1024 + 1),
+              contentType: "image/gif",
+              fileName: "route.gif",
+            },
+          },
+          { errors: "all" }
+        )
+      )
+      const viewModel = yield* presenter.presentSchemaError(
+        createGymRouteInitialViewModel,
+        error
+      )
+
+      expect(viewModel.status).toBe("invalid")
+      expect(viewModel.errors.routeImage).not.toBe("")
+    }).pipe(Effect.provide(CreateGymRoutePresenter.Live))
+  )
+
   it.effect("presents nested routes and unavailable boulders", () =>
     Effect.gen(function* () {
       const presenter = yield* GetGymManagementPresenter
@@ -123,6 +157,9 @@ describe("Gym management presenters", () => {
                 setOn: GymRouteSetDate.make("2026-06-30"),
                 setterName: Option.none(),
                 boulderId: BoulderId.make("deleted-boulder"),
+                imageUrl: Option.some(
+                  GymRouteImageUrl.make("/uploads/gym-routes/route-1.png")
+                ),
               }),
             ],
           },
@@ -139,6 +176,9 @@ describe("Gym management presenters", () => {
         color: "UNSPECIFIED",
         available: false,
       })
+      expect(viewModel.fields.areas.value[0]?.routes[0]?.imageUrl).toBe(
+        "/uploads/gym-routes/route-1.png"
+      )
     }).pipe(Effect.provide(GetGymManagementPresenter.Live))
   )
 

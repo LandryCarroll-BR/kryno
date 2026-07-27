@@ -91,6 +91,7 @@ export const GymRouteDBRepository = Layer.effect(
             setOn: route.setOn,
             setterName: Option.getOrNull(route.setterName),
             boulderId: route.boulderId,
+            imageUrl: Option.getOrNull(route.imageUrl),
           })
           .onConflictDoNothing()
           .returning()

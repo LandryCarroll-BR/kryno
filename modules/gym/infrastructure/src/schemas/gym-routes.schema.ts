@@ -6,6 +6,7 @@ import type {
   GymRoutePositionLabel,
   GymRouteSetDate,
   GymRouteSetterName,
+  GymRouteImageUrl,
 } from "@gym/application/models/gym-route"
 
 import { gymAreasTable } from "./gym-areas.schema"
@@ -25,6 +26,7 @@ export const gymRoutesTable = gymSchema.table(
     setOn: t.date().$type<GymRouteSetDate>().notNull(),
     setterName: t.text().$type<GymRouteSetterName>(),
     boulderId: t.char({ length: 24 }).$type<BoulderId>().notNull(),
+    imageUrl: t.text().$type<GymRouteImageUrl>(),
   }),
   (table) => [
     uniqueIndex("gym_routes_area_id_order_unique").on(
