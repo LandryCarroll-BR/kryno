@@ -3,6 +3,7 @@ import type {
   ClimbingAttemptId,
   ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
+  ClimbingAttemptVideoUrl,
 } from "@climbing/application/models/climbing-attempt"
 import type { BoulderId } from "@climbing/application/models/boulder"
 import type { ClimbingSessionId } from "@climbing/application/models/climbing-session"
@@ -38,6 +39,7 @@ export const climbingAttemptsTable = climbingSchema.table(
       .array()
       .default([])
       .notNull(),
+    videoUrl: t.text().$type<ClimbingAttemptVideoUrl>(),
     occurredAt: t.timestamp({ withTimezone: true }).notNull(),
     createdAt: t.timestamp({ withTimezone: true }).notNull(),
   }),

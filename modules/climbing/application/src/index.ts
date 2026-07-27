@@ -1,6 +1,7 @@
 import { Layer } from "effect"
 
 import { ClimbingAttemptRecorder } from "./factories/climbing-attempt-recorder.factory"
+import { ClimbingAttemptVideoStorage } from "./services/climbing-attempt-video-storage.service"
 import { CreateBoulderUseCase } from "./use-cases/create-boulder.use-case"
 import { DeleteBoulderUseCase } from "./use-cases/delete-boulder.use-case"
 import { DeleteClimbingSessionUseCase } from "./use-cases/delete-climbing-session.use-case"
@@ -30,3 +31,5 @@ const UseCaseLayer = Layer.mergeAll(
 export const ApplicationLayer = UseCaseLayer.pipe(
   Layer.provideMerge(ClimbingAttemptRecorder.Live)
 )
+
+export { ClimbingAttemptVideoStorage }

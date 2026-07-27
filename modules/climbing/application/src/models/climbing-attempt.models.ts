@@ -1,4 +1,4 @@
-import { Schema } from "effect"
+import { Effect, Option, Schema } from "effect"
 import { BoulderId } from "./boulder.models"
 
 export type ClimbingAttemptId = typeof ClimbingAttemptId.Type
@@ -45,6 +45,39 @@ export const ClimbingDate = Schema.Date.check(
   Schema.isDateValid({ message: "Climbing date must be valid." })
 )
 
+export type ClimbingAttemptVideoUrl = typeof ClimbingAttemptVideoUrl.Type
+export const ClimbingAttemptVideoUrl = Schema.NonEmptyString.pipe(
+  Schema.brand("ClimbingAttemptVideoUrl")
+)
+
+export const ClimbingAttemptVideoContentType = Schema.Literals([
+  "video/mp4",
+  "video/webm",
+])
+export type ClimbingAttemptVideoContentType =
+  typeof ClimbingAttemptVideoContentType.Type
+
+export type ClimbingAttemptVideoBytes =
+  typeof ClimbingAttemptVideoBytes.Type
+export const ClimbingAttemptVideoBytes = Schema.Uint8Array.pipe(
+  Schema.check(
+    Schema.makeFilter((value) =>
+      value.byteLength > 0 && value.byteLength <= 50 * 1024 * 1024
+        ? undefined
+        : "Attempt video must be between 1 byte and 50 MB."
+    )
+  ),
+  Schema.brand("ClimbingAttemptVideoBytes")
+)
+
+export class ClimbingAttemptVideoUpload extends Schema.Class<ClimbingAttemptVideoUpload>(
+  "ClimbingAttemptVideoUpload"
+)({
+  bytes: ClimbingAttemptVideoBytes,
+  contentType: ClimbingAttemptVideoContentType,
+  fileName: Schema.NonEmptyString,
+}) {}
+
 export class ClimbingAttempt extends Schema.Class<ClimbingAttempt>(
   "ClimbingAttempt"
 )({
@@ -54,4 +87,7 @@ export class ClimbingAttempt extends Schema.Class<ClimbingAttempt>(
   outcome: ClimbingAttemptOutcome,
   moveTypes: Schema.Array(ClimbingAttemptMoveType),
   occurredAt: ClimbingDate,
+  videoUrl: Schema.OptionFromNullOr(ClimbingAttemptVideoUrl).pipe(
+    Schema.withConstructorDefault(Effect.succeed(Option.none()))
+  ),
 }) {}

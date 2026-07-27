@@ -29,13 +29,30 @@ export const LogBoulderAttemptController = Effect.fn(
           return yield* redirectToSignIn
         }
 
+        const videoFile = formData.get("video")
+        const video =
+          videoFile instanceof File && videoFile.size > 0
+            ? {
+                bytes: new Uint8Array(
+                  yield* Effect.tryPromise(() =>
+                    videoFile.arrayBuffer()
+                  ).pipe(Effect.orDie)
+                ),
+                contentType: videoFile.type,
+                fileName: videoFile.name || "attempt-video",
+              }
+            : undefined
+        const formValues = Object.fromEntries(formData)
+        delete formValues.video
+
         const input = yield* Schema.decodeUnknownEffect(
           LogBoulderAttemptInputSchema
         )(
           {
             token: authToken.value,
-            ...Object.fromEntries(formData),
+            ...formValues,
             moveTypes: formData.getAll("moveTypes"),
+            ...(video === undefined ? {} : { video }),
           },
           { errors: "all" }
         )

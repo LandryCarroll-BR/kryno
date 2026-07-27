@@ -195,6 +195,14 @@ function BoulderAttemptHistory({
                     >
                       {formatDate(attempt.occurredAt)}
                     </time>
+                    {attempt.videoUrl !== null && (
+                      <video
+                        src={attempt.videoUrl}
+                        controls
+                        preload="metadata"
+                        className="mt-2 aspect-video w-full rounded-md border bg-black"
+                      />
+                    )}
                   </li>
                 ))}
               </ol>

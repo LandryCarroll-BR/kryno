@@ -65,6 +65,12 @@ describe("LogBoulderAttemptController", () => {
         formData.set("outcome", "TOPPED")
         formData.append("moveTypes", "HEEL_HOOK")
         formData.append("moveTypes", "FLAG")
+        formData.set(
+          "video",
+          new File([new Uint8Array([1, 2, 3])], "attempt.webm", {
+            type: "video/webm",
+          })
+        )
 
         return yield* controller.handle(formData)
       })
@@ -73,6 +79,9 @@ describe("LogBoulderAttemptController", () => {
     expect(viewModel.status).toBe("success")
     expect(viewModel.fields.outcome.value).toBe("TOPPED")
     expect(viewModel.fields.moveTypes.value).toBe("HEEL_HOOK,FLAG")
+    expect(viewModel.fields.video.value).toMatch(
+      /^\/uploads\/climbing-attempt-videos\/attempt-\d+\.webm$/
+    )
   })
 
   it("returns invalid state for an unknown move type", async () => {

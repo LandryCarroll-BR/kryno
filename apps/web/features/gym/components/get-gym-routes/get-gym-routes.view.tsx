@@ -219,6 +219,14 @@ export async function GetGymRoutesView({
                                       ))}
                                     </div>
                                   )}
+                                  {attempt.videoUrl !== null && (
+                                    <video
+                                      src={attempt.videoUrl}
+                                      controls
+                                      preload="metadata"
+                                      className="mt-2 aspect-video w-full rounded-md border bg-black"
+                                    />
+                                  )}
                                 </div>
                               ))}
                             </div>

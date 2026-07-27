@@ -3,6 +3,7 @@ import {
   AttemptOrdinal,
   ClimbingAttempt,
   ClimbingAttemptId,
+  ClimbingAttemptVideoUrl,
 } from "@climbing/application/models/climbing-attempt"
 import { ClimbingSessionId } from "@climbing/application/models/climbing-session"
 import { NoActiveGymClimbingSessionError } from "@gym/application/errors/gym-climbing"
@@ -46,6 +47,7 @@ export const GymBoulderAttemptsTest = Layer.effect(
         boulderId,
         outcome,
         moveTypes,
+        video,
       }) {
         if (token === "other-user-token") {
           return yield* new NoActiveGymClimbingSessionError({ memberId })
@@ -60,6 +62,14 @@ export const GymBoulderAttemptsTest = Layer.effect(
           outcome,
           moveTypes,
           occurredAt: new Date(ordinal * 1_000),
+          videoUrl:
+            video === undefined
+              ? Option.none()
+              : Option.some(
+                  ClimbingAttemptVideoUrl.make(
+                    `/uploads/climbing-attempt-videos/gym-attempt-${ordinal}.${video.contentType === "video/mp4" ? "mp4" : "webm"}`
+                  )
+                ),
         })
       }),
     }

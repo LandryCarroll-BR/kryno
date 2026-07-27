@@ -13,6 +13,7 @@ import {
 } from "../models/climbing-session.models"
 import { ClimbingSessionRepository } from "../repositories/climbing-session.repository"
 import { AuthenticatedClimber } from "../services/authenticated-climber.service"
+import { ClimbingAttemptVideoStorage } from "../services/climbing-attempt-video-storage.service"
 
 export const DeleteClimbingSessionInputSchema = Schema.Struct({
   token: Schema.NonEmptyString,
@@ -42,6 +43,7 @@ export class DeleteClimbingSessionUseCase extends Service<
     Effect.gen(function* () {
       const authenticatedClimber = yield* AuthenticatedClimber
       const sessionRepository = yield* ClimbingSessionRepository
+      const videoStorage = yield* ClimbingAttemptVideoStorage
 
       return {
         execute: Effect.fn("DeleteClimbingSessionUseCase.execute")(
@@ -77,6 +79,14 @@ export class DeleteClimbingSessionUseCase extends Service<
                 climberId,
                 climbingSessionId: parsedInput.climbingSessionId,
               })
+            }
+
+            for (const attempt of deletedSession.value.attempts) {
+              if (Option.isSome(attempt.videoUrl)) {
+                yield* videoStorage
+                  .delete(attempt.videoUrl.value)
+                  .pipe(Effect.catchDefect(() => Effect.void))
+              }
             }
 
             return deletedSession.value

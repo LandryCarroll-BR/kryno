@@ -1,0 +1,1 @@
+ALTER TABLE "kryno_climbing"."climbing_attempts" ADD COLUMN "video_url" text;

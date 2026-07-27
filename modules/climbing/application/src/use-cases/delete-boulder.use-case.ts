@@ -9,7 +9,9 @@ import {
 import type { UnauthenticatedClimberError } from "../errors/climber.errors"
 import { BoulderId, type Boulder } from "../models/boulder.models"
 import { BoulderRepository } from "../repositories/boulder.repository"
+import { ClimbingSessionRepository } from "../repositories/climbing-session.repository"
 import { AuthenticatedClimber } from "../services/authenticated-climber.service"
+import { ClimbingAttemptVideoStorage } from "../services/climbing-attempt-video-storage.service"
 
 export const DeleteBoulderInputSchema = Schema.Struct({
   token: Schema.NonEmptyString,
@@ -38,6 +40,8 @@ export class DeleteBoulderUseCase extends Service<
     Effect.gen(function* () {
       const authenticatedClimber = yield* AuthenticatedClimber
       const boulderRepository = yield* BoulderRepository
+      const sessionRepository = yield* ClimbingSessionRepository
+      const videoStorage = yield* ClimbingAttemptVideoStorage
 
       return {
         execute: Effect.fn("DeleteBoulderUseCase.execute")(function* (input) {
@@ -66,6 +70,10 @@ export class DeleteBoulderUseCase extends Service<
             })
           }
 
+          const attemptVideoUrls =
+            yield* sessionRepository.findAttemptVideoUrlsByBoulderId(
+              parsedInput.boulderId
+            )
           const deletedBoulder =
             yield* boulderRepository.deleteByCreatorClimberId(
               creatorClimberId,
@@ -77,6 +85,12 @@ export class DeleteBoulderUseCase extends Service<
               climberId: creatorClimberId,
               boulderId: parsedInput.boulderId,
             })
+          }
+
+          for (const videoUrl of attemptVideoUrls) {
+            yield* videoStorage
+              .delete(videoUrl)
+              .pipe(Effect.catchDefect(() => Effect.void))
           }
 
           return deletedBoulder.value

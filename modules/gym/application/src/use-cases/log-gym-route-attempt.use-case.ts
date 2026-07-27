@@ -4,6 +4,8 @@ import type { SchemaError } from "effect/Schema"
 import {
   ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
+  ClimbingAttemptVideoUpload,
+  type ClimbingAttemptVideoUrl,
 } from "@climbing/application/models/climbing-attempt"
 import type { BoulderId } from "@climbing/application/models/boulder"
 
@@ -32,6 +34,7 @@ export const LogGymRouteAttemptInputSchema = Schema.Struct({
   routeId: GymRouteId,
   outcome: ClimbingAttemptOutcome,
   moveTypes: Schema.Array(ClimbingAttemptMoveType),
+  video: Schema.optional(ClimbingAttemptVideoUpload),
 }).annotate({ identifier: "LogGymRouteAttemptInput" })
 
 export type LogGymRouteAttemptInput =
@@ -43,6 +46,7 @@ export type LoggedGymRouteAttempt = {
   readonly outcome: typeof ClimbingAttemptOutcome.Type
   readonly moveTypes: readonly (typeof ClimbingAttemptMoveType.Type)[]
   readonly occurredAt: Date
+  readonly videoUrl: Option.Option<ClimbingAttemptVideoUrl>
 }
 export type LogGymRouteAttemptOutput = {
   readonly gymId: GymId
@@ -134,6 +138,9 @@ export class LogGymRouteAttemptUseCase extends Service<
               boulderId: route.value.boulderId,
               outcome: parsedInput.outcome,
               moveTypes: parsedInput.moveTypes,
+              ...(parsedInput.video === undefined
+                ? {}
+                : { video: parsedInput.video }),
             })
 
             return {

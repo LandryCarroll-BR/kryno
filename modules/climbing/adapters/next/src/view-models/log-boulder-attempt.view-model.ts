@@ -7,6 +7,7 @@ export type LogBoulderAttemptViewModel = {
     readonly outcome: FieldViewModel
     readonly moveTypes: FieldViewModel
     readonly ordinal: FieldViewModel
+    readonly video: FieldViewModel
   }
   readonly errors: Record<keyof LogBoulderAttemptViewModel["fields"], string>
 }
@@ -60,6 +61,10 @@ export const logBoulderAttemptInitialViewModel = {
       label: "Attempt",
       value: "",
     },
+    video: {
+      label: "Video",
+      value: "",
+    },
   },
   errors: {
     attemptId: "",
@@ -67,6 +72,7 @@ export const logBoulderAttemptInitialViewModel = {
     outcome: "",
     moveTypes: "",
     ordinal: "",
+    video: "",
   },
 } satisfies LogBoulderAttemptViewModel
 

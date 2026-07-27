@@ -30,6 +30,22 @@ export function LogBoulderAttemptView({
   return (
     <form action={formAction} className="flex flex-col items-start gap-2">
       <input type="hidden" name="boulderId" value={boulderId} />
+      <label className="flex max-w-80 flex-col gap-1 text-xs text-muted-foreground">
+        <span>{state.fields.video.label}</span>
+        <input
+          type="file"
+          name="video"
+          accept="video/mp4,video/webm"
+          disabled={pending}
+          aria-invalid={Boolean(state.errors.video)}
+          className="w-full text-xs file:mr-2 file:rounded-md file:border-0 file:bg-secondary file:px-2 file:py-1 file:text-xs file:text-secondary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+        />
+      </label>
+      {state.errors.video !== "" && (
+        <p className="max-w-80 text-xs text-destructive">
+          {state.errors.video}
+        </p>
+      )}
       <div className="flex max-w-80 flex-wrap gap-1.5">
         {attemptMoveTypeOptions.map((moveType) => (
           <label
@@ -49,17 +65,17 @@ export function LogBoulderAttemptView({
       </div>
       <div className="flex flex-wrap gap-2">
         {outcomeOptions.map((outcome) => (
-            <Button
-              key={outcome.value}
-              type="submit"
-              name="outcome"
-              value={outcome.value}
-              size="sm"
-              variant={outcome.value === "FELL" ? "outline" : "default"}
-              disabled={pending}
-            >
-              {outcome.label}
-            </Button>
+          <Button
+            key={outcome.value}
+            type="submit"
+            name="outcome"
+            value={outcome.value}
+            size="sm"
+            variant={outcome.value === "FELL" ? "outline" : "default"}
+            disabled={pending}
+          >
+            {outcome.label}
+          </Button>
         ))}
       </div>
       {state.message !== "" && (

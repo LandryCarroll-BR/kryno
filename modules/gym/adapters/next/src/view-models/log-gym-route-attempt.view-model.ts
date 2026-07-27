@@ -19,6 +19,7 @@ export type LogGymRouteAttemptViewModel = {
     readonly outcome: FieldViewModel
     readonly moveTypes: FieldViewModel
     readonly ordinal: FieldViewModel
+    readonly video: FieldViewModel
   }
   readonly errors: Record<
     keyof LogGymRouteAttemptViewModel["fields"],
@@ -61,6 +62,7 @@ export const logGymRouteAttemptInitialViewModel = {
     outcome: { label: "Outcome", value: "" },
     moveTypes: { label: "Move types", value: "" },
     ordinal: { label: "Attempt", value: "" },
+    video: { label: "Video", value: "" },
   },
   errors: {
     gymId: "",
@@ -69,5 +71,6 @@ export const logGymRouteAttemptInitialViewModel = {
     outcome: "",
     moveTypes: "",
     ordinal: "",
+    video: "",
   },
 } satisfies LogGymRouteAttemptViewModel

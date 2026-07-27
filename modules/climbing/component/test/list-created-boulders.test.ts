@@ -27,6 +27,11 @@ describe("Climbing.listCreatedBoulders", () => {
           boulderId: boulder.id,
           outcome: "FELL",
           moveTypes: ["HEEL_HOOK", "FLAG"],
+          video: {
+            bytes: new Uint8Array([1, 2, 3]),
+            contentType: "video/mp4",
+            fileName: "attempt.mp4",
+          },
         })
         yield* climbing.endClimbingSession({ token: "valid-token" })
 
@@ -50,11 +55,16 @@ describe("Climbing.listCreatedBoulders", () => {
             session.attempts.map((attempt) => ({
               outcome: attempt.outcome,
               moveTypes: attempt.moveTypes,
+              videoUrl: Option.getOrNull(attempt.videoUrl),
             }))
           )
         ).toEqual([
-          { outcome: "FELL", moveTypes: ["HEEL_HOOK", "FLAG"] },
-          { outcome: "TOPPED", moveTypes: [] },
+          {
+            outcome: "FELL",
+            moveTypes: ["HEEL_HOOK", "FLAG"],
+            videoUrl: "/uploads/climbing-attempt-videos/attempt-1.mp4",
+          },
+          { outcome: "TOPPED", moveTypes: [], videoUrl: null },
         ])
         expect(Option.isSome(result?.sessions[0]?.endedAt)).toBe(true)
         expect(Option.isNone(result?.sessions[1]?.endedAt)).toBe(true)

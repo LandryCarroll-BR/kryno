@@ -5,6 +5,7 @@ import { ClimbingSessionInMemoryRepository } from "./repositories/climbing-sessi
 import { AuthenticatedClimberTest } from "./services/authenticated-climber-test.service"
 import { BoulderIdServiceTest } from "./services/boulder-id-test.service"
 import { ClimbingAttemptIdServiceTest } from "./services/climbing-attempt-id-test.service"
+import { ClimbingAttemptVideoStorageTest } from "./services/climbing-attempt-video-storage-test.service"
 import { ClimbingSessionIdServiceTest } from "./services/climbing-session-id-test.service"
 
 export const InfrastructureTestLayer = Layer.mergeAll(
@@ -13,5 +14,6 @@ export const InfrastructureTestLayer = Layer.mergeAll(
   AuthenticatedClimberTest,
   BoulderIdServiceTest,
   ClimbingAttemptIdServiceTest,
+  ClimbingAttemptVideoStorageTest,
   ClimbingSessionIdServiceTest
 )

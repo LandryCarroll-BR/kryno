@@ -7,6 +7,7 @@ export type GymRouteAttemptViewModel = {
   }
   readonly moveTypes: readonly GymRouteAttemptMoveTypeViewModel[]
   readonly occurredAt: string
+  readonly videoUrl: string | null
 }
 
 export type GymRouteAttemptMoveTypeViewModel = {

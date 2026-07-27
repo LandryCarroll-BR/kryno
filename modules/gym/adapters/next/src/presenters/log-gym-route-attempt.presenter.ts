@@ -1,4 +1,4 @@
-import { Effect, Layer, SchemaIssue } from "effect"
+import { Effect, Layer, Option, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
 import type { SchemaError } from "effect/Schema"
 import type { LogGymRouteAttemptOutput } from "@gym/application/use-cases/log-gym-route-attempt"
@@ -67,6 +67,10 @@ export class LogGymRouteAttemptPresenter extends Service<
             ...logGymRouteAttemptInitialViewModel.fields.ordinal,
             value: String(attempt.ordinal),
           },
+          video: {
+            ...logGymRouteAttemptInitialViewModel.fields.video,
+            value: Option.getOrNull(attempt.videoUrl) ?? "",
+          },
         },
       }),
     presentSchemaError: (previous, error) =>
@@ -124,6 +128,7 @@ export class LogGymRouteAttemptPresenter extends Service<
       outcome: fieldError("outcome"),
       moveTypes: fieldError("moveTypes"),
       ordinal: fieldError("ordinal"),
+      video: fieldError("video"),
     } satisfies LogGymRouteAttemptViewModel["errors"]
   }
 

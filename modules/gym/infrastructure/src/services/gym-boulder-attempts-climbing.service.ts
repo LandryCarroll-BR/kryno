@@ -34,6 +34,7 @@ export const GymBoulderAttemptsClimbing = Layer.effect(
         boulderId,
         outcome,
         moveTypes,
+        video,
       }) {
         return yield* climbing
           .logExistingBoulderAttempt({
@@ -41,6 +42,7 @@ export const GymBoulderAttemptsClimbing = Layer.effect(
             boulderId,
             outcome,
             moveTypes,
+            video,
           })
           .pipe(
             Effect.catchTags({

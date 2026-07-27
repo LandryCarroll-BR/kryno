@@ -11,6 +11,7 @@ import {
   type ClimbingAttempt,
   ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
+  ClimbingAttemptVideoUpload,
 } from "../models/climbing-attempt.models"
 import { BoulderRepository } from "../repositories/boulder.repository"
 import { AuthenticatedClimber } from "../services/authenticated-climber.service"
@@ -20,6 +21,7 @@ export const LogBoulderAttemptInputSchema = Schema.Struct({
   boulderId: BoulderId,
   outcome: ClimbingAttemptOutcome,
   moveTypes: Schema.Array(ClimbingAttemptMoveType),
+  video: Schema.optional(ClimbingAttemptVideoUpload),
 }).annotate({ identifier: "LogBoulderAttemptInput" })
 
 export type LogBoulderAttemptInput = typeof LogBoulderAttemptInputSchema.Type
@@ -73,6 +75,9 @@ export class LogBoulderAttemptUseCase extends Service<
               boulderId: parsedInput.boulderId,
               outcome: parsedInput.outcome,
               moveTypes: parsedInput.moveTypes,
+              ...(parsedInput.video === undefined
+                ? {}
+                : { video: parsedInput.video }),
             })
           }
         ),

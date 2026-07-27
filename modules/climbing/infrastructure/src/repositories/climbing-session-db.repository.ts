@@ -4,6 +4,7 @@ import { Effect, Layer, Option, Schema } from "effect"
 import {
   AttemptOrdinal,
   ClimbingAttempt,
+  ClimbingAttemptVideoUrl,
 } from "@climbing/application/models/climbing-attempt"
 import {
   ActiveClimbingSession,
@@ -26,6 +27,7 @@ const toAttempt = (
     outcome: row.outcome,
     moveTypes: row.moveTypes ?? [],
     occurredAt: row.occurredAt,
+    videoUrl: row.videoUrl,
   })
 
 const toActiveSession = (
@@ -220,6 +222,7 @@ export const ClimbingSessionDBRepository = Layer.effect(
         outcome,
         moveTypes,
         occurredAt,
+        videoUrl = Option.none(),
       }) {
         const [session] = yield* db
           .select()
@@ -261,6 +264,7 @@ export const ClimbingSessionDBRepository = Layer.effect(
             ordinal,
             outcome,
             moveTypes: [...moveTypes],
+            videoUrl: Option.getOrNull(videoUrl),
             occurredAt,
             createdAt: occurredAt,
           })
@@ -274,6 +278,25 @@ export const ClimbingSessionDBRepository = Layer.effect(
         }
 
         return Option.some(toAttempt(created))
+      }),
+
+      findAttemptVideoUrlsByBoulderId: Effect.fn(
+        "ClimbingSessionRepository.findAttemptVideoUrlsByBoulderId"
+      )(function* (boulderId) {
+        const attempts = yield* db
+          .select({ videoUrl: climbingAttemptsTable.videoUrl })
+          .from(climbingAttemptsTable)
+          .where(
+            and(
+              eq(climbingAttemptsTable.boulderId, boulderId),
+              isNotNull(climbingAttemptsTable.videoUrl)
+            )
+          )
+          .pipe(Effect.orDie)
+
+        return attempts.flatMap(({ videoUrl }) =>
+          videoUrl === null ? [] : [ClimbingAttemptVideoUrl.make(videoUrl)]
+        )
       }),
 
       endActiveByClimberId: Effect.fn(

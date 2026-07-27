@@ -108,6 +108,7 @@ export class ListCreatedBouldersPresenter extends Service<
                         value: moveType,
                       })),
                       occurredAt: attempt.occurredAt.toISOString(),
+                      videoUrl: Option.getOrNull(attempt.videoUrl),
                     })),
                 })),
             })),

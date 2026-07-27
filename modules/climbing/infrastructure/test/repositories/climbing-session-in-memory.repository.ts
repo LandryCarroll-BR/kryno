@@ -89,6 +89,7 @@ export const ClimbingSessionInMemoryRepository = Layer.effect(
         outcome,
         moveTypes,
         occurredAt,
+        videoUrl = Option.none(),
       }) {
         return yield* Ref.modify(store, (sessions) => {
           const activeSession = findActive(sessions, climberId)
@@ -108,6 +109,7 @@ export const ClimbingSessionInMemoryRepository = Layer.effect(
             outcome,
             moveTypes,
             occurredAt,
+            videoUrl,
           })
           const updatedSession: ActiveClimbingSession = {
             ...activeSession,
@@ -118,6 +120,19 @@ export const ClimbingSessionInMemoryRepository = Layer.effect(
 
           return [Option.some(attempt), next]
         })
+      }),
+
+      findAttemptVideoUrlsByBoulderId: Effect.fn(
+        "ClimbingSessionRepository.findAttemptVideoUrlsByBoulderId"
+      )(function* (boulderId) {
+        const sessions = yield* Ref.get(store)
+
+        return [...sessions.values()]
+          .flatMap((session) => session.attempts)
+          .filter((attempt) => attempt.boulderId === boulderId)
+          .flatMap((attempt) =>
+            Option.isSome(attempt.videoUrl) ? [attempt.videoUrl.value] : []
+          )
       }),
 
       endActiveByClimberId: Effect.fn(

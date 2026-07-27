@@ -29,6 +29,7 @@ export type BoulderAttemptViewModel = {
   }
   readonly moveTypes: readonly BoulderAttemptMoveTypeViewModel[]
   readonly occurredAt: string
+  readonly videoUrl: string | null
 }
 
 export type BoulderAttemptMoveTypeViewModel = {

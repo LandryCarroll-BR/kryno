@@ -84,6 +84,12 @@ describe("LogGymRouteAttemptController", () => {
         formData.set("outcome", "TOPPED")
         formData.append("moveTypes", "HEEL_HOOK")
         formData.append("moveTypes", "FLAG")
+        formData.set(
+          "video",
+          new File([new Uint8Array([1, 2, 3])], "attempt.mp4", {
+            type: "video/mp4",
+          })
+        )
 
         return yield* controller.handle(formData)
       })
@@ -92,6 +98,9 @@ describe("LogGymRouteAttemptController", () => {
     expect(viewModel.status).toBe("success")
     expect(viewModel.fields.outcome.value).toBe("TOPPED")
     expect(viewModel.fields.moveTypes.value).toBe("HEEL_HOOK,FLAG")
+    expect(viewModel.fields.video.value).toMatch(
+      /^\/uploads\/climbing-attempt-videos\/gym-attempt-\d+\.mp4$/
+    )
   })
 
   it("returns invalid state for an unknown move type", async () => {

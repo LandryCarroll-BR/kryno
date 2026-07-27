@@ -5,6 +5,7 @@ import type {
   ClimbingAttempt,
   ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
+  ClimbingAttemptVideoUpload,
 } from "@climbing/application/models/climbing-attempt"
 import type { ClimbingSessionId } from "@climbing/application/models/climbing-session"
 import type { Option } from "effect"
@@ -33,6 +34,7 @@ export class GymBoulderAttempts extends Service<
       readonly boulderId: BoulderId
       readonly outcome: ClimbingAttemptOutcome
       readonly moveTypes: readonly ClimbingAttemptMoveType[]
+      readonly video?: ClimbingAttemptVideoUpload
     }) => Effect.Effect<
       ClimbingAttempt,
       | UnauthenticatedGymMemberError

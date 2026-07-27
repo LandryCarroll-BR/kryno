@@ -109,6 +109,7 @@ describe("Gym routes presenters", () => {
           outcome: "TOPPED",
           moveTypes: ["HEEL_HOOK", "FLAG"],
           occurredAt: new Date(0),
+          videoUrl: Option.none(),
         },
       })
       const forbidden = yield* presenter.presentMembershipRequired(
@@ -178,6 +179,7 @@ describe("Gym routes presenters", () => {
                     outcome: "FELL",
                     moveTypes: [],
                     occurredAt: new Date(1_000),
+                    videoUrl: Option.none(),
                   },
                   {
                     id: "attempt-new" as RouteAttempt["id"],
@@ -186,6 +188,7 @@ describe("Gym routes presenters", () => {
                     outcome: "TOPPED",
                     moveTypes: ["HEEL_HOOK", "FLAG"],
                     occurredAt: new Date(2_000),
+                    videoUrl: Option.none(),
                   },
                 ],
               },

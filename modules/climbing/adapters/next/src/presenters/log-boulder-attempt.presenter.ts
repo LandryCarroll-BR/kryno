@@ -1,4 +1,4 @@
-import { Effect, Layer, SchemaIssue } from "effect"
+import { Effect, Layer, Option, SchemaIssue } from "effect"
 import { Service } from "effect/Context"
 import type { SavedBoulderNotFoundError } from "@climbing/application/errors/boulder"
 import type { NoActiveClimbingSessionError } from "@climbing/application/errors/climbing-session"
@@ -64,6 +64,10 @@ export class LogBoulderAttemptPresenter extends Service<
             ...logBoulderAttemptInitialViewModel.fields.ordinal,
             value: String(attempt.ordinal),
           },
+          video: {
+            ...logBoulderAttemptInitialViewModel.fields.video,
+            value: Option.getOrNull(attempt.videoUrl) ?? "",
+          },
         },
       }),
 
@@ -110,6 +114,7 @@ export class LogBoulderAttemptPresenter extends Service<
       outcome: fieldError("outcome"),
       moveTypes: fieldError("moveTypes"),
       ordinal: fieldError("ordinal"),
+      video: fieldError("video"),
     } satisfies LogBoulderAttemptViewModel["errors"]
   }
 

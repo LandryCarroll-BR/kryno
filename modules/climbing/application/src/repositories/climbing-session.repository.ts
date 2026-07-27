@@ -9,6 +9,7 @@ import type {
   ClimbingAttemptId,
   ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
+  ClimbingAttemptVideoUrl,
 } from "../models/climbing-attempt.models"
 
 import type {
@@ -40,7 +41,12 @@ export class ClimbingSessionRepository extends Service<
       readonly outcome: ClimbingAttemptOutcome
       readonly moveTypes: readonly ClimbingAttemptMoveType[]
       readonly occurredAt: Date
+      readonly videoUrl?: Option.Option<ClimbingAttemptVideoUrl>
     }) => Effect.Effect<Option.Option<ClimbingAttempt>>
+
+    readonly findAttemptVideoUrlsByBoulderId: (
+      boulderId: BoulderId
+    ) => Effect.Effect<readonly ClimbingAttemptVideoUrl[]>
 
     readonly endActiveByClimberId: (
       climberId: ClimberId,
