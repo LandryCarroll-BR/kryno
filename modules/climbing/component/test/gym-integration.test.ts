@@ -54,6 +54,7 @@ describe("Climbing gym integration", () => {
             token: "valid-token",
             boulderId: boulder.id,
             outcome: "FELL",
+            moveTypes: [],
           })
         )
         expect(
@@ -64,11 +65,13 @@ describe("Climbing gym integration", () => {
           token: "valid-token",
           boulderId: boulder.id,
           outcome: "TOPPED",
+          moveTypes: ["HEEL_HOOK", "TOE_HOOK"],
         })
         expect(attempt).toMatchObject({
           boulderId: boulder.id,
           ordinal: 1,
           outcome: "TOPPED",
+          moveTypes: ["HEEL_HOOK", "TOE_HOOK"],
         })
       }).pipe(Effect.provide(ClimbingTestLayer))
   )
@@ -98,11 +101,13 @@ describe("Climbing gym integration", () => {
         token: "valid-token",
         boulderId: requested.id,
         outcome: "TOPPED",
+        moveTypes: ["DEADPOINT"],
       })
       yield* climbing.logExistingBoulderAttempt({
         token: "valid-token",
         boulderId: unrequested.id,
         outcome: "FELL",
+        moveTypes: [],
       })
 
       const result = yield* climbing.listBoulderAttemptHistory({
@@ -119,6 +124,7 @@ describe("Climbing gym integration", () => {
           boulderId: requested.id,
           ordinal: 1,
           outcome: "TOPPED",
+          moveTypes: ["DEADPOINT"],
         },
       ])
       expect(result[1]?.sessions).toEqual([])
@@ -142,6 +148,7 @@ describe("Climbing gym integration", () => {
           token: "other-valid-token",
           boulderId: boulder.id,
           outcome: "FELL",
+          moveTypes: [],
         })
       )
       expect(
@@ -153,6 +160,7 @@ describe("Climbing gym integration", () => {
           token: "valid-token",
           boulderId: BoulderId.make("missing-boulder"),
           outcome: "FELL",
+          moveTypes: [],
         })
       )
       expect(Predicate.isTagged(missing, "BoulderNotFoundError")).toBe(true)

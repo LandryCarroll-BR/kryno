@@ -17,6 +17,7 @@ export type LogGymRouteAttemptViewModel = {
     readonly routeId: FieldViewModel
     readonly attemptId: FieldViewModel
     readonly outcome: FieldViewModel
+    readonly moveTypes: FieldViewModel
     readonly ordinal: FieldViewModel
   }
   readonly errors: Record<
@@ -30,6 +31,26 @@ export const gymAttemptOutcomeOptions = [
   { label: "Topped", value: "TOPPED" },
 ] as const satisfies readonly FieldViewModel[]
 
+export const gymAttemptMoveTypeOptions = [
+  { label: "Dyno", value: "DYNO" },
+  { label: "Deadpoint", value: "DEADPOINT" },
+  { label: "Heel hook", value: "HEEL_HOOK" },
+  { label: "Toe hook", value: "TOE_HOOK" },
+  { label: "Drop knee", value: "DROP_KNEE" },
+  { label: "Flag", value: "FLAG" },
+  { label: "Match", value: "MATCH" },
+  { label: "Mantle", value: "MANTLE" },
+  { label: "Smear", value: "SMEAR" },
+  { label: "Campus", value: "CAMPUS" },
+  { label: "Compression", value: "COMPRESSION" },
+  { label: "Gaston", value: "GASTON" },
+  { label: "Undercling", value: "UNDERCLING" },
+  { label: "Sidepull", value: "SIDEPULL" },
+  { label: "Crimp", value: "CRIMP" },
+  { label: "Pinch", value: "PINCH" },
+  { label: "Sloper", value: "SLOPER" },
+] as const satisfies readonly FieldViewModel[]
+
 export const logGymRouteAttemptInitialViewModel = {
   status: "idle",
   message: "",
@@ -38,6 +59,7 @@ export const logGymRouteAttemptInitialViewModel = {
     routeId: { label: "Route", value: "" },
     attemptId: { label: "Attempt ID", value: "" },
     outcome: { label: "Outcome", value: "" },
+    moveTypes: { label: "Move types", value: "" },
     ordinal: { label: "Attempt", value: "" },
   },
   errors: {
@@ -45,6 +67,7 @@ export const logGymRouteAttemptInitialViewModel = {
     routeId: "",
     attemptId: "",
     outcome: "",
+    moveTypes: "",
     ordinal: "",
   },
 } satisfies LogGymRouteAttemptViewModel

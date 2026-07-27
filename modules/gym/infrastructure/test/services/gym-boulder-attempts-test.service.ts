@@ -31,6 +31,7 @@ export const GymBoulderAttemptsTest = Layer.effect(
                     boulderId,
                     ordinal: AttemptOrdinal.make(1),
                     outcome: index % 2 === 0 ? "TOPPED" : "FELL",
+                    moveTypes: index % 2 === 0 ? ["HEEL_HOOK"] : [],
                     occurredAt: new Date((index + 1) * 10_000 + 1_000),
                   }),
                 ],
@@ -44,6 +45,7 @@ export const GymBoulderAttemptsTest = Layer.effect(
         memberId,
         boulderId,
         outcome,
+        moveTypes,
       }) {
         if (token === "other-user-token") {
           return yield* new NoActiveGymClimbingSessionError({ memberId })
@@ -56,6 +58,7 @@ export const GymBoulderAttemptsTest = Layer.effect(
           boulderId,
           ordinal: AttemptOrdinal.make(ordinal),
           outcome,
+          moveTypes,
           occurredAt: new Date(ordinal * 1_000),
         })
       }),

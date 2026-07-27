@@ -24,6 +24,7 @@ describe("Climbing.deleteClimbingSession", () => {
         token: "valid-token",
         boulderId: boulder.id,
         outcome: "FELL",
+        moveTypes: [],
       })
       const ended = yield* climbing.endClimbingSession({
         token: "valid-token",

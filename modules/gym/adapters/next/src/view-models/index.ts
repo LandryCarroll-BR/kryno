@@ -57,6 +57,7 @@ export {
   type MemberGymRouteViewModel,
 } from "./get-gym-routes.view-model"
 export {
+  gymAttemptMoveTypeOptions,
   gymAttemptOutcomeOptions,
   logGymRouteAttemptInitialViewModel,
   type LogGymRouteAttemptViewModel,

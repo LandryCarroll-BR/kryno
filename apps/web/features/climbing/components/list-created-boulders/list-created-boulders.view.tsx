@@ -184,6 +184,11 @@ function BoulderAttemptHistory({
                     >
                       {attempt.outcome.label}
                     </Badge>
+                    {attempt.moveTypes.map((moveType) => (
+                      <Badge key={moveType.value} variant="secondary">
+                        {moveType.label}
+                      </Badge>
+                    ))}
                     <time
                       dateTime={attempt.occurredAt}
                       className="ml-auto text-xs text-muted-foreground"

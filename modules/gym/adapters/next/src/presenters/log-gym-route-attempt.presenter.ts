@@ -59,6 +59,10 @@ export class LogGymRouteAttemptPresenter extends Service<
             ...logGymRouteAttemptInitialViewModel.fields.outcome,
             value: attempt.outcome,
           },
+          moveTypes: {
+            ...logGymRouteAttemptInitialViewModel.fields.moveTypes,
+            value: attempt.moveTypes.join(","),
+          },
           ordinal: {
             ...logGymRouteAttemptInitialViewModel.fields.ordinal,
             value: String(attempt.ordinal),
@@ -118,6 +122,7 @@ export class LogGymRouteAttemptPresenter extends Service<
       routeId: fieldError("routeId"),
       attemptId: fieldError("attemptId"),
       outcome: fieldError("outcome"),
+      moveTypes: fieldError("moveTypes"),
       ordinal: fieldError("ordinal"),
     } satisfies LogGymRouteAttemptViewModel["errors"]
   }

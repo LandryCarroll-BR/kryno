@@ -26,6 +26,7 @@ describe("Climbing.listCreatedBoulders", () => {
           token: "valid-token",
           boulderId: boulder.id,
           outcome: "FELL",
+          moveTypes: ["HEEL_HOOK", "FLAG"],
         })
         yield* climbing.endClimbingSession({ token: "valid-token" })
 
@@ -35,6 +36,7 @@ describe("Climbing.listCreatedBoulders", () => {
           token: "valid-token",
           boulderId: boulder.id,
           outcome: "TOPPED",
+          moveTypes: [],
         })
 
         const [result] = yield* climbing.listCreatedBoulders({
@@ -45,9 +47,15 @@ describe("Climbing.listCreatedBoulders", () => {
         expect(result?.sessions).toHaveLength(2)
         expect(
           result?.sessions.flatMap((session) =>
-            session.attempts.map((attempt) => attempt.outcome)
+            session.attempts.map((attempt) => ({
+              outcome: attempt.outcome,
+              moveTypes: attempt.moveTypes,
+            }))
           )
-        ).toEqual(["FELL", "TOPPED"])
+        ).toEqual([
+          { outcome: "FELL", moveTypes: ["HEEL_HOOK", "FLAG"] },
+          { outcome: "TOPPED", moveTypes: [] },
+        ])
         expect(Option.isSome(result?.sessions[0]?.endedAt)).toBe(true)
         expect(Option.isNone(result?.sessions[1]?.endedAt)).toBe(true)
       }).pipe(Effect.provide(ClimbingTestLayer))
@@ -78,6 +86,7 @@ describe("Climbing.listCreatedBoulders", () => {
         token: "valid-token",
         boulderId: attemptedBoulder.id,
         outcome: "FELL",
+        moveTypes: [],
       })
 
       const result = yield* climbing.listCreatedBoulders({
@@ -118,12 +127,14 @@ describe("Climbing.listCreatedBoulders", () => {
         token: "valid-token",
         boulderId: ownerBoulder.id,
         outcome: "FELL",
+        moveTypes: [],
       })
       yield* climbing.startClimbingSession({ token: "other-valid-token" })
       yield* climbing.logBoulderAttempt({
         token: "other-valid-token",
         boulderId: otherBoulder.id,
         outcome: "TOPPED",
+        moveTypes: [],
       })
 
       const result = yield* climbing.listCreatedBoulders({

@@ -1,6 +1,7 @@
 import type {
   AttemptOrdinal,
   ClimbingAttemptId,
+  ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
 } from "@climbing/application/models/climbing-attempt"
 import type { BoulderId } from "@climbing/application/models/boulder"
@@ -31,6 +32,12 @@ export const climbingAttemptsTable = climbingSchema.table(
       }),
     ordinal: t.integer().$type<AttemptOrdinal>().notNull(),
     outcome: t.text().$type<ClimbingAttemptOutcome>().notNull(),
+    moveTypes: t
+      .text()
+      .$type<ClimbingAttemptMoveType>()
+      .array()
+      .default([])
+      .notNull(),
     occurredAt: t.timestamp({ withTimezone: true }).notNull(),
     createdAt: t.timestamp({ withTimezone: true }).notNull(),
   }),

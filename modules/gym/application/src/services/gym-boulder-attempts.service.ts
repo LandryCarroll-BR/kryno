@@ -3,6 +3,7 @@ import { Service } from "effect/Context"
 import type { BoulderId } from "@climbing/application/models/boulder"
 import type {
   ClimbingAttempt,
+  ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
 } from "@climbing/application/models/climbing-attempt"
 import type { ClimbingSessionId } from "@climbing/application/models/climbing-session"
@@ -31,6 +32,7 @@ export class GymBoulderAttempts extends Service<
       readonly routeId: GymRouteId
       readonly boulderId: BoulderId
       readonly outcome: ClimbingAttemptOutcome
+      readonly moveTypes: readonly ClimbingAttemptMoveType[]
     }) => Effect.Effect<
       ClimbingAttempt,
       | UnauthenticatedGymMemberError

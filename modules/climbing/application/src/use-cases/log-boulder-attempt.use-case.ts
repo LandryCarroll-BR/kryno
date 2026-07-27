@@ -9,6 +9,7 @@ import { ClimbingAttemptRecorder } from "../factories/climbing-attempt-recorder.
 import { BoulderId } from "../models/boulder.models"
 import {
   type ClimbingAttempt,
+  ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
 } from "../models/climbing-attempt.models"
 import { BoulderRepository } from "../repositories/boulder.repository"
@@ -18,6 +19,7 @@ export const LogBoulderAttemptInputSchema = Schema.Struct({
   token: Schema.NonEmptyString,
   boulderId: BoulderId,
   outcome: ClimbingAttemptOutcome,
+  moveTypes: Schema.Array(ClimbingAttemptMoveType),
 }).annotate({ identifier: "LogBoulderAttemptInput" })
 
 export type LogBoulderAttemptInput = typeof LogBoulderAttemptInputSchema.Type
@@ -70,6 +72,7 @@ export class LogBoulderAttemptUseCase extends Service<
               climberId,
               boulderId: parsedInput.boulderId,
               outcome: parsedInput.outcome,
+              moveTypes: parsedInput.moveTypes,
             })
           }
         ),

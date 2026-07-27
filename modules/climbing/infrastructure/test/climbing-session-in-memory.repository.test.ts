@@ -44,6 +44,7 @@ describe("ClimbingSessionInMemoryRepository.findAllByClimberId", () => {
           climberId,
           boulderId: BoulderId.make("boulder-1"),
           outcome: "FELL",
+          moveTypes: ["HEEL_HOOK", "FLAG"],
           occurredAt: new Date("2026-01-01T10:00:00.000Z"),
         })
         yield* repository.endActiveByClimberId(
@@ -64,6 +65,10 @@ describe("ClimbingSessionInMemoryRepository.findAllByClimberId", () => {
         ).toBe(true)
         expect(sessions[0]?.attempts.map((attempt) => attempt.id)).toEqual([
           "attempt-1",
+        ])
+        expect(sessions[0]?.attempts[0]?.moveTypes).toEqual([
+          "HEEL_HOOK",
+          "FLAG",
         ])
         expect(Predicate.isTagged(sessions[1], "ActiveClimbingSession")).toBe(
           true
@@ -103,6 +108,7 @@ describe("ClimbingSessionInMemoryRepository.deleteCompletedByClimberId", () => {
         climberId,
         boulderId: BoulderId.make("boulder-1"),
         outcome: "FELL",
+        moveTypes: [],
         occurredAt: new Date("2026-01-01T10:00:00.000Z"),
       })
       const completed = yield* repository.endActiveByClimberId(

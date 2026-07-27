@@ -34,6 +34,7 @@ export const LogGymRouteAttemptController = Effect.fn(
           {
             token: authToken.value,
             ...Object.fromEntries(formData),
+            moveTypes: formData.getAll("moveTypes"),
           },
           { errors: "all" }
         )

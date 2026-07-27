@@ -91,6 +91,7 @@ describe("Gym member routes", () => {
             gymId: createdGym.id,
             routeId: route.id,
             outcome: "FELL",
+            moveTypes: [],
           })
         )
         expect(
@@ -107,6 +108,7 @@ describe("Gym member routes", () => {
             gymId: otherGym.id,
             routeId: route.id,
             outcome: "FELL",
+            moveTypes: [],
           })
         )
         expect(Predicate.isTagged(wrongGym, "GymRouteNotFoundError")).toBe(true)
@@ -129,6 +131,7 @@ describe("Gym member routes", () => {
           gymId: createdGym.id,
           routeId: route.id,
           outcome: "TOPPED",
+          moveTypes: ["HEEL_HOOK", "FLAG"],
         })
         expect(result).toMatchObject({
           gymId: createdGym.id,
@@ -137,6 +140,7 @@ describe("Gym member routes", () => {
             boulderId: "admin-boulder-1",
             ordinal: 1,
             outcome: "TOPPED",
+            moveTypes: ["HEEL_HOOK", "FLAG"],
           },
         })
 
@@ -150,6 +154,7 @@ describe("Gym member routes", () => {
             gymId: createdGym.id,
             routeId: route.id,
             outcome: "FELL",
+            moveTypes: [],
           })
         )
         expect(
@@ -209,6 +214,7 @@ describe("Gym member routes", () => {
           id: "gym-history-attempt-1",
           boulderId: "admin-boulder-1",
           ordinal: 1,
+          moveTypes: ["HEEL_HOOK"],
         },
       ])
       expect(

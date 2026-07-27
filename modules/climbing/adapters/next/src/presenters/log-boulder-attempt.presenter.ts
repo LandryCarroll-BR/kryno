@@ -56,6 +56,10 @@ export class LogBoulderAttemptPresenter extends Service<
             ...logBoulderAttemptInitialViewModel.fields.outcome,
             value: attempt.outcome,
           },
+          moveTypes: {
+            ...logBoulderAttemptInitialViewModel.fields.moveTypes,
+            value: attempt.moveTypes.join(","),
+          },
           ordinal: {
             ...logBoulderAttemptInitialViewModel.fields.ordinal,
             value: String(attempt.ordinal),
@@ -104,6 +108,7 @@ export class LogBoulderAttemptPresenter extends Service<
       attemptId: fieldError("attemptId"),
       boulderId: fieldError("boulderId"),
       outcome: fieldError("outcome"),
+      moveTypes: fieldError("moveTypes"),
       ordinal: fieldError("ordinal"),
     } satisfies LogBoulderAttemptViewModel["errors"]
   }

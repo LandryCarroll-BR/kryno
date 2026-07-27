@@ -48,6 +48,7 @@ describe("ListCreatedBouldersPresenter", () => {
                     boulderId,
                     ordinal: AttemptOrdinal.make(1),
                     outcome: "FELL",
+                    moveTypes: ["HEEL_HOOK", "FLAG"],
                     occurredAt: new Date("2026-01-01T10:00:00.000Z"),
                   }),
                   ClimbingAttempt.make({
@@ -55,6 +56,7 @@ describe("ListCreatedBouldersPresenter", () => {
                     boulderId,
                     ordinal: AttemptOrdinal.make(2),
                     outcome: "TOPPED",
+                    moveTypes: [],
                     occurredAt: new Date("2026-01-01T11:00:00.000Z"),
                   }),
                 ],
@@ -69,6 +71,7 @@ describe("ListCreatedBouldersPresenter", () => {
                     boulderId,
                     ordinal: AttemptOrdinal.make(1),
                     outcome: "FELL",
+                    moveTypes: ["DYNO"],
                     occurredAt: new Date("2026-01-02T10:00:00.000Z"),
                   }),
                 ],
@@ -95,6 +98,10 @@ describe("ListCreatedBouldersPresenter", () => {
           label: "Topped",
           value: "TOPPED",
         })
+        expect(presented?.sessions[1]?.attempts[1]?.moveTypes).toEqual([
+          { label: "Heel hook", value: "HEEL_HOOK" },
+          { label: "Flag", value: "FLAG" },
+        ])
       }).pipe(Effect.provide(ListCreatedBouldersPresenter.Live))
   )
 

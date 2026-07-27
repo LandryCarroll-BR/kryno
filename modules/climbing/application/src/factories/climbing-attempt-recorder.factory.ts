@@ -5,6 +5,7 @@ import { NoActiveClimbingSessionError } from "../errors/climbing-session.errors"
 import type { BoulderId } from "../models/boulder.models"
 import {
   ClimbingAttempt,
+  type ClimbingAttemptMoveType,
   type ClimbingAttemptOutcome,
 } from "../models/climbing-attempt.models"
 import type { ClimberId } from "../models/climber.models"
@@ -15,6 +16,7 @@ export type RecordClimbingAttemptInput = {
   readonly climberId: ClimberId
   readonly boulderId: BoulderId
   readonly outcome: ClimbingAttemptOutcome
+  readonly moveTypes: readonly ClimbingAttemptMoveType[]
 }
 
 export class ClimbingAttemptRecorder extends Service<
@@ -33,7 +35,7 @@ export class ClimbingAttemptRecorder extends Service<
 
       return {
         record: Effect.fn("ClimbingAttemptRecorder.record")(
-          function* ({ climberId, boulderId, outcome }) {
+          function* ({ climberId, boulderId, outcome, moveTypes }) {
             const id = yield* attemptIdService.generate()
             const occurredAt = yield* DateTime.nowAsDate
             const loggedAttempt =
@@ -42,6 +44,7 @@ export class ClimbingAttemptRecorder extends Service<
                 id,
                 boulderId,
                 outcome,
+                moveTypes,
                 occurredAt,
               })
 

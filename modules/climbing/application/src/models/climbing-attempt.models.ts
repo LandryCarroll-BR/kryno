@@ -20,6 +20,27 @@ export const AttemptOrdinal = Schema.Number.check(
 export const ClimbingAttemptOutcome = Schema.Literals(["FELL", "TOPPED"])
 export type ClimbingAttemptOutcome = typeof ClimbingAttemptOutcome.Type
 
+export const ClimbingAttemptMoveType = Schema.Literals([
+  "DYNO",
+  "DEADPOINT",
+  "HEEL_HOOK",
+  "TOE_HOOK",
+  "DROP_KNEE",
+  "FLAG",
+  "MATCH",
+  "MANTLE",
+  "SMEAR",
+  "CAMPUS",
+  "COMPRESSION",
+  "GASTON",
+  "UNDERCLING",
+  "SIDEPULL",
+  "CRIMP",
+  "PINCH",
+  "SLOPER",
+])
+export type ClimbingAttemptMoveType = typeof ClimbingAttemptMoveType.Type
+
 export const ClimbingDate = Schema.Date.check(
   Schema.isDateValid({ message: "Climbing date must be valid." })
 )
@@ -31,5 +52,6 @@ export class ClimbingAttempt extends Schema.Class<ClimbingAttempt>(
   boulderId: BoulderId,
   ordinal: AttemptOrdinal,
   outcome: ClimbingAttemptOutcome,
+  moveTypes: Schema.Array(ClimbingAttemptMoveType),
   occurredAt: ClimbingDate,
 }) {}

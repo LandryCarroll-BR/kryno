@@ -24,6 +24,7 @@ const toAttempt = (
     boulderId: row.boulderId,
     ordinal: row.ordinal,
     outcome: row.outcome,
+    moveTypes: row.moveTypes ?? [],
     occurredAt: row.occurredAt,
   })
 
@@ -212,7 +213,14 @@ export const ClimbingSessionDBRepository = Layer.effect(
 
       insertAttemptIntoActiveSession: Effect.fn(
         "ClimbingSessionRepository.insertAttemptIntoActiveSession"
-      )(function* ({ climberId, id, boulderId, outcome, occurredAt }) {
+      )(function* ({
+        climberId,
+        id,
+        boulderId,
+        outcome,
+        moveTypes,
+        occurredAt,
+      }) {
         const [session] = yield* db
           .select()
           .from(climbingSessionsTable)
@@ -252,6 +260,7 @@ export const ClimbingSessionDBRepository = Layer.effect(
             boulderId,
             ordinal,
             outcome,
+            moveTypes: [...moveTypes],
             occurredAt,
             createdAt: occurredAt,
           })

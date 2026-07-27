@@ -207,6 +207,18 @@ export async function GetGymRoutesView({
                                   >
                                     {formatDate(attempt.occurredAt)}
                                   </time>
+                                  {attempt.moveTypes.length > 0 && (
+                                    <div className="mt-2 flex flex-wrap gap-1">
+                                      {attempt.moveTypes.map((moveType) => (
+                                        <Badge
+                                          key={moveType.value}
+                                          variant="secondary"
+                                        >
+                                          {moveType.label}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>

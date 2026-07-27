@@ -7,6 +7,7 @@ import type { BoulderId } from "../models/boulder.models"
 import type {
   ClimbingAttempt,
   ClimbingAttemptId,
+  ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
 } from "../models/climbing-attempt.models"
 
@@ -37,6 +38,7 @@ export class ClimbingSessionRepository extends Service<
       readonly climberId: ClimberId
       readonly boulderId: BoulderId
       readonly outcome: ClimbingAttemptOutcome
+      readonly moveTypes: readonly ClimbingAttemptMoveType[]
       readonly occurredAt: Date
     }) => Effect.Effect<Option.Option<ClimbingAttempt>>
 

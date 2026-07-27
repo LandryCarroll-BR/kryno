@@ -33,12 +33,14 @@ export const GymBoulderAttemptsClimbing = Layer.effect(
         routeId,
         boulderId,
         outcome,
+        moveTypes,
       }) {
         return yield* climbing
           .logExistingBoulderAttempt({
             token,
             boulderId,
             outcome,
+            moveTypes,
           })
           .pipe(
             Effect.catchTags({

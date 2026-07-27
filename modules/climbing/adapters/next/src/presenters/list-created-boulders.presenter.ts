@@ -5,8 +5,29 @@ import type { SchemaError } from "effect/Schema"
 
 import {
   listCreatedBouldersInitialViewModel,
+  type BoulderAttemptMoveTypeViewModel,
   type ListCreatedBouldersViewModel,
 } from "../view-models/list-created-boulders.view-model"
+
+const moveTypeLabels = {
+  DYNO: "Dyno",
+  DEADPOINT: "Deadpoint",
+  HEEL_HOOK: "Heel hook",
+  TOE_HOOK: "Toe hook",
+  DROP_KNEE: "Drop knee",
+  FLAG: "Flag",
+  MATCH: "Match",
+  MANTLE: "Mantle",
+  SMEAR: "Smear",
+  CAMPUS: "Campus",
+  COMPRESSION: "Compression",
+  GASTON: "Gaston",
+  UNDERCLING: "Undercling",
+  SIDEPULL: "Sidepull",
+  CRIMP: "Crimp",
+  PINCH: "Pinch",
+  SLOPER: "Sloper",
+} as const satisfies Record<BoulderAttemptMoveTypeViewModel["value"], string>
 
 export class ListCreatedBouldersPresenter extends Service<
   ListCreatedBouldersPresenter,
@@ -82,6 +103,10 @@ export class ListCreatedBouldersPresenter extends Service<
                             : ("Topped" as const),
                         value: attempt.outcome,
                       },
+                      moveTypes: attempt.moveTypes.map((moveType) => ({
+                        label: moveTypeLabels[moveType],
+                        value: moveType,
+                      })),
                       occurredAt: attempt.occurredAt.toISOString(),
                     })),
                 })),

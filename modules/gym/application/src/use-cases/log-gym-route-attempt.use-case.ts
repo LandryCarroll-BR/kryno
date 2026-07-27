@@ -2,6 +2,7 @@ import { Effect, Layer, Option, Schema } from "effect"
 import { Service } from "effect/Context"
 import type { SchemaError } from "effect/Schema"
 import {
+  ClimbingAttemptMoveType,
   ClimbingAttemptOutcome,
 } from "@climbing/application/models/climbing-attempt"
 import type { BoulderId } from "@climbing/application/models/boulder"
@@ -30,6 +31,7 @@ export const LogGymRouteAttemptInputSchema = Schema.Struct({
   gymId: GymId,
   routeId: GymRouteId,
   outcome: ClimbingAttemptOutcome,
+  moveTypes: Schema.Array(ClimbingAttemptMoveType),
 }).annotate({ identifier: "LogGymRouteAttemptInput" })
 
 export type LogGymRouteAttemptInput =
@@ -39,6 +41,7 @@ export type LoggedGymRouteAttempt = {
   readonly boulderId: BoulderId
   readonly ordinal: number
   readonly outcome: typeof ClimbingAttemptOutcome.Type
+  readonly moveTypes: readonly (typeof ClimbingAttemptMoveType.Type)[]
   readonly occurredAt: Date
 }
 export type LogGymRouteAttemptOutput = {
@@ -130,6 +133,7 @@ export class LogGymRouteAttemptUseCase extends Service<
               routeId: route.value.id,
               boulderId: route.value.boulderId,
               outcome: parsedInput.outcome,
+              moveTypes: parsedInput.moveTypes,
             })
 
             return {

@@ -5,7 +5,30 @@ export type GymRouteAttemptViewModel = {
     readonly label: "Fell" | "Topped"
     readonly value: "FELL" | "TOPPED"
   }
+  readonly moveTypes: readonly GymRouteAttemptMoveTypeViewModel[]
   readonly occurredAt: string
+}
+
+export type GymRouteAttemptMoveTypeViewModel = {
+  readonly label: string
+  readonly value:
+    | "DYNO"
+    | "DEADPOINT"
+    | "HEEL_HOOK"
+    | "TOE_HOOK"
+    | "DROP_KNEE"
+    | "FLAG"
+    | "MATCH"
+    | "MANTLE"
+    | "SMEAR"
+    | "CAMPUS"
+    | "COMPRESSION"
+    | "GASTON"
+    | "UNDERCLING"
+    | "SIDEPULL"
+    | "CRIMP"
+    | "PINCH"
+    | "SLOPER"
 }
 
 export type GymRouteAttemptBoulderViewModel = {

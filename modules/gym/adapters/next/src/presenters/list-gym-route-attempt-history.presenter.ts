@@ -5,8 +5,29 @@ import type { ListGymRouteAttemptHistoryOutput } from "@gym/application/use-case
 
 import {
   listGymRouteAttemptHistoryInitialViewModel,
+  type GymRouteAttemptMoveTypeViewModel,
   type ListGymRouteAttemptHistoryViewModel,
 } from "../view-models/list-gym-route-attempt-history.view-model"
+
+const moveTypeLabels = {
+  DYNO: "Dyno",
+  DEADPOINT: "Deadpoint",
+  HEEL_HOOK: "Heel hook",
+  TOE_HOOK: "Toe hook",
+  DROP_KNEE: "Drop knee",
+  FLAG: "Flag",
+  MATCH: "Match",
+  MANTLE: "Mantle",
+  SMEAR: "Smear",
+  CAMPUS: "Campus",
+  COMPRESSION: "Compression",
+  GASTON: "Gaston",
+  UNDERCLING: "Undercling",
+  SIDEPULL: "Sidepull",
+  CRIMP: "Crimp",
+  PINCH: "Pinch",
+  SLOPER: "Sloper",
+} as const satisfies Record<GymRouteAttemptMoveTypeViewModel["value"], string>
 
 export class ListGymRouteAttemptHistoryPresenter extends Service<
   ListGymRouteAttemptHistoryPresenter,
@@ -94,6 +115,10 @@ export class ListGymRouteAttemptHistoryPresenter extends Service<
                           : ("Topped" as const),
                       value: attempt.outcome,
                     },
+                    moveTypes: attempt.moveTypes.map((moveType) => ({
+                      label: moveTypeLabels[moveType],
+                      value: moveType,
+                    })),
                     occurredAt: attempt.occurredAt.toISOString(),
                   })),
               })),

@@ -107,6 +107,7 @@ describe("Gym routes presenters", () => {
           boulderId: BoulderId.make("boulder-1"),
           ordinal: 2,
           outcome: "TOPPED",
+          moveTypes: ["HEEL_HOOK", "FLAG"],
           occurredAt: new Date(0),
         },
       })
@@ -175,6 +176,7 @@ describe("Gym routes presenters", () => {
                     boulderId: BoulderId.make("boulder-1"),
                     ordinal: 1 as RouteAttempt["ordinal"],
                     outcome: "FELL",
+                    moveTypes: [],
                     occurredAt: new Date(1_000),
                   },
                   {
@@ -182,6 +184,7 @@ describe("Gym routes presenters", () => {
                     boulderId: BoulderId.make("boulder-1"),
                     ordinal: 2 as RouteAttempt["ordinal"],
                     outcome: "TOPPED",
+                    moveTypes: ["HEEL_HOOK", "FLAG"],
                     occurredAt: new Date(2_000),
                   },
                 ],
@@ -201,6 +204,10 @@ describe("Gym routes presenters", () => {
         label: "Topped",
         value: "TOPPED",
       })
+      expect(viewRoute?.attempts[0]?.moveTypes).toEqual([
+        { label: "Heel hook", value: "HEEL_HOOK" },
+        { label: "Flag", value: "FLAG" },
+      ])
       expect(viewRoute?.imageUrl).toBe("/uploads/gym-routes/route-1.png")
     }).pipe(Effect.provide(ListGymRouteAttemptHistoryPresenter.Live))
   )

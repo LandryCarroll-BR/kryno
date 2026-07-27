@@ -82,7 +82,14 @@ export const ClimbingSessionInMemoryRepository = Layer.effect(
 
       insertAttemptIntoActiveSession: Effect.fn(
         "ClimbingSessionRepository.insertAttemptIntoActiveSession"
-      )(function* ({ climberId, id, boulderId, outcome, occurredAt }) {
+      )(function* ({
+        climberId,
+        id,
+        boulderId,
+        outcome,
+        moveTypes,
+        occurredAt,
+      }) {
         return yield* Ref.modify(store, (sessions) => {
           const activeSession = findActive(sessions, climberId)
           if (activeSession === undefined) {
@@ -99,6 +106,7 @@ export const ClimbingSessionInMemoryRepository = Layer.effect(
             boulderId,
             ordinal,
             outcome,
+            moveTypes,
             occurredAt,
           })
           const updatedSession: ActiveClimbingSession = {
