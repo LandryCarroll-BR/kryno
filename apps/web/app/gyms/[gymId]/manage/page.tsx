@@ -1,6 +1,7 @@
 import { createGymArea } from "@/features/gym/components/create-gym-area/create-gym-area.action"
 import { createGymRoute } from "@/features/gym/components/create-gym-route/create-gym-route.action"
 import { deleteGymRoute } from "@/features/gym/components/delete-gym-route/delete-gym-route.action"
+import { editGymRoute } from "@/features/gym/components/edit-gym-route/edit-gym-route.action"
 import { getGymManagement } from "@/features/gym/components/get-gym-management/get-gym-management.query"
 import { GetGymManagementView } from "@/features/gym/components/get-gym-management/get-gym-management.view"
 import { withAuthentication } from "@/features/auth/utils/with-authentication"
@@ -20,6 +21,7 @@ async function ManageGymPage({
         createAreaAction={createGymArea}
         createRouteAction={createGymRoute}
         deleteRouteAction={deleteGymRoute}
+        editRouteAction={editGymRoute}
       />
     </main>
   )

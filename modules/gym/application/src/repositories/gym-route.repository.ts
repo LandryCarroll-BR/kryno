@@ -26,5 +26,8 @@ export class GymRouteRepository extends Service<
     readonly insert: (
       route: GymRoute
     ) => Effect.Effect<Option.Option<GymRoute>>
+    readonly update: (
+      route: GymRoute
+    ) => Effect.Effect<Option.Option<GymRoute>>
   }
 >()("@gym/application/GymRouteRepository") {}

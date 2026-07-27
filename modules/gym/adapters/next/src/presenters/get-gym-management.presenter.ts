@@ -24,26 +24,19 @@ export class GetGymManagementPresenter extends Service<
     presentSuccess: ({ gym, areas, boulders, assignableBoulders }) => {
       const boulderOptions = assignableBoulders.map((boulder) => ({
         value: boulder.id,
-        label: `${boulder.name} (${boulder.grade})`,
+        label: `${boulder.name}`,
         color: boulder.color,
       }))
       const labelsById = new Map(
-        boulders.map(({ id, name, grade }) => [
-          id,
-          `${name} (${grade})`,
-        ])
+        boulders.map(({ id, name }) => [id, `${name}`])
       )
-      const colorsById = new Map(
-        boulders.map(({ id, color }) => [id, color])
-      )
+      const colorsById = new Map(boulders.map(({ id, color }) => [id, color]))
 
       return Effect.succeed({
         ...getGymManagementInitialViewModel,
         status: "success",
         message:
-          areas.length === 0
-            ? "Create the first area for this gym."
-            : "",
+          areas.length === 0 ? "Create the first area for this gym." : "",
         fields: {
           gym: {
             ...getGymManagementInitialViewModel.fields.gym,
@@ -55,10 +48,8 @@ export class GetGymManagementPresenter extends Service<
               id: area.id,
               name: area.name,
               nextOrder:
-                routes.reduce(
-                  (max, route) => Math.max(max, route.order),
-                  0
-                ) + 1,
+                routes.reduce((max, route) => Math.max(max, route.order), 0) +
+                1,
               routes: routes.map((route) => ({
                 id: route.id,
                 order: route.order,

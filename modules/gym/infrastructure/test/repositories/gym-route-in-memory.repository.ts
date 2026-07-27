@@ -73,6 +73,30 @@ export const GymRouteInMemoryRepository = Layer.effect(
           return [Option.some(route), next]
         })
       }),
+
+      update: Effect.fn("GymRouteRepository.update")(function* (route) {
+        return yield* Ref.modify(store, (routes) => {
+          if (!routes.has(route.id)) {
+            return [Option.none<GymRoute>(), routes]
+          }
+
+          const duplicate = [...routes.values()].some(
+            (candidate) =>
+              candidate.id !== route.id &&
+              (candidate.areaId === route.areaId &&
+                candidate.order === route.order ||
+                candidate.boulderId === route.boulderId)
+          )
+
+          if (duplicate) {
+            return [Option.none<GymRoute>(), routes]
+          }
+
+          const next = new Map(routes)
+          next.set(route.id, route)
+          return [Option.some(route), next]
+        })
+      }),
     }
   })
 )

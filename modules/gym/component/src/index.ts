@@ -5,6 +5,7 @@ import { CreateGymUseCase } from "@gym/application/use-cases/create-gym"
 import { CreateGymAreaUseCase } from "@gym/application/use-cases/create-gym-area"
 import { CreateGymRouteUseCase } from "@gym/application/use-cases/create-gym-route"
 import { DeleteGymRouteUseCase } from "@gym/application/use-cases/delete-gym-route"
+import { EditGymRouteUseCase } from "@gym/application/use-cases/edit-gym-route"
 import { GetGymManagementUseCase } from "@gym/application/use-cases/get-gym-management"
 import { GetGymRoutesUseCase } from "@gym/application/use-cases/get-gym-routes"
 import { JoinGymUseCase } from "@gym/application/use-cases/join-gym"
@@ -20,6 +21,7 @@ export class Gym extends Service<
     readonly createGymArea: CreateGymAreaUseCase["Service"]["execute"]
     readonly createGymRoute: CreateGymRouteUseCase["Service"]["execute"]
     readonly deleteGymRoute: DeleteGymRouteUseCase["Service"]["execute"]
+    readonly editGymRoute: EditGymRouteUseCase["Service"]["execute"]
     readonly getGymManagement: GetGymManagementUseCase["Service"]["execute"]
     readonly getGymRoutes: GetGymRoutesUseCase["Service"]["execute"]
     readonly joinGym: JoinGymUseCase["Service"]["execute"]
@@ -35,6 +37,7 @@ export class Gym extends Service<
       const createGymArea = yield* CreateGymAreaUseCase
       const createGymRoute = yield* CreateGymRouteUseCase
       const deleteGymRoute = yield* DeleteGymRouteUseCase
+      const editGymRoute = yield* EditGymRouteUseCase
       const getGymManagement = yield* GetGymManagementUseCase
       const getGymRoutes = yield* GetGymRoutesUseCase
       const joinGym = yield* JoinGymUseCase
@@ -48,6 +51,7 @@ export class Gym extends Service<
         createGymArea: createGymArea.execute,
         createGymRoute: createGymRoute.execute,
         deleteGymRoute: deleteGymRoute.execute,
+        editGymRoute: editGymRoute.execute,
         getGymManagement: getGymManagement.execute,
         getGymRoutes: getGymRoutes.execute,
         joinGym: joinGym.execute,

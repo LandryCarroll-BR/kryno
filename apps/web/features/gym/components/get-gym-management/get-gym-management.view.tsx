@@ -4,7 +4,10 @@ import { Badge } from "@packages/ui/components/badge"
 import type { GetGymManagementViewModel } from "@gym/adapters-next/view-models/get-gym-management"
 import type { CreateGymAreaViewModel } from "@gym/adapters-next/view-models/create-gym-area"
 import type { CreateGymRouteViewModel } from "@gym/adapters-next/view-models/create-gym-route"
-import type { DeleteGymRouteViewModel } from "@gym/adapters-next/view-models"
+import type {
+  DeleteGymRouteViewModel,
+  EditGymRouteViewModel,
+} from "@gym/adapters-next/view-models"
 
 import {
   Card,
@@ -17,6 +20,7 @@ import {
 import { CreateGymAreaView } from "../create-gym-area/create-gym-area.view"
 import { CreateGymRouteView } from "../create-gym-route/create-gym-route.view"
 import { DeleteGymRouteView } from "../delete-gym-route/delete-gym-route.view"
+import { EditGymRouteView } from "../edit-gym-route/edit-gym-route.view"
 import { BoulderColorBadge } from "@/features/climbing/components/boulder-color-badge/boulder-color-badge.view"
 
 type ManagementQuery = (gymId: string) => Promise<GetGymManagementViewModel>
@@ -32,6 +36,10 @@ type DeleteRouteAction = (
   previous: DeleteGymRouteViewModel,
   formData: FormData
 ) => Promise<DeleteGymRouteViewModel>
+type EditRouteAction = (
+  previous: EditGymRouteViewModel,
+  formData: FormData
+) => Promise<EditGymRouteViewModel>
 
 export async function GetGymManagementView({
   gymId,
@@ -39,12 +47,14 @@ export async function GetGymManagementView({
   createAreaAction,
   createRouteAction,
   deleteRouteAction,
+  editRouteAction,
 }: {
   gymId: string
   query: ManagementQuery
   createAreaAction: AreaAction
   createRouteAction: RouteAction
   deleteRouteAction: DeleteRouteAction
+  editRouteAction: EditRouteAction
 }) {
   const management = await query(gymId)
   const gym = management.fields.gym.value
@@ -128,6 +138,12 @@ export async function GetGymManagementView({
                           {route.boulder.label}
                         </Badge>
                       ))}
+                    <EditGymRouteView
+                      action={editRouteAction}
+                      gymId={gym.id}
+                      route={route}
+                      areas={areas}
+                    />
                     <DeleteGymRouteView
                       action={deleteRouteAction}
                       gymId={gym.id}

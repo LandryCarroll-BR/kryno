@@ -99,6 +99,25 @@ export const GymRouteDBRepository = Layer.effect(
 
         return Option.fromNullishOr(created).pipe(Option.map(toGymRoute))
       }),
+
+      update: Effect.fn("GymRouteRepository.update")(function* (route) {
+        const [updated] = yield* db
+          .update(gymRoutesTable)
+          .set({
+            areaId: route.areaId,
+            order: route.order,
+            positionLabel: Option.getOrNull(route.positionLabel),
+            setOn: route.setOn,
+            setterName: Option.getOrNull(route.setterName),
+            boulderId: route.boulderId,
+            imageUrl: Option.getOrNull(route.imageUrl),
+          })
+          .where(eq(gymRoutesTable.id, route.id))
+          .returning()
+          .pipe(Effect.orDie)
+
+        return Option.fromNullishOr(updated).pipe(Option.map(toGymRoute))
+      }),
     }
   })
 )

@@ -14,10 +14,7 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@packages/ui/components/native-select"
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@packages/ui/components/radio-group"
+import { RadioGroup, RadioGroupItem } from "@packages/ui/components/radio-group"
 import {
   boulderColorOptions,
   boulderGradeOptions,
@@ -57,9 +54,9 @@ export function CreateGymRouteView({
   boulders: readonly GymBoulderOptionViewModel[]
 }) {
   const initialBoulderSource = boulders.length === 0 ? "new" : "existing"
-  const [boulderSource, setBoulderSource] = useState<
-    "existing" | "new"
-  >(initialBoulderSource)
+  const [boulderSource, setBoulderSource] = useState<"existing" | "new">(
+    initialBoulderSource
+  )
   const [boulderGrade, setBoulderGrade] = useState(
     createGymRouteInitialViewModel.fields.boulderGrade.value
   )
@@ -95,7 +92,8 @@ export function CreateGymRouteView({
   })
   const prefix = `route-${areaId}`
   const usingExistingBoulder = boulderSource === "existing"
-  const cannotSubmit = pending || (usingExistingBoulder && boulders.length === 0)
+  const cannotSubmit =
+    pending || (usingExistingBoulder && boulders.length === 0)
   const selectedColorLabel =
     boulderColorOptions.find(({ value }) => value === boulderColor)?.label ??
     "White"
@@ -110,11 +108,7 @@ export function CreateGymRouteView({
   }, [imagePreviewUrl])
 
   return (
-    <form
-      action={formAction}
-      className="mt-6 border-t pt-6"
-      encType="multipart/form-data"
-    >
+    <form action={formAction} className="mt-6 border-t pt-6">
       <input type="hidden" name="gymId" value={gymId} />
       <input type="hidden" name="areaId" value={areaId} />
       <input type="hidden" name="boulderSource" value={boulderSource} />
@@ -204,6 +198,7 @@ export function CreateGymRouteView({
             }}
           />
           {imagePreviewUrl !== null && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={imagePreviewUrl}
               alt="Route preview"
