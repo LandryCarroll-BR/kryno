@@ -3,6 +3,7 @@ import { Layer } from "effect"
 import { CreateGymUseCase } from "./use-cases/create-gym.use-case"
 import { CreateGymAreaUseCase } from "./use-cases/create-gym-area.use-case"
 import { CreateGymRouteUseCase } from "./use-cases/create-gym-route.use-case"
+import { DeleteGymAreaUseCase } from "./use-cases/delete-gym-area.use-case"
 import { DeleteGymRouteUseCase } from "./use-cases/delete-gym-route.use-case"
 import { EditGymRouteUseCase } from "./use-cases/edit-gym-route.use-case"
 import { GetGymManagementUseCase } from "./use-cases/get-gym-management.use-case"
@@ -16,6 +17,7 @@ export const ApplicationLayer = Layer.mergeAll(
   CreateGymUseCase.Live,
   CreateGymAreaUseCase.Live,
   CreateGymRouteUseCase.Live,
+  DeleteGymAreaUseCase.Live,
   DeleteGymRouteUseCase.Live,
   EditGymRouteUseCase.Live,
   GetGymManagementUseCase.Live,

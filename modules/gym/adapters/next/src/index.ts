@@ -4,6 +4,7 @@ import { GymLayer } from "@gym/component"
 import { CreateGymPresenter } from "./presenters/create-gym.presenter"
 import { CreateGymAreaPresenter } from "./presenters/create-gym-area.presenter"
 import { CreateGymRoutePresenter } from "./presenters/create-gym-route.presenter"
+import { DeleteGymAreaPresenter } from "./presenters/delete-gym-area.presenter"
 import { DeleteGymRoutePresenter } from "./presenters/delete-gym-route.presenter"
 import { EditGymRoutePresenter } from "./presenters/edit-gym-route.presenter"
 import { GetGymManagementPresenter } from "./presenters/get-gym-management.presenter"
@@ -17,6 +18,7 @@ export const PresenterLayer = Layer.mergeAll(
   CreateGymPresenter.Live,
   CreateGymAreaPresenter.Live,
   CreateGymRoutePresenter.Live,
+  DeleteGymAreaPresenter.Live,
   DeleteGymRoutePresenter.Live,
   EditGymRoutePresenter.Live,
   GetGymManagementPresenter.Live,

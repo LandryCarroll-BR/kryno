@@ -28,6 +28,21 @@ export const GymAreaInMemoryRepository = Layer.effect(
         }
       ),
 
+      deleteById: Effect.fn("GymAreaRepository.deleteById")(
+        function* (areaId) {
+          return yield* Ref.modify(store, (areas) => {
+            const area = areas.get(areaId)
+            if (area === undefined) {
+              return [Option.none<GymArea>(), areas]
+            }
+
+            const next = new Map(areas)
+            next.delete(areaId)
+            return [Option.some(area), next]
+          })
+        }
+      ),
+
       insert: Effect.fn("GymAreaRepository.insert")(function* (area) {
         return yield* Ref.modify(store, (areas) => {
           const duplicate = [...areas.values()].some(

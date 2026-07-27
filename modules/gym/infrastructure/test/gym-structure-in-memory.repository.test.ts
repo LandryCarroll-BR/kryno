@@ -51,6 +51,28 @@ describe("Gym structure in-memory repositories", () => {
     }).pipe(Effect.provide(GymAreaInMemoryRepository))
   )
 
+  it.effect("deletes areas by id and returns the deleted area", () =>
+    Effect.gen(function* () {
+      const repository = yield* GymAreaRepository
+      const gymId = GymId.make("gym-1")
+      const area = GymArea.make({
+        id: GymAreaId.make("area-1"),
+        gymId,
+        name: GymAreaName.make("Barrel"),
+      })
+
+      yield* repository.insert(area)
+
+      const deleted = yield* repository.deleteById(area.id)
+      const missing = yield* repository.findById(area.id)
+      const deletedAgain = yield* repository.deleteById(area.id)
+
+      expect(Option.getOrNull(deleted)).toEqual(area)
+      expect(Option.isNone(missing)).toBe(true)
+      expect(Option.isNone(deletedAgain)).toBe(true)
+    }).pipe(Effect.provide(GymAreaInMemoryRepository))
+  )
+
   it.effect("enforces route order uniqueness and numeric ordering", () =>
     Effect.gen(function* () {
       const repository = yield* GymRouteRepository

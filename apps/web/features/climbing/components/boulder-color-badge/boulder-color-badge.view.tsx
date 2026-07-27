@@ -14,10 +14,17 @@ const boulderColorBadgeClasses = {
   PURPLE: "bg-purple-600 text-white",
   PINK: "bg-pink-500 text-white",
   GRAY: "bg-zinc-500 text-white",
-} satisfies Record<string, string>
+} as const
+
+type Color = keyof typeof boulderColorBadgeClasses
+
+const validateColor = (color: string): color is Color =>
+  color in boulderColorBadgeClasses
 
 export const boulderColorBadgeClassName = (color: string): string =>
-  boulderColorBadgeClasses[color] ?? boulderColorBadgeClasses.UNSPECIFIED
+  validateColor(color)
+    ? boulderColorBadgeClasses[color]
+    : boulderColorBadgeClasses.UNSPECIFIED
 
 export function BoulderColorBadge({
   color,

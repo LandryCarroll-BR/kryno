@@ -11,14 +11,17 @@ import {
 } from "@gym/application/models/gym-route"
 import { Gym, GymId, GymName } from "@gym/application/models/gym"
 import { CreateGymRouteInputSchema } from "@gym/application/use-cases/create-gym-route"
+import { DeleteGymAreaInputSchema } from "@gym/application/use-cases/delete-gym-area"
 import { DeleteGymRouteInputSchema } from "@gym/application/use-cases/delete-gym-route"
 
 import { CreateGymAreaPresenter } from "../src/presenters/create-gym-area.presenter"
 import { CreateGymRoutePresenter } from "../src/presenters/create-gym-route.presenter"
+import { DeleteGymAreaPresenter } from "../src/presenters/delete-gym-area.presenter"
 import { DeleteGymRoutePresenter } from "../src/presenters/delete-gym-route.presenter"
 import { GetGymManagementPresenter } from "../src/presenters/get-gym-management.presenter"
 import { createGymAreaInitialViewModel } from "../src/view-models/create-gym-area.view-model"
 import { createGymRouteInitialViewModel } from "../src/view-models/create-gym-route.view-model"
+import { deleteGymAreaInitialViewModel } from "../src/view-models/delete-gym-area.view-model"
 import { deleteGymRouteInitialViewModel } from "../src/view-models/delete-gym-route.view-model"
 
 describe("Gym management presenters", () => {
@@ -201,6 +204,74 @@ describe("Gym management presenters", () => {
       expect(viewModel.message).toBe("Deleted route 3.")
       expect(viewModel.fields.routeId.value).toBe("route-1")
     }).pipe(Effect.provide(DeleteGymRoutePresenter.Live))
+  )
+
+  it.effect("presents deleted areas as success", () =>
+    Effect.gen(function* () {
+      const presenter = yield* DeleteGymAreaPresenter
+      const gymId = GymId.make("gym-1")
+      const areaId = GymAreaId.make("area-1")
+      const area = GymArea.make({
+        id: areaId,
+        gymId,
+        name: GymAreaName.make("Cave"),
+      })
+      const route = GymRoute.make({
+        id: GymRouteId.make("route-1"),
+        areaId,
+        order: GymRouteOrder.make(1),
+        positionLabel: Option.none(),
+        setOn: GymRouteSetDate.make("2026-06-30"),
+        setterName: Option.none(),
+        boulderId: BoulderId.make("boulder-1"),
+      })
+
+      const viewModel = yield* presenter.presentSuccess({
+        area,
+        deletedRoutes: [route],
+      })
+
+      expect(viewModel.status).toBe("success")
+      expect(viewModel.message).toBe("Deleted Cave and 1 route.")
+      expect(viewModel.fields.areaId.value).toBe("area-1")
+    }).pipe(Effect.provide(DeleteGymAreaPresenter.Live))
+  )
+
+  it.effect("maps area delete schema issues to their fields", () =>
+    Effect.gen(function* () {
+      const presenter = yield* DeleteGymAreaPresenter
+      const error = yield* Effect.flip(
+        Schema.decodeUnknownEffect(DeleteGymAreaInputSchema)(
+          {
+            token: "admin-token",
+            gymId: "",
+            areaId: "",
+          },
+          { errors: "all" }
+        )
+      )
+
+      const viewModel = yield* presenter.presentSchemaError(
+        deleteGymAreaInitialViewModel,
+        error
+      )
+      const forbidden = yield* presenter.presentForbidden(
+        deleteGymAreaInitialViewModel
+      )
+      const notFound = yield* presenter.presentNotFound(
+        deleteGymAreaInitialViewModel
+      )
+      const unexpected = yield* presenter.presentUnexpectedError(
+        deleteGymAreaInitialViewModel
+      )
+
+      expect(viewModel.status).toBe("invalid")
+      expect(viewModel.errors.gymId).not.toBe("")
+      expect(viewModel.errors.areaId).not.toBe("")
+      expect(forbidden.status).toBe("forbidden")
+      expect(notFound.status).toBe("not-found")
+      expect(unexpected.status).toBe("error")
+    }).pipe(Effect.provide(DeleteGymAreaPresenter.Live))
   )
 
   it.effect("maps route delete schema issues to their fields", () =>

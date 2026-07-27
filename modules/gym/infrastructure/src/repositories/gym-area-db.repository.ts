@@ -42,6 +42,18 @@ export const GymAreaDBRepository = Layer.effect(
         }
       ),
 
+      deleteById: Effect.fn("GymAreaRepository.deleteById")(
+        function* (areaId) {
+          const [deleted] = yield* db
+            .delete(gymAreasTable)
+            .where(eq(gymAreasTable.id, areaId))
+            .returning()
+            .pipe(Effect.orDie)
+
+          return Option.fromNullishOr(deleted).pipe(Option.map(toGymArea))
+        }
+      ),
+
       insert: Effect.fn("GymAreaRepository.insert")(function* (area) {
         const [created] = yield* db
           .insert(gymAreasTable)

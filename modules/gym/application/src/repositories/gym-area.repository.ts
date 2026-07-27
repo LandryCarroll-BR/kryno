@@ -16,6 +16,9 @@ export class GymAreaRepository extends Service<
     readonly findById: (
       areaId: GymAreaId
     ) => Effect.Effect<Option.Option<GymArea>>
+    readonly deleteById: (
+      areaId: GymAreaId
+    ) => Effect.Effect<Option.Option<GymArea>>
     readonly insert: (
       area: GymArea
     ) => Effect.Effect<Option.Option<GymArea>>

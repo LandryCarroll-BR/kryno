@@ -5,6 +5,7 @@ import type { GetGymManagementViewModel } from "@gym/adapters-next/view-models/g
 import type { CreateGymAreaViewModel } from "@gym/adapters-next/view-models/create-gym-area"
 import type { CreateGymRouteViewModel } from "@gym/adapters-next/view-models/create-gym-route"
 import type {
+  DeleteGymAreaViewModel,
   DeleteGymRouteViewModel,
   EditGymRouteViewModel,
 } from "@gym/adapters-next/view-models"
@@ -19,6 +20,7 @@ import {
 
 import { CreateGymAreaView } from "../create-gym-area/create-gym-area.view"
 import { CreateGymRouteView } from "../create-gym-route/create-gym-route.view"
+import { DeleteGymAreaView } from "../delete-gym-area/delete-gym-area.view"
 import { DeleteGymRouteView } from "../delete-gym-route/delete-gym-route.view"
 import { EditGymRouteView } from "../edit-gym-route/edit-gym-route.view"
 import { BoulderColorBadge } from "@/features/climbing/components/boulder-color-badge/boulder-color-badge.view"
@@ -28,6 +30,10 @@ type AreaAction = (
   previous: CreateGymAreaViewModel,
   formData: FormData
 ) => Promise<CreateGymAreaViewModel>
+type DeleteAreaAction = (
+  previous: DeleteGymAreaViewModel,
+  formData: FormData
+) => Promise<DeleteGymAreaViewModel>
 type RouteAction = (
   previous: CreateGymRouteViewModel,
   formData: FormData
@@ -45,6 +51,7 @@ export async function GetGymManagementView({
   gymId,
   query,
   createAreaAction,
+  deleteAreaAction,
   createRouteAction,
   deleteRouteAction,
   editRouteAction,
@@ -52,6 +59,7 @@ export async function GetGymManagementView({
   gymId: string
   query: ManagementQuery
   createAreaAction: AreaAction
+  deleteAreaAction: DeleteAreaAction
   createRouteAction: RouteAction
   deleteRouteAction: DeleteRouteAction
   editRouteAction: EditRouteAction
@@ -91,15 +99,24 @@ export async function GetGymManagementView({
       ) : (
         areas.map((area) => (
           <Card key={area.id}>
-            <CardHeader>
-              <CardTitle>{area.name}</CardTitle>
-              <CardDescription>
-                {area.routes.length === 0
-                  ? "No routes have been set here yet."
-                  : `${area.routes.length} current route${
-                      area.routes.length === 1 ? "" : "s"
-                    }.`}
-              </CardDescription>
+            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <CardTitle>{area.name}</CardTitle>
+                <CardDescription>
+                  {area.routes.length === 0
+                    ? "No routes have been set here yet."
+                    : `${area.routes.length} current route${
+                        area.routes.length === 1 ? "" : "s"
+                      }.`}
+                </CardDescription>
+              </div>
+              <DeleteGymAreaView
+                action={deleteAreaAction}
+                gymId={gym.id}
+                areaId={area.id}
+                areaName={area.name}
+                routeCount={area.routes.length}
+              />
             </CardHeader>
             <CardContent>
               <div className="divide-y">
