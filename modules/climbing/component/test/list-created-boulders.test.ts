@@ -2,6 +2,7 @@ import { describe, expect, it } from "@effect/vitest"
 import { Effect, Option } from "effect"
 import { TestClock } from "effect/testing"
 import { BoulderName } from "@climbing/application/models/boulder"
+import { ClimbingAttemptVideoBytes } from "@climbing/application/models/climbing-attempt"
 
 import { Climbing } from "../src/index"
 import { ClimbingTestLayer } from "./index"
@@ -28,7 +29,7 @@ describe("Climbing.listCreatedBoulders", () => {
           outcome: "FELL",
           moveTypes: ["HEEL_HOOK", "FLAG"],
           video: {
-            bytes: new Uint8Array([1, 2, 3]),
+            bytes: ClimbingAttemptVideoBytes.make(new Uint8Array([1, 2, 3])),
             contentType: "video/mp4",
             fileName: "attempt.mp4",
           },
