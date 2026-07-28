@@ -66,7 +66,11 @@
     "modules/gym/application/.turbo": true,
     "modules/gym/component/.turbo": true,
     "apps/web/.vercel": true,
-    ".agents": true
+    ".agents": true,
+    "packages/effect-s3/node_modules": true,
+    "packages/effect-s3/.turbo": true,
+    "modules/gym/adapters/next/.turbo": true,
+    "modules/gym/infrastructure/.turbo": true
   },
   "hide-files.files": [
     ".gitignore",
@@ -128,7 +132,11 @@
     "modules/gym/application/.turbo",
     "modules/gym/component/.turbo",
     "apps/web/.vercel",
-    ".agents"
+    ".agents",
+    "packages/effect-s3/node_modules",
+    "packages/effect-s3/.turbo",
+    "modules/gym/adapters/next/.turbo",
+    "modules/gym/infrastructure/.turbo"
   ],
   "typescript.preferences.importModuleSpecifier": "relative",
   "javascript.preferences.importModuleSpecifier": "relative"
