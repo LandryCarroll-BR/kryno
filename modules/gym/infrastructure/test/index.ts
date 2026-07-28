@@ -13,6 +13,8 @@ import { GymIdServiceTest } from "./services/gym-id-test.service"
 import { GymRouteImageStorageTest } from "./services/gym-route-image-storage-test.service"
 import { GymRouteIdServiceTest } from "./services/gym-route-id-test.service"
 
+export { GymRouteImageStorageLocal } from "./services/gym-route-image-storage-local.service"
+
 export const InfrastructureTestLayer = Layer.mergeAll(
   AuthenticatedGymMemberTest,
   GymAreaInMemoryRepository,

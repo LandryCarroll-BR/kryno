@@ -292,15 +292,15 @@ importers:
       '@auth/component':
         specifier: workspace:*
         version: link:../../auth/component
-      '@aws-sdk/client-s3':
-        specifier: ^3.1096.0
-        version: 3.1096.0
       '@climbing/application':
         specifier: workspace:*
         version: link:../application
       '@packages/effect-drizzle':
         specifier: workspace:*
         version: link:../../../packages/effect-drizzle
+      '@packages/effect-s3':
+        specifier: workspace:*
+        version: link:../../../packages/effect-s3
       drizzle-orm:
         specifier: 1.0.0-rc.4-5d5b77c
         version: 1.0.0-rc.4-5d5b77c(@effect/sql-pg@4.0.0-beta.70(effect@4.0.0-beta.70))(@types/pg@8.20.0)(effect@4.0.0-beta.70)(pg@8.22.0)(zod@3.25.76)
@@ -431,6 +431,9 @@ importers:
       '@packages/effect-drizzle':
         specifier: workspace:*
         version: link:../../../packages/effect-drizzle
+      '@packages/effect-s3':
+        specifier: workspace:*
+        version: link:../../../packages/effect-s3
       drizzle-orm:
         specifier: 1.0.0-rc.4-5d5b77c
         version: 1.0.0-rc.4-5d5b77c(@effect/sql-pg@4.0.0-beta.70(effect@4.0.0-beta.70))(@types/pg@8.20.0)(effect@4.0.0-beta.70)(pg@8.22.0)(zod@3.25.76)
@@ -499,6 +502,31 @@ importers:
       next:
         specifier: ^16.2.9
         version: 16.2.9(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+    devDependencies:
+      '@effect/vitest':
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70(effect@4.0.0-beta.70)(vitest@4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)))
+      '@packages/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/node':
+        specifier: ^25.1.0
+        version: 25.9.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.15
+        version: 4.1.7(@types/node@25.9.1)(msw@2.14.6(@types/node@25.9.1)(typescript@5.9.3))(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
+
+  packages/effect-s3:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.1096.0
+        version: 3.1096.0
+      effect:
+        specifier: 4.0.0-beta.70
+        version: 4.0.0-beta.70
     devDependencies:
       '@effect/vitest':
         specifier: 4.0.0-beta.70

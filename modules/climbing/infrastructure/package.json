@@ -17,9 +17,9 @@
   "dependencies": {
     "@auth/application": "workspace:*",
     "@auth/component": "workspace:*",
-    "@aws-sdk/client-s3": "^3.1096.0",
     "@climbing/application": "workspace:*",
     "@packages/effect-drizzle": "workspace:*",
+    "@packages/effect-s3": "workspace:*",
     "drizzle-orm": "1.0.0-rc.4-5d5b77c",
     "effect": "4.0.0-beta.70"
   },

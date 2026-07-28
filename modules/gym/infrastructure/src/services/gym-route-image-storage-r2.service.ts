@@ -1,17 +1,18 @@
 import crypto from "node:crypto"
 import { Config, Effect, Layer } from "effect"
 import * as Redacted from "effect/Redacted"
-import {
-  type ClimbingAttemptVideoContentType,
-  ClimbingAttemptVideoUrl,
-} from "@climbing/application/models/climbing-attempt"
-import { ClimbingAttemptVideoStorage } from "@climbing/application/services/climbing-attempt-video-storage"
 import { R2, S3ObjectClient, type S3ObjectClientFactory } from "@packages/effect-s3"
+import {
+  type GymRouteImageContentType,
+  GymRouteImageUrl,
+} from "@gym/application/models/gym-route"
+import { GymRouteImageStorage } from "@gym/application/services/gym-route-image-storage"
 
 const extensionByContentType = {
-  "video/mp4": "mp4",
-  "video/webm": "webm",
-} satisfies Record<ClimbingAttemptVideoContentType, string>
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+} satisfies Record<GymRouteImageContentType, string>
 
 type R2StorageConfig = {
   readonly accountId: string
@@ -22,7 +23,7 @@ type R2StorageConfig = {
   readonly keyPrefix: string
 }
 
-type ClimbingAttemptVideoStorageR2Options = {
+type GymRouteImageStorageR2Options = {
   readonly createClient?: S3ObjectClientFactory
   readonly randomBytes?: (size: number) => Uint8Array
 }
@@ -34,17 +35,17 @@ const config = Effect.gen(function* () {
     secretAccessKey: yield* Config.redacted(
       "CLOUDFLARE_R2_SECRET_ACCESS_KEY"
     ),
-    bucket: yield* Config.string("CLIMBING_ATTEMPT_VIDEO_R2_BUCKET"),
+    bucket: yield* Config.string("GYM_ROUTE_IMAGE_R2_BUCKET"),
     publicUrlBase: yield* Config.string(
-      "CLIMBING_ATTEMPT_VIDEO_PUBLIC_URL_BASE"
+      "GYM_ROUTE_IMAGE_PUBLIC_URL_BASE"
     ),
-    keyPrefix: yield* Config.string(
-      "CLIMBING_ATTEMPT_VIDEO_R2_KEY_PREFIX"
-    ).pipe(Config.withDefault("climbing-attempt-videos")),
+    keyPrefix: yield* Config.string("GYM_ROUTE_IMAGE_R2_KEY_PREFIX").pipe(
+      Config.withDefault("gym-route-images")
+    ),
   } satisfies R2StorageConfig
 })
 
-const extensionFor = (contentType: ClimbingAttemptVideoContentType) =>
+const extensionFor = (contentType: GymRouteImageContentType) =>
   extensionByContentType[contentType]
 
 const normalizePublicUrlBase = (publicUrlBase: string) =>
@@ -54,17 +55,17 @@ const normalizeKeyPrefix = (keyPrefix: string) =>
   keyPrefix.replace(/^\/+|\/+$/g, "")
 
 const keyFor = ({
-  attemptId,
+  routeId,
   contentType,
   keyPrefix,
   randomBytes,
 }: {
-  readonly attemptId: string
-  readonly contentType: ClimbingAttemptVideoContentType
+  readonly routeId: string
+  readonly contentType: GymRouteImageContentType
   readonly keyPrefix: string
   readonly randomBytes: (size: number) => Uint8Array
 }) => {
-  const filename = `${attemptId}-${Buffer.from(randomBytes(8)).toString(
+  const filename = `${routeId}-${Buffer.from(randomBytes(8)).toString(
     "hex"
   )}.${extensionFor(contentType)}`
   const prefix = normalizeKeyPrefix(keyPrefix)
@@ -73,27 +74,27 @@ const keyFor = ({
 }
 
 const keyFromPublicUrl = ({
+  imageUrl,
   publicUrlBase,
-  videoUrl,
 }: {
+  readonly imageUrl: GymRouteImageUrl
   readonly publicUrlBase: string
-  readonly videoUrl: ClimbingAttemptVideoUrl
 }) => {
   const normalizedPublicUrlBase = normalizePublicUrlBase(publicUrlBase)
-  const videoUrlString = String(videoUrl)
+  const imageUrlString = String(imageUrl)
   const publicUrlPrefix = `${normalizedPublicUrlBase}/`
 
-  return videoUrlString.startsWith(publicUrlPrefix)
-    ? videoUrlString.slice(publicUrlPrefix.length)
+  return imageUrlString.startsWith(publicUrlPrefix)
+    ? imageUrlString.slice(publicUrlPrefix.length)
     : undefined
 }
 
-export const makeClimbingAttemptVideoStorageR2 = ({
+export const makeGymRouteImageStorageR2 = ({
   createClient = S3ObjectClient.make,
   randomBytes = crypto.randomBytes,
-}: ClimbingAttemptVideoStorageR2Options = {}) =>
+}: GymRouteImageStorageR2Options = {}) =>
   Layer.effect(
-    ClimbingAttemptVideoStorage,
+    GymRouteImageStorage,
     Effect.gen(function* () {
       const storageConfig = yield* config
       const client = createClient({
@@ -104,13 +105,13 @@ export const makeClimbingAttemptVideoStorageR2 = ({
       })
 
       return {
-        store: Effect.fn("ClimbingAttemptVideoStorage.store")(function* ({
-          attemptId,
-          video,
+        store: Effect.fn("GymRouteImageStorage.store")(function* ({
+          routeId,
+          image,
         }) {
           const key = keyFor({
-            attemptId,
-            contentType: video.contentType,
+            routeId,
+            contentType: image.contentType,
             keyPrefix: storageConfig.keyPrefix,
             randomBytes,
           })
@@ -119,21 +120,21 @@ export const makeClimbingAttemptVideoStorageR2 = ({
             .putObject({
               bucket: storageConfig.bucket,
               key,
-              body: video.bytes,
-              contentType: video.contentType,
-              contentLength: video.bytes.byteLength,
+              body: image.bytes,
+              contentType: image.contentType,
+              contentLength: image.bytes.byteLength,
             })
             .pipe(Effect.orDie)
 
-          return ClimbingAttemptVideoUrl.make(
+          return GymRouteImageUrl.make(
             `${normalizePublicUrlBase(storageConfig.publicUrlBase)}/${key}`
           )
         }),
-        delete: Effect.fn("ClimbingAttemptVideoStorage.delete")(
-          function* (videoUrl) {
+        delete: Effect.fn("GymRouteImageStorage.delete")(
+          function* (imageUrl) {
             const key = keyFromPublicUrl({
+              imageUrl,
               publicUrlBase: storageConfig.publicUrlBase,
-              videoUrl,
             })
 
             if (key === undefined || key.length === 0) {
@@ -152,5 +153,4 @@ export const makeClimbingAttemptVideoStorageR2 = ({
     })
   )
 
-export const ClimbingAttemptVideoStorageR2 =
-  makeClimbingAttemptVideoStorageR2()
+export const GymRouteImageStorageR2 = makeGymRouteImageStorageR2()

@@ -13,7 +13,7 @@ import { GymAreaIdServiceLive } from "./services/gym-area-id.service"
 import { GymBoulderCatalogClimbing } from "./services/gym-boulder-catalog-climbing.service"
 import { GymBoulderAttemptsClimbing } from "./services/gym-boulder-attempts-climbing.service"
 import { GymIdServiceLive } from "./services/gym-id.service"
-import { GymRouteImageStorageLocal } from "./services/gym-route-image-storage-local.service"
+import { GymRouteImageStorageR2 } from "./services/gym-route-image-storage-r2.service"
 import { GymRouteIdServiceLive } from "./services/gym-route-id.service"
 
 const GymInfrastructureLayer = Layer.mergeAll(
@@ -24,7 +24,7 @@ const GymInfrastructureLayer = Layer.mergeAll(
   GymAreaIdServiceLive,
   GymRouteIdServiceLive,
   GymIdServiceLive,
-  GymRouteImageStorageLocal
+  GymRouteImageStorageR2
 ).pipe(Layer.provide(GymDBContextLive))
 
 const GymAuthenticationLayer = Layer.mergeAll(
