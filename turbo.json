@@ -6,7 +6,20 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["build/**"],
-      "env": ["AUTH_DATABASE_URL", "CLIMBING_DATABASE_URL", "GYM_DATABASE_URL"]
+      "env": [
+        "AUTH_DATABASE_URL",
+        "CLIMBING_DATABASE_URL",
+        "GYM_DATABASE_URL",
+        "CLOUDFLARE_R2_ACCOUNT_ID",
+        "CLOUDFLARE_R2_ACCESS_KEY_ID",
+        "CLOUDFLARE_R2_SECRET_ACCESS_KEY",
+        "CLIMBING_ATTEMPT_VIDEO_R2_BUCKET",
+        "CLIMBING_ATTEMPT_VIDEO_PUBLIC_URL_BASE",
+        "CLIMBING_ATTEMPT_VIDEO_R2_KEY_PREFIX",
+        "GYM_ROUTE_IMAGE_R2_BUCKET",
+        "GYM_ROUTE_IMAGE_PUBLIC_URL_BASE",
+        "GYM_ROUTE_IMAGE_R2_KEY_PREFIX"
+      ]
     },
     "format": {
       "dependsOn": ["^format"]
