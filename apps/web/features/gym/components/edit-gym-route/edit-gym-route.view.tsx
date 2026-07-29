@@ -17,7 +17,7 @@ import {
 import {
   editGymRouteInitialViewModel,
   type EditGymRouteViewModel,
-} from "@gym/adapters-next/view-models"
+} from "@gym/adapters-next/view-models/edit-gym-route"
 import type {
   ManagedGymAreaViewModel,
   ManagedGymRouteViewModel,

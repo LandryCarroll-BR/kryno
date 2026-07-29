@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache"
 import { Effect } from "effect"
 import { GymAdapterRuntime } from "@gym/adapters-next"
 import { EditGymRouteController } from "@gym/adapters-next/controllers/edit-gym-route"
-import type { EditGymRouteViewModel } from "@gym/adapters-next/view-models"
+import type { EditGymRouteViewModel } from "@gym/adapters-next/view-models/edit-gym-route"
 
 export async function editGymRoute(
   previousState: EditGymRouteViewModel,

@@ -4,11 +4,9 @@ import { Badge } from "@packages/ui/components/badge"
 import type { GetGymManagementViewModel } from "@gym/adapters-next/view-models/get-gym-management"
 import type { CreateGymAreaViewModel } from "@gym/adapters-next/view-models/create-gym-area"
 import type { CreateGymRouteViewModel } from "@gym/adapters-next/view-models/create-gym-route"
-import type {
-  DeleteGymAreaViewModel,
-  DeleteGymRouteViewModel,
-  EditGymRouteViewModel,
-} from "@gym/adapters-next/view-models"
+import type { DeleteGymAreaViewModel } from "@gym/adapters-next/view-models/delete-gym-area"
+import type { DeleteGymRouteViewModel } from "@gym/adapters-next/view-models/delete-gym-route"
+import type { EditGymRouteViewModel } from "@gym/adapters-next/view-models/edit-gym-route"
 
 import {
   Card,

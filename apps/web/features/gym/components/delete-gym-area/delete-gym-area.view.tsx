@@ -16,7 +16,7 @@ import { Button } from "@packages/ui/components/button"
 import {
   deleteGymAreaInitialViewModel,
   type DeleteGymAreaViewModel,
-} from "@gym/adapters-next/view-models"
+} from "@gym/adapters-next/view-models/delete-gym-area"
 
 type DeleteGymAreaAction = (
   previousState: DeleteGymAreaViewModel,

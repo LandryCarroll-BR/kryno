@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache"
 import { Effect } from "effect"
 import { GymAdapterRuntime } from "@gym/adapters-next"
 import { DeleteGymRouteController } from "@gym/adapters-next/controllers/delete-gym-route"
-import type { DeleteGymRouteViewModel } from "@gym/adapters-next/view-models"
+import type { DeleteGymRouteViewModel } from "@gym/adapters-next/view-models/delete-gym-route"
 
 export async function deleteGymRoute(
   previousState: DeleteGymRouteViewModel,
