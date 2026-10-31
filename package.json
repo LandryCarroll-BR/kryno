@@ -24,12 +24,12 @@
   },
   "devDependencies": {
     "@effect/language-service": "^0.86.6",
-    "@turbo/gen": "^2.11.10",
+    "@turbo/gen": "catalog:",
     "effect-solutions": "^0.5.3",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.7.4",
     "turbo": "^2.11.10",
-    "typescript": "5.9.3"
+    "typescript": "catalog:typescript-5"
   },
   "engines": {
     "node": ">=26"

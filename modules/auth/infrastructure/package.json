@@ -17,15 +17,15 @@
   "dependencies": {
     "@auth/application": "workspace:*",
     "@packages/effect-drizzle": "workspace:*",
-    "drizzle-orm": "1.0.0-rc.5",
-    "effect": "4.1.1"
+    "drizzle-orm": "catalog:",
+    "effect": "catalog:"
   },
   "devDependencies": {
-    "@effect/vitest": "4.1.1",
+    "@effect/vitest": "catalog:",
     "@packages/tsconfig": "workspace:*",
-    "@types/node": "^26.6.6",
-    "drizzle-kit": "1.0.0-rc.5",
-    "typescript": "^7.0.2",
-    "vitest": "^5.0.5"
+    "@types/node": "catalog:",
+    "drizzle-kit": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

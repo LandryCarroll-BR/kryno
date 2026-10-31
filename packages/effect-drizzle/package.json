@@ -9,18 +9,18 @@
   },
   "dependencies": {
     "@effect/sql-pg": "4.1.1",
-    "drizzle-orm": "1.0.0-rc.5",
-    "effect": "4.1.1",
+    "drizzle-orm": "catalog:",
+    "effect": "catalog:",
     "pg": "^8.23.1"
   },
   "devDependencies": {
-    "@effect/vitest": "4.1.1",
+    "@effect/vitest": "catalog:",
     "@packages/tsconfig": "workspace:*",
-    "@types/node": "^26.6.6",
+    "@types/node": "catalog:",
     "@types/pg": "^8.23.1",
-    "drizzle-kit": "1.0.0-rc.5",
-    "typescript": "^7.0.2",
-    "vitest": "^5.0.5"
+    "drizzle-kit": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts"

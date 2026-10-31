@@ -162,6 +162,65 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@effect/vitest':
+      specifier: 4.1.1
+      version: 4.1.1
+    '@turbo/gen':
+      specifier: ^2.11.10
+      version: 2.11.10
+    '@types/node':
+      specifier: ^26.6.6
+      version: 26.6.6
+    '@types/react':
+      specifier: ^19.3.0
+      version: 19.3.0
+    '@types/react-dom':
+      specifier: ^19.3.0
+      version: 19.3.0
+    'drizzle-kit':
+      specifier: 1.0.0-rc.5
+      version: 1.0.0-rc.5
+    'drizzle-orm':
+      specifier: 1.0.0-rc.5
+      version: 1.0.0-rc.5
+    'effect':
+      specifier: 4.1.1
+      version: 4.1.1
+    'next':
+      specifier: 16.4.3
+      version: 16.4.3
+    'react':
+      specifier: 19.3.1
+      version: 19.3.1
+    'react-dom':
+      specifier: 19.3.1
+      version: 19.3.1
+    'tailwindcss':
+      specifier: ^4.3.3
+      version: 4.3.3
+    'typescript':
+      specifier: ^7.0.2
+      version: 7.0.2
+    'vitest':
+      specifier: ^5.0.5
+      version: 5.0.5
+  pinned:
+    'next':
+      specifier: ^16.4.3
+      version: 16.4.3
+    'react':
+      specifier: ^19.3.1
+      version: 19.3.1
+    'react-dom':
+      specifier: ^19.3.1
+      version: 19.3.1
+  typescript-5:
+    'typescript':
+      specifier: 5.9.3
+      version: 5.9.3
+
 importers:
 
   .:
@@ -170,7 +229,7 @@ importers:
         specifier: ^0.86.6
         version: 0.86.6
       '@turbo/gen':
-        specifier: ^2.11.10
+        specifier: 'catalog:'
         version: 2.11.10(@types/node@26.6.6)
       effect-solutions:
         specifier: ^0.5.3
@@ -185,7 +244,7 @@ importers:
         specifier: ^2.11.10
         version: 2.11.10
       typescript:
-        specifier: 5.9.3
+        specifier: 'catalog:typescript-5'
         version: 5.9.3
 
   apps/web:
@@ -203,29 +262,29 @@ importers:
         specifier: workspace:*
         version: link:../../packages/ui
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
       next:
-        specifier: 16.4.3
+        specifier: 'catalog:'
         version: 16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react:
-        specifier: 19.3.1
+        specifier: 'catalog:'
         version: 19.3.1
       react-dom:
-        specifier: 19.3.1
+        specifier: 'catalog:'
         version: 19.3.1(react@19.3.1)
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.3.3
         version: 4.3.3
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       '@types/react':
-        specifier: ^19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: ^19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
       eslint:
         specifier: ^10.14.0
@@ -234,10 +293,10 @@ importers:
         specifier: 16.4.3
         version: 16.4.3(@typescript-eslint/parser@8.72.1(eslint@10.14.0(jiti@2.7.0))(typescript@7.0.2))(eslint@10.14.0(jiti@2.7.0))(typescript@7.0.2)
       tailwindcss:
-        specifier: ^4.3.3
+        specifier: 'catalog:'
         version: 4.3.3
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
 
   modules/auth/adapters/next:
@@ -255,45 +314,45 @@ importers:
         specifier: workspace:*
         version: link:../../../../packages/effect-next
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/auth/application:
     dependencies:
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/auth/component:
@@ -305,23 +364,23 @@ importers:
         specifier: workspace:*
         version: link:../infrastructure
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/auth/infrastructure:
@@ -333,29 +392,29 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/effect-drizzle
       drizzle-orm:
-        specifier: 1.0.0-rc.5
+        specifier: 'catalog:'
         version: 1.0.0-rc.5(@effect/sql-pg@4.1.1(effect@4.1.1))(@types/pg@8.23.1)(effect@4.1.1)(pg@8.23.1)(zod@4.6.7)
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       drizzle-kit:
-        specifier: 1.0.0-rc.5
+        specifier: 'catalog:'
         version: 1.0.0-rc.5(drizzle-orm@1.0.0-rc.5(@effect/sql-pg@4.1.1(effect@4.1.1))(@types/pg@8.23.1)(effect@4.1.1)(pg@8.23.1)(zod@4.6.7))
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/climbing/adapters/next:
@@ -373,45 +432,45 @@ importers:
         specifier: workspace:*
         version: link:../../../../packages/effect-next
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/climbing/application:
     dependencies:
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/climbing/component:
@@ -423,23 +482,23 @@ importers:
         specifier: workspace:*
         version: link:../infrastructure
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/climbing/infrastructure:
@@ -460,29 +519,29 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/effect-s3
       drizzle-orm:
-        specifier: 1.0.0-rc.5
+        specifier: 'catalog:'
         version: 1.0.0-rc.5(@effect/sql-pg@4.1.1(effect@4.1.1))(@types/pg@8.23.1)(effect@4.1.1)(pg@8.23.1)(zod@4.6.7)
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       drizzle-kit:
-        specifier: 1.0.0-rc.5
+        specifier: 'catalog:'
         version: 1.0.0-rc.5(drizzle-orm@1.0.0-rc.5(@effect/sql-pg@4.1.1(effect@4.1.1))(@types/pg@8.23.1)(effect@4.1.1)(pg@8.23.1)(zod@4.6.7))
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/gym/adapters/next:
@@ -497,23 +556,23 @@ importers:
         specifier: workspace:*
         version: link:../../../../packages/effect-next
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/gym/application:
@@ -522,23 +581,23 @@ importers:
         specifier: workspace:*
         version: link:../../climbing/application
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/gym/component:
@@ -550,23 +609,23 @@ importers:
         specifier: workspace:*
         version: link:../infrastructure
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   modules/gym/infrastructure:
@@ -593,29 +652,29 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/effect-s3
       drizzle-orm:
-        specifier: 1.0.0-rc.5
+        specifier: 'catalog:'
         version: 1.0.0-rc.5(@effect/sql-pg@4.1.1(effect@4.1.1))(@types/pg@8.23.1)(effect@4.1.1)(pg@8.23.1)(zod@4.6.7)
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       drizzle-kit:
-        specifier: 1.0.0-rc.5
+        specifier: 'catalog:'
         version: 1.0.0-rc.5(drizzle-orm@1.0.0-rc.5(@effect/sql-pg@4.1.1(effect@4.1.1))(@types/pg@8.23.1)(effect@4.1.1)(pg@8.23.1)(zod@4.6.7))
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   packages/effect-drizzle:
@@ -624,60 +683,60 @@ importers:
         specifier: 4.1.1
         version: 4.1.1(effect@4.1.1)
       drizzle-orm:
-        specifier: 1.0.0-rc.5
+        specifier: 'catalog:'
         version: 1.0.0-rc.5(@effect/sql-pg@4.1.1(effect@4.1.1))(@types/pg@8.23.1)(effect@4.1.1)(pg@8.23.1)(zod@4.6.7)
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
       pg:
         specifier: ^8.23.1
         version: 8.23.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       '@types/pg':
         specifier: ^8.23.1
         version: 8.23.1
       drizzle-kit:
-        specifier: 1.0.0-rc.5
+        specifier: 'catalog:'
         version: 1.0.0-rc.5(drizzle-orm@1.0.0-rc.5(@effect/sql-pg@4.1.1(effect@4.1.1))(@types/pg@8.23.1)(effect@4.1.1)(pg@8.23.1)(zod@4.6.7))
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   packages/effect-next:
     dependencies:
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
       next:
-        specifier: ^16.4.3
+        specifier: 'catalog:pinned'
         version: 16.4.3(@babel/core@7.29.7)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   packages/effect-s3:
@@ -686,23 +745,23 @@ importers:
         specifier: ^3.1161.0
         version: 3.1161.0
       effect:
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1
     devDependencies:
       '@effect/vitest':
-        specifier: 4.1.1
+        specifier: 'catalog:'
         version: 4.1.1(effect@4.1.1)(vitest@5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))
       '@packages/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
       vitest:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   packages/tsconfig: {}
@@ -746,13 +805,13 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react:
-        specifier: ^19.3.1
+        specifier: 'catalog:pinned'
         version: 19.3.1
       react-day-picker:
         specifier: ^10.0.2
         version: 10.0.2(@types/react@19.3.0)(react@19.3.1)
       react-dom:
-        specifier: ^19.3.1
+        specifier: 'catalog:pinned'
         version: 19.3.1(react@19.3.1)
       react-resizable-panels:
         specifier: ^4.15.3
@@ -783,22 +842,22 @@ importers:
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
       '@turbo/gen':
-        specifier: ^2.11.10
+        specifier: 'catalog:'
         version: 2.11.10(@types/node@26.6.6)
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 'catalog:'
         version: 26.6.6
       '@types/react':
-        specifier: ^19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: ^19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
       tailwindcss:
-        specifier: ^4.3.3
+        specifier: 'catalog:'
         version: 4.3.3
       typescript:
-        specifier: ^7.0.2
+        specifier: 'catalog:'
         version: 7.0.2
 
 packages:

@@ -1,7 +1,6 @@
 import { Effect, Layer } from "effect"
 import { Service } from "effect/Context"
 import { InfrastructureLayer } from "@climbing/infrastructure"
-
 import { ApplicationLayer } from "@climbing/application"
 import { CreateBoulderUseCase } from "@climbing/application/use-cases/create-boulder"
 import { DeleteBoulderUseCase } from "@climbing/application/use-cases/delete-boulder"
