@@ -8,15 +8,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "effect": "4.0.0-beta.70",
-    "next": "^16.2.9"
+    "effect": "4.1.1",
+    "next": "^16.4.3"
   },
   "devDependencies": {
-    "@effect/vitest": "4.0.0-beta.70",
-    "@types/node": "^25.1.0",
+    "@effect/vitest": "4.1.1",
     "@packages/tsconfig": "workspace:*",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
   },
   "exports": {
     ".": "./src/index.ts"

@@ -9,15 +9,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1096.0",
-    "effect": "4.0.0-beta.70"
+    "@aws-sdk/client-s3": "^3.1161.0",
+    "effect": "4.1.1"
   },
   "devDependencies": {
-    "@effect/vitest": "4.0.0-beta.70",
+    "@effect/vitest": "4.1.1",
     "@packages/tsconfig": "workspace:*",
-    "@types/node": "^25.1.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
   },
   "exports": {
     ".": "./src/index.ts"
