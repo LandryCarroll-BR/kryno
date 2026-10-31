@@ -17,14 +17,14 @@
   "dependencies": {
     "@auth/application": "workspace:*",
     "@packages/effect-drizzle": "workspace:*",
-    "drizzle-orm": "1.0.0-rc.4-5d5b77c",
+    "drizzle-orm": "1.0.0-rc.5",
     "effect": "4.1.1"
   },
   "devDependencies": {
     "@effect/vitest": "4.1.1",
     "@packages/tsconfig": "workspace:*",
     "@types/node": "^26.6.6",
-    "drizzle-kit": "1.0.0-rc.4-5d5b77c",
+    "drizzle-kit": "1.0.0-rc.5",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5"
   }

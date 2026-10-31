@@ -6,7 +6,7 @@ export const UserId = NonEmptyString.pipe(Schema.brand("UserId"))
 
 export const Username = Schema.Trim.pipe(
   Schema.check(
-    Schema.isLengthBetween(3, 32, {
+    Schema.isBetweenLength(3, 32, {
       message: "Username must be between 3 and 32 characters.",
     }),
     Schema.isPattern(/^[a-zA-Z0-9_]+$/, {
@@ -30,7 +30,7 @@ export type Email = typeof Email.Type
 
 export const Password = Schema.String.pipe(
   Schema.check(
-    Schema.isLengthBetween(8, 128, {
+    Schema.isBetweenLength(8, 128, {
       message: "Password must be between 8 and 128 characters.",
     })
   )

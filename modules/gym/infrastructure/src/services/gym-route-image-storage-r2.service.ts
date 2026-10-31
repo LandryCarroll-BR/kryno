@@ -30,16 +30,16 @@ type GymRouteImageStorageR2Options = {
 
 const config = Effect.gen(function* () {
   return {
-    accountId: yield* Config.string("CLOUDFLARE_R2_ACCOUNT_ID"),
-    accessKeyId: yield* Config.redacted("CLOUDFLARE_R2_ACCESS_KEY_ID"),
-    secretAccessKey: yield* Config.redacted(
+    accountId: yield* Config.String("CLOUDFLARE_R2_ACCOUNT_ID"),
+    accessKeyId: yield* Config.Redacted("CLOUDFLARE_R2_ACCESS_KEY_ID"),
+    secretAccessKey: yield* Config.Redacted(
       "CLOUDFLARE_R2_SECRET_ACCESS_KEY"
     ),
-    bucket: yield* Config.string("GYM_ROUTE_IMAGE_R2_BUCKET"),
-    publicUrlBase: yield* Config.string(
+    bucket: yield* Config.String("GYM_ROUTE_IMAGE_R2_BUCKET"),
+    publicUrlBase: yield* Config.String(
       "GYM_ROUTE_IMAGE_PUBLIC_URL_BASE"
     ),
-    keyPrefix: yield* Config.string("GYM_ROUTE_IMAGE_R2_KEY_PREFIX").pipe(
+    keyPrefix: yield* Config.String("GYM_ROUTE_IMAGE_R2_KEY_PREFIX").pipe(
       Config.withDefault("gym-route-images")
     ),
   } satisfies R2StorageConfig

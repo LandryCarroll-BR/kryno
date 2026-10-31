@@ -16,7 +16,7 @@ export class ClimbingDB extends Context.Service<
 const ClimbingDBLive = Layer.effect(ClimbingDB, dbEffect)
 
 const PgClientLive = PgClientFactory.create(
-  Config.redacted("CLIMBING_DATABASE_URL")
+  Config.Redacted("CLIMBING_DATABASE_URL")
 )
 
 export const ClimbingDBContextLive = ClimbingDBLive.pipe(

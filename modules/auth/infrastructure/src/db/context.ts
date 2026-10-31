@@ -19,7 +19,7 @@ export class AuthDB extends Context.Service<
 const AuthDBLive = Layer.effect(AuthDB, dbEffect)
 
 const PgClientLive = PgClientFactory.create(
-  Config.redacted("AUTH_DATABASE_URL")
+  Config.Redacted("AUTH_DATABASE_URL")
 )
 
 // Compose all layers together

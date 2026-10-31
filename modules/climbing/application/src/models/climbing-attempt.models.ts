@@ -41,9 +41,7 @@ export const ClimbingAttemptMoveType = Schema.Literals([
 ])
 export type ClimbingAttemptMoveType = typeof ClimbingAttemptMoveType.Type
 
-export const ClimbingDate = Schema.Date.check(
-  Schema.isDateValid({ message: "Climbing date must be valid." })
-)
+export const ClimbingDate = Schema.Date
 
 export type ClimbingAttemptVideoUrl = typeof ClimbingAttemptVideoUrl.Type
 export const ClimbingAttemptVideoUrl = Schema.NonEmptyString.pipe(

@@ -326,7 +326,7 @@ export class ${service} extends Context.Service<
 const ${service}Live = Layer.effect(${service}, dbEffect)
 
 const PgClientLive = PgClientFactory.create(
-  Config.redacted("${environment}_DATABASE_URL")
+  Config.Redacted("${environment}_DATABASE_URL")
 )
 
 export const ${service}ContextLive = ${service}Live.pipe(

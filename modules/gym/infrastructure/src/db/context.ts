@@ -16,7 +16,7 @@ export class GymDB extends Context.Service<
 const GymDBLive = Layer.effect(GymDB, dbEffect)
 
 const PgClientLive = PgClientFactory.create(
-  Config.redacted("GYM_DATABASE_URL")
+  Config.Redacted("GYM_DATABASE_URL")
 )
 
 export const GymDBContextLive = GymDBLive.pipe(

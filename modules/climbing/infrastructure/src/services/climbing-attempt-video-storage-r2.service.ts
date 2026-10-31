@@ -29,16 +29,16 @@ type ClimbingAttemptVideoStorageR2Options = {
 
 const config = Effect.gen(function* () {
   return {
-    accountId: yield* Config.string("CLOUDFLARE_R2_ACCOUNT_ID"),
-    accessKeyId: yield* Config.redacted("CLOUDFLARE_R2_ACCESS_KEY_ID"),
-    secretAccessKey: yield* Config.redacted(
+    accountId: yield* Config.String("CLOUDFLARE_R2_ACCOUNT_ID"),
+    accessKeyId: yield* Config.Redacted("CLOUDFLARE_R2_ACCESS_KEY_ID"),
+    secretAccessKey: yield* Config.Redacted(
       "CLOUDFLARE_R2_SECRET_ACCESS_KEY"
     ),
-    bucket: yield* Config.string("CLIMBING_ATTEMPT_VIDEO_R2_BUCKET"),
-    publicUrlBase: yield* Config.string(
+    bucket: yield* Config.String("CLIMBING_ATTEMPT_VIDEO_R2_BUCKET"),
+    publicUrlBase: yield* Config.String(
       "CLIMBING_ATTEMPT_VIDEO_PUBLIC_URL_BASE"
     ),
-    keyPrefix: yield* Config.string(
+    keyPrefix: yield* Config.String(
       "CLIMBING_ATTEMPT_VIDEO_R2_KEY_PREFIX"
     ).pipe(Config.withDefault("climbing-attempt-videos")),
   } satisfies R2StorageConfig

@@ -33,5 +33,11 @@
   },
   "engines": {
     "node": ">=26"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.15.0"
+    }
   }
 }
